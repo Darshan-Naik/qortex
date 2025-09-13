@@ -1,4 +1,4 @@
-import { Fetcher, InferFetcherResult, QueryKey, HandleMountOptions } from "dquery-core";
+import { Fetcher, InferFetcherResult, QueryKey } from "dquery-core";
 
 export type UseQueryOptions<F extends Fetcher | undefined = undefined> = {
   fetcher?: F;
@@ -12,9 +12,6 @@ export type UseQueryOptions<F extends Fetcher | undefined = undefined> = {
   usePreviousDataOnError?: boolean;
   usePlaceholderOnError?: boolean;
 };
-
-// Align shape with runtime's HandleMountOptions (subset; fetcher/equalityFn types adjusted for F)
-export type UseQueryMountOptions<T> = HandleMountOptions<T>;
 
 export type UseQueryResult<T = unknown> = {
   data?: T;

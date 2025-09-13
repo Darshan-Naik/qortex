@@ -8,12 +8,15 @@ import {
   GetQueryStateOptions,
   CancelOptions,
   QueryState,
-  HandleMountOptions,
+  ReadQueryOptions,
 } from "./types";
 import { serializeKey, shallowEqual, createDefaultState } from "./utils";
 
 type Status = "idle" | "fetching" | "success" | "error";
 
+/**
+ * Internal query state that tracks all aspects of a query's lifecycle
+ */
 type QueryStateInternal<T = unknown> = {
   data?: T;
   error?: any;
@@ -31,13 +34,25 @@ type QueryStateInternal<T = unknown> = {
   placeholderData?: T;
   usePreviousDataOnError?: boolean;
   usePlaceholderOnError?: boolean;
+  hasBeenMounted: boolean;
+  lastMountTime: number | null;
+  wasEnabledOnFirstMount: boolean;
+  refetchOnSubscribe: "always" | "stale" | false;
+  lastFetchTime: number | null;
 };
 
+/**
+ * Core query manager that handles caching, fetching, and state management
+ * Implements robust throttling and race condition prevention
+ */
 export class QueryManager {
   private cache = new Map<string, QueryStateInternal<any>>();
   private fetcherRegistry = new Map<string, Fetcher<any>>();
   private subs = new Map<string, Set<() => void>>();
 
+  /**
+   * Ensures a query state exists in cache, creating it if necessary
+   */
   private ensure<T = unknown>(key: QueryKey): QueryStateInternal<T> {
     const sk = serializeKey(key);
     if (!this.cache.has(sk)) {
@@ -47,28 +62,46 @@ export class QueryManager {
     return this.cache.get(sk)! as QueryStateInternal<T>;
   }
 
+  /**
+   * Notifies all subscribers of a query state change
+   */
   private emit(key: QueryKey) {
     const set = this.subs.get(serializeKey(key));
     if (!set) return;
     for (const cb of Array.from(set)) cb();
   }
 
+  /**
+   * Schedules cache eviction for inactive queries
+   */
   private scheduleEvictionIfNeeded(key: QueryKey) {
     const s = this.ensure(key);
-    if (s.timeoutHandle) { clearTimeout(s.timeoutHandle); s.timeoutHandle = undefined; }
+    if (s.timeoutHandle) { 
+      clearTimeout(s.timeoutHandle); 
+      s.timeoutHandle = undefined; 
+    }
     if (s.subscribers === 0) {
       const sk = serializeKey(key);
       s.timeoutHandle = setTimeout(() => {
-        if (s.subscribers === 0) { this.cache.delete(sk); this.subs.delete(sk); }
+        if (s.subscribers === 0) { 
+          this.cache.delete(sk); 
+          this.subs.delete(sk); 
+        }
       }, s.cacheTime);
     }
   }
 
+  /**
+   * Registers a fetcher function for a query key
+   * Automatically fetches if enabled is not false
+   */
   registerFetcher<F extends Fetcher = Fetcher>(key: QueryKey, opts: RegisterFetcherOptions<F>): void {
     const sk = serializeKey(key);
     this.fetcherRegistry.set(sk, opts.fetcher as Fetcher<any>);
     const q = this.cache.get(sk) as QueryStateInternal<any> | undefined;
+    
     if (q) {
+      // Update existing query state
       q.fetcher = opts.fetcher as Fetcher<any>;
       q.equalityFn = (opts.equalityFn as EqualityFn<any> | undefined) ?? q.equalityFn;
       q.staleTime = opts.staleTime ?? q.staleTime;
@@ -77,6 +110,7 @@ export class QueryManager {
       q.usePreviousDataOnError = opts.usePreviousDataOnError ?? q.usePreviousDataOnError;
       q.usePlaceholderOnError = opts.usePlaceholderOnError ?? q.usePlaceholderOnError;
     } else {
+      // Create new query state
       const base = createDefaultState<any>(opts.fetcher as Fetcher<any>);
       this.cache.set(sk, {
         ...base,
@@ -88,12 +122,17 @@ export class QueryManager {
         usePlaceholderOnError: opts.usePlaceholderOnError ?? base.usePlaceholderOnError,
       });
     }
-    // Invoke fetch immediately only if enabled is not explicitly false
+    
+    // Auto-fetch if enabled
     if (opts.enabled !== false) {
-      try { void this.fetchQuery<any>(key); } catch { /* noop */ }
+      try { void this.fetchQuery<any>(key); } catch { }
     }
   }
 
+  /**
+   * Executes a fetch operation with proper error handling and state management
+   * Prevents duplicate fetches and handles cancellation
+   */
   async fetchQuery<T = unknown>(key: QueryKey, opts?: FetchQueryOptions<T>): Promise<T> {
     const s = this.ensure<T>(key);
     s.staleTime = opts?.staleTime ?? s.staleTime;
@@ -108,7 +147,10 @@ export class QueryManager {
     if (opts?.signal) {
       const ext = opts.signal;
       if (ext.aborted) controller.abort();
-      else { const onAbort = () => controller.abort(); ext.addEventListener("abort", onAbort, { once: true }); }
+      else { 
+        const onAbort = () => controller.abort(); 
+        ext.addEventListener("abort", onAbort, { once: true }); 
+      }
     }
 
     s.fetchController = controller;
@@ -120,6 +162,7 @@ export class QueryManager {
         const result = await fetcher({ signal: controller.signal });
         const eq = (s.equalityFn ?? shallowEqual) as EqualityFn<T>;
         const old = s.data as T | undefined;
+        
         if (!eq(old, result)) {
           s.data = result;
           s.updatedAt = Date.now();
@@ -128,13 +171,14 @@ export class QueryManager {
           s.isInvalidated = false;
           this.emit(key);
         } else {
-          // Equal result: update timestamp to maintain accurate staleness, but don't emit
           s.updatedAt = Date.now();
           s.status = "success";
           s.error = undefined;
         }
+        
         s.fetchPromise = null;
         s.fetchController = null;
+        this.emit(key);
         this.scheduleEvictionIfNeeded(key);
         return s.data as T;
       } catch (err: any) {
@@ -159,32 +203,51 @@ export class QueryManager {
     return p;
   }
 
+  /**
+   * Manually sets query data without triggering a fetch
+   * Marks query as mounted to prevent unnecessary subsequent fetches
+   */
   setQueryData<T = unknown>(key: QueryKey, opts: SetQueryDataOptions<T>): void {
     const s = this.ensure<T>(key);
     const eq = (s.equalityFn ?? shallowEqual) as EqualityFn<T>;
     const old = s.data as T | undefined;
     if (eq(old, opts.data)) return;
+    
     s.data = opts.data;
     s.updatedAt = Date.now();
     s.error = undefined;
     s.status = "success";
     s.isInvalidated = false;
+    s.hasBeenMounted = true;
+    s.wasEnabledOnFirstMount = true;
     this.emit(key);
   }
 
-  getQueryData<T = unknown>(key: QueryKey, _opts?: {}): T | undefined {
+  /**
+   * Gets query data and triggers fetch logic if needed
+   */
+  getQueryData<T = unknown>(key: QueryKey, opts?: ReadQueryOptions<T>): T | undefined {
     const s = this.ensure<T>(key);
+    this.updateQueryState(key, opts);
+    this.handleMountLogic(key, opts);
     return s.data as T | undefined;
   }
 
-  getQueryState<T = unknown>(key: QueryKey, _opts?: GetQueryStateOptions<T>): QueryState<T> {
+  /**
+   * Gets comprehensive query state including computed flags
+   * Handles placeholder data and error states appropriately
+   */
+  getQueryState<T = unknown>(key: QueryKey, opts?: ReadQueryOptions<T>): QueryState<T> {
     const s = this.ensure<T>(key);
+    this.updateQueryState(key, opts);
+    this.handleMountLogic(key, opts);
     const now = Date.now();
     const isStale = s.updatedAt == null || (now - (s.updatedAt || 0) > s.staleTime) || s.isInvalidated;
 
     let returnedData: T | undefined = s.data as T | undefined;
     let isPlaceholderData = false;
 
+    // Handle error state with fallback options
     if (s.status === "error") {
       if (s.usePreviousDataOnError && s.data !== undefined) {
         returnedData = s.data as T | undefined;
@@ -196,7 +259,9 @@ export class QueryManager {
         returnedData = undefined;
         isPlaceholderData = false;
       }
-    } else if (s.status === "fetching") {
+    } 
+    // Handle fetching state with placeholder data
+    else if (s.status === "fetching") {
       if (s.data === undefined) {
         const ph = s.placeholderData;
         if (ph !== undefined) {
@@ -210,7 +275,9 @@ export class QueryManager {
         returnedData = s.data as T | undefined;
         isPlaceholderData = false;
       }
-    } else {
+    } 
+    // Handle success/idle state
+    else {
       if (s.data === undefined) {
         const ph = s.placeholderData;
         if (ph !== undefined) {
@@ -237,67 +304,162 @@ export class QueryManager {
       isFetching: s.status === "fetching",
       isError: s.status === "error",
       isSuccess: s.status === "success" && returnedData !== undefined,
-    } ;
+    };
   }
 
+  /**
+   * Marks a query as invalidated, triggering refetch on next access
+   */
   invalidateQuery(key: QueryKey, _opts?: {}): void {
     const s = this.ensure(key);
     s.isInvalidated = true;
     this.emit(key);
   }
 
+  /**
+   * Cancels an ongoing fetch operation
+   */
   cancelFetch(key: QueryKey, _opts?: CancelOptions): void {
     const s = this.ensure(key);
-    if (s.fetchController) { try { s.fetchController.abort(); } catch { } s.fetchController = null; }
+    if (s.fetchController) { 
+      try { s.fetchController.abort(); } catch { } 
+      s.fetchController = null; 
+    }
     s.fetchPromise = null;
   }
 
-  subscribeQuery(key: QueryKey, cb: () => void): () => void {
+  /**
+   * Subscribes to query state changes with automatic subscription management
+   * Handles subscriber counting and triggers mount logic to potentially start fetching
+   */
+  subscribeQuery(key: QueryKey, cb: () => void, opts?: ReadQueryOptions<any>): () => void {
     const sk = serializeKey(key);
+    const s = this.ensure(key);
+    
+    // Increment subscriber count and cancel eviction
+    s.subscribers++;
+    if (s.timeoutHandle) { 
+      clearTimeout(s.timeoutHandle); 
+      s.timeoutHandle = undefined; 
+    }
+    
+    // Set up subscription
     if (!this.subs.has(sk)) this.subs.set(sk, new Set());
     this.subs.get(sk)!.add(cb);
-    return () => this.subs.get(sk)!.delete(cb);
+    this.updateQueryState(key, opts);
+    this.handleMountLogic(key, opts);
+    
+    // Return unsubscribe function that handles cleanup
+    return () => {
+      this.subs.get(sk)!.delete(cb);
+      s.subscribers = Math.max(0, s.subscribers - 1);
+      this.scheduleEvictionIfNeeded(key);
+    };
   }
 
-  onSubscribe(key: QueryKey): void {
-    const s = this.ensure(key);
-    s.subscribers++;
-    if (s.timeoutHandle) { clearTimeout(s.timeoutHandle); s.timeoutHandle = undefined; }
-  }
-
-  onUnsubscribe(key: QueryKey): void {
-    const s = this.ensure(key);
-    s.subscribers = Math.max(0, s.subscribers - 1);
-    this.scheduleEvictionIfNeeded(key);
-  }
-
-  async handleMount<T = unknown>(
+  /**
+   * Updates query state with new options
+   */
+  private updateQueryState<T = unknown>(
     key: QueryKey,
-    opts?: HandleMountOptions<T>
-  ): Promise<T | undefined> {
+    opts?: ReadQueryOptions<T>
+  ): void {
     const s = this.ensure<T>(key);
-    s.staleTime = opts?.staleTime ?? s.staleTime;
-    s.fetcher = opts?.fetcher ?? s.fetcher;
-    s.equalityFn = opts?.equalityFn ?? s.equalityFn;
-    s.placeholderData = (opts?.placeholderData as T | undefined) ?? s.placeholderData;
-    s.usePreviousDataOnError = opts?.usePreviousDataOnError ?? s.usePreviousDataOnError;
-    s.usePlaceholderOnError = opts?.usePlaceholderOnError ?? s.usePlaceholderOnError;
+    if (opts?.staleTime !== undefined) s.staleTime = opts.staleTime;
+    if (opts?.cacheTime !== undefined) s.cacheTime = opts.cacheTime;
+    if (opts?.fetcher !== undefined) s.fetcher = opts.fetcher;
+    if (opts?.equalityFn !== undefined) s.equalityFn = opts.equalityFn;
+    if (opts?.placeholderData !== undefined) s.placeholderData = opts.placeholderData;
+    if (opts?.usePreviousDataOnError !== undefined) s.usePreviousDataOnError = opts.usePreviousDataOnError;
+    if (opts?.usePlaceholderOnError !== undefined) s.usePlaceholderOnError = opts.usePlaceholderOnError;
+    if (opts?.refetchOnSubscribe !== undefined) s.refetchOnSubscribe = opts.refetchOnSubscribe;
+  }
+
+  /**
+   * Core mount logic that determines when to fetch
+   * Implements robust throttling and race condition prevention
+   * 
+   * Fetch conditions:
+   * 1. First mount with enabled=true
+   * 2. Subsequent mount where first was disabled, now enabled
+   * 3. Subsequent mount based on refetchOnSubscribe setting
+   * 
+   * Throttling:
+   * - Prevents multiple fetches within 50ms window
+   * - Blocks fetches if already in progress
+   * - Sets status immediately to prevent race conditions
+   */
+  private handleMountLogic<T = unknown>(
+    key: QueryKey,
+    opts?: ReadQueryOptions<T>
+  ): void {
+    const s = this.ensure<T>(key);
     const enabled = opts?.enabled ?? true;
-
-    if (!enabled) return Promise.resolve(s.data as T | undefined);
-
     const now = Date.now();
+    
+    // Early returns for disabled or already fetching queries
+    if (!enabled) return;
+    if (s.status === "fetching" || s.fetchPromise) return;
+    if (s.lastFetchTime && (now - s.lastFetchTime) < 50) return;
+    
     const isStale = s.updatedAt == null || (now - (s.updatedAt || 0) > s.staleTime) || s.isInvalidated;
+    const isFirstMount = !s.hasBeenMounted;
 
-    if (opts?.refetchOnSubscribe === "always") {
-      return this.fetchQuery<T>(key, { fetcher: opts?.fetcher, staleTime: s.staleTime, cacheTime: s.cacheTime, signal: opts?.signal });
+    // Update mount tracking
+    if (isFirstMount) {
+      s.hasBeenMounted = true;
+      s.wasEnabledOnFirstMount = enabled;
     }
-    if (opts?.refetchOnSubscribe === "stale") {
-      if (isStale) {
-        return this.fetchQuery<T>(key, { fetcher: opts?.fetcher, staleTime: s.staleTime, cacheTime: s.cacheTime, signal: opts?.signal }).catch(() => undefined);
+    s.lastMountTime = now;
+
+    let shouldRefetch = false;
+
+    // Determine if we should fetch based on mount history and options
+    if (isFirstMount) {
+      shouldRefetch = true;
+    } else {
+      if (!s.wasEnabledOnFirstMount) {
+        // First mount was disabled, this one is enabled - fetch
+        shouldRefetch = true;
+        s.wasEnabledOnFirstMount = true;
+      } else {
+        // Check refetchOnSubscribe setting
+        const refetchOnSubscribe = opts?.refetchOnSubscribe ?? s.refetchOnSubscribe;
+        if (refetchOnSubscribe === "always") {
+          shouldRefetch = true;
+        } else if (refetchOnSubscribe === "stale") {
+          shouldRefetch = isStale;
+        } else if (refetchOnSubscribe === false) {
+          shouldRefetch = false;
+        } else {
+          // Default to "stale" behavior
+          shouldRefetch = isStale;
+        }
       }
     }
-    return Promise.resolve(s.data as T | undefined);
+
+    // Execute fetch if conditions are met
+    if (shouldRefetch) {
+      s.status = "fetching";
+      s.lastFetchTime = now;
+      
+      this.fetchQuery<T>(key, { 
+        staleTime: s.staleTime, 
+        cacheTime: s.cacheTime,
+        signal: opts?.signal,
+        fetcher: s.fetcher || undefined,
+        equalityFn: s.equalityFn
+      }).catch(() => undefined);
+    }
+  }
+
+  /**
+   * Mount method for React integration
+   * @internal - Used by React hooks
+   */
+  mountQuery<T = unknown>(key: QueryKey, opts?: ReadQueryOptions<T>): void {
+    this.updateQueryState(key, opts);
+    this.handleMountLogic(key, opts);
   }
 }
 

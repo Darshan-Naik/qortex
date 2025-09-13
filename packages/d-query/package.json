@@ -1,6 +1,7 @@
 {
   "name": "dquery-core",
   "version": "0.1.1",
+  "private": true,
   "description": "Framework-agnostic query cache & fetch registry (MFE friendly).",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -21,7 +22,6 @@
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",
-    "publish:pkg": "npm publish --access public",
     "prepare": "npm run build"
   },
   "repository": {

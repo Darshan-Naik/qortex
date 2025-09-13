@@ -1,4 +1,4 @@
-import type { UseQueryResult } from "./types";
+import type { QueryKey, UseQueryResult } from "./types";
 
 export function snapshotEqual<T>(a: UseQueryResult<T> | null, b: UseQueryResult<T> | null) {
   if (a === b) return true;
@@ -37,4 +37,9 @@ export function computeStatusFlags<T>(state: { status: "idle" | "fetching" | "su
   return { isLoading, isFetching, isError, isSuccess } as const;
 }
 
+
+/** Normalize query keys to a string for internal maps */
+export function serializeKey(key: QueryKey): string {
+  return Array.isArray(key) ? key.join(",") : String(key);
+}
 

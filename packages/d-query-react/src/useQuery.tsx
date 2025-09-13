@@ -3,7 +3,7 @@ import { queryManager } from "d-query";
 import { QueryKey, Fetcher, InferFetcherResult } from "d-query";
 import { UseQueryOptions, UseQueryResult } from "./types";
 import { subscribeToKey } from "./subscribe";
-import { snapshotEqual, computeStatusFlags } from "./utils";
+import { snapshotEqual } from "./utils";
 
 
 /**
@@ -18,25 +18,36 @@ export function useQuery<F extends Fetcher | undefined = undefined, T = F extend
   // Keep a ref to the last snapshot object so we can return same reference when unchanged
   const lastSnapshotRef = useRef<UseQueryResult<T> | null>(null);
 
-  const subscribe = (notify: () => void) => {
-    const unsub = subscribeToKey(key, notify);
-    queryManager.handleMount<T>(key, {
+  const subscribe = useMemo(() => (notify: () => void) => {
+    const unsub = subscribeToKey(key, notify, {
+      enabled: memoOpts.enabled,
       refetchOnSubscribe: memoOpts.refetchOnSubscribe ?? "stale",
       fetcher: memoOpts.fetcher as Fetcher<T> | undefined,
       staleTime: memoOpts.staleTime,
-      enabled: memoOpts.enabled,
+      cacheTime: memoOpts.cacheTime,
       equalityFn: memoOpts.equalityFn as any,
       signal: memoOpts.signal,
-      // allow first-use to seed runtime defaults
       placeholderData: memoOpts.placeholderData as any,
       usePreviousDataOnError: (memoOpts as any).usePreviousDataOnError,
       usePlaceholderOnError: (memoOpts as any).usePlaceholderOnError,
-    }).catch(() => { });
+    });
+
     return unsub;
-  };
+  }, [key, memoOpts.refetchOnSubscribe, memoOpts.fetcher, memoOpts.staleTime, memoOpts.cacheTime, memoOpts.enabled, memoOpts.equalityFn, memoOpts.signal, memoOpts.placeholderData, memoOpts.usePreviousDataOnError, memoOpts.usePlaceholderOnError]);
 
   const getSnapshot = (): UseQueryResult<T> => {
-    const state = queryManager.getQueryState<T>(key, {});
+    const state = queryManager.getQueryState<T>(key, {
+      enabled: memoOpts.enabled,
+      refetchOnSubscribe: memoOpts.refetchOnSubscribe ?? "stale",
+      fetcher: memoOpts.fetcher as Fetcher<T> | undefined,
+      staleTime: memoOpts.staleTime,
+      cacheTime: memoOpts.cacheTime,
+      equalityFn: memoOpts.equalityFn as any,
+      signal: memoOpts.signal,
+      placeholderData: memoOpts.placeholderData as any,
+      usePreviousDataOnError: (memoOpts as any).usePreviousDataOnError,
+      usePlaceholderOnError: (memoOpts as any).usePlaceholderOnError,
+    });
 
     const { isLoading, isFetching, isError, isSuccess } = state;
 

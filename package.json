@@ -21,6 +21,20 @@
   ],
   "author": "Darshan Naik",
   "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0",
+    "babel-jest": "^29.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-typescript": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/jest-dom": "^6.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
   "workspaces": [
     "packages/*",
     "examples/*"
@@ -29,8 +43,13 @@
     "build:packages": "pnpm -w -r --filter './packages/*' run build",
     "bootstrap": "pnpm install",
     "dev:example": "pnpm --filter d-query-react-example --parallel run dev",
-    "publish:d-query": "pnpm --filter d-query publish --access public",
-    "publish:d-query-react": "pnpm --filter d-query-react publish --access public",
-    "publish:packages": "pnpm -w -r --filter './packages/*' run build && pnpm -w -r --filter './packages/*' publish --access public"
+    "prepare:publish": "node scripts/prepare-publish.js",
+    "publish:d-query": "cd packages/d-query/dist && npm publish --access public",
+    "publish:d-query-react": "cd packages/d-query-react/dist && npm publish --access public",
+    "publish:packages": "pnpm run build:packages && pnpm run prepare:publish && pnpm run publish:d-query && pnpm run publish:d-query-react",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:packages": "pnpm -w -r --filter './packages/*' run test"
   }
 }
