@@ -1,47 +1,54 @@
-# d-query
+# 🚀 d-query
 
-A minimal, performant data fetching library with React integration. Built for simplicity and efficiency.
+> **A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness! 🎉**
 
-## Packages
+[![npm version](https://badge.fury.io/js/d-query.svg)](https://badge.fury.io/js/d-query)
+[![npm version](https://badge.fury.io/js/d-query-react.svg)](https://badge.fury.io/js/d-query-react)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/d-query)](https://bundlephobia.com/package/d-query)
 
-- **`d-query`** - Core runtime with query management
-- **`d-query-react`** - React hooks and components
+## ✨ Why d-query?
 
-## Quick Start
+Tired of complex data fetching libraries that make simple tasks complicated? **d-query** is here to save the day! 🦸‍♂️
+
+- 🎯 **Dead simple** - Get started in 30 seconds
+- ⚡ **Lightning fast** - Minimal bundle size, maximum performance
+- 🧠 **Smart caching** - Automatic deduplication and background updates
+- 🎭 **Framework agnostic** - Works with React, Vue, Svelte, or vanilla JS
+- 🛡️ **TypeScript first** - Full type safety out of the box
+- 🎪 **Fun to use** - Because coding should be enjoyable!
+
+## 📦 Packages
+
+| Package | Description | Size |
+|---------|-------------|------|
+| **`d-query`** | Core runtime with query management | ~3KB gzipped |
+| **`d-query-react`** | React hooks and components | ~2KB gzipped |
+
+
+## 📥 Installation
 
 ```bash
-# Install dependencies
-pnpm install
+# Core runtime (works everywhere!)
+npm install d-query
 
-# Build packages
-pnpm run build
-
-# Run example app
-pnpm --filter react-app run dev
+# React integration (if you're using React)
+npm install d-query-react
 ```
 
-## Installation
+## 🎯 Core Features
 
-```bash
-# Core runtime
-pnpm add d-query
+- **🎪 Automatic caching** with configurable stale time and cache time
+- **🔄 Background refetching** with smart invalidation
+- **💾 Previous data preservation** during refetches (no loading states for cached data!)
+- **⚡ Shallow equality** to prevent unnecessary re-renders
+- **🛑 AbortController** support for request cancellation
+- **🎭 TypeScript** support with full type safety
+- **🎨 Framework agnostic** - use anywhere!
 
-# React integration
-pnpm add d-query-react
-```
+## 🎪 Usage Examples
 
-## Core Features
-
-- **Automatic caching** with configurable stale time and cache time
-- **Background refetching** with smart invalidation
-- **Previous data preservation** during refetches (no loading states for cached data)
-- **Shallow equality** to prevent unnecessary re-renders
-- **AbortController** support for request cancellation
-- **TypeScript** support with full type safety
-
-## Usage
-
-### 1. Setup Query Manager
+### 1. 🎯 Basic Setup (The Happy Path)
 
 ```ts
 import { queryManager } from "d-query";
@@ -50,16 +57,17 @@ import { queryManager } from "d-query";
 queryManager.registerFetcher(["todos"], {
   fetcher: async ({ signal }) => {
     const response = await fetch("/api/todos", { signal });
+    if (!response.ok) throw new Error("Failed to fetch todos");
     return response.json();
   },
-  staleTime: 10_000, // 10 seconds
-  cacheTime: 5 * 60 * 1000, // 5 minutes
+  staleTime: 10_000, // 10 seconds of freshness
+  cacheTime: 5 * 60 * 1000, // 5 minutes in cache
   placeholderData: [], // Show empty array while loading
   // enabled: false // Skip immediate prefetch on register
 });
 ```
 
-### 2. React Integration
+### 2. 🎭 React Integration (The Magic)
 
 ```tsx
 import { useQuery } from "d-query-react";
@@ -69,17 +77,17 @@ function TodosList() {
     refetchOnSubscribe: "stale" // Refetch if data is stale when component mounts
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading) return <div>🎯 Loading your todos...</div>;
+  if (error) return <div>❌ Oops! {error.message}</div>;
 
   return (
     <div>
       <button onClick={() => refetch()} disabled={isFetching}>
-        {isFetching ? "Refreshing..." : "Refresh"}
+        {isFetching ? "🔄 Refreshing..." : "🔄 Refresh"}
       </button>
       <ul>
         {data?.map(todo => (
-          <li key={todo.id}>{todo.title}</li>
+          <li key={todo.id}>✅ {todo.title}</li>
         ))}
       </ul>
     </div>
@@ -87,7 +95,7 @@ function TodosList() {
 }
 ```
 
-### 3. Manual Query Management
+### 3. 🎪 Manual Query Management (The Power User)
 
 ```ts
 import { queryManager } from "d-query";
@@ -95,7 +103,7 @@ import { queryManager } from "d-query";
 // Fetch data manually
 const todos = await queryManager.fetchQuery(["todos"]);
 
-// Update cache directly
+// Update cache directly (optimistic updates!)
 queryManager.setQueryData(["todos"], { data: newTodos });
 
 // Invalidate and refetch
@@ -106,11 +114,144 @@ queryManager.cancelFetch(["todos"]);
 
 // Subscribe to query state changes
 const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
-  console.log("Query state:", state);
+  console.log("🎭 Query state changed:", state);
 });
 ```
 
-## API Reference
+## 🎨 Advanced Examples
+
+### 🎯 Error Handling & Recovery
+
+```tsx
+function UserProfile({ userId }: { userId: string }) {
+  const { data: user, error, isLoading, refetch } = useQuery(["user", userId], {
+    // Show placeholder data on error
+    usePlaceholderOnError: true,
+    placeholderData: { name: "Unknown User", avatar: "/default-avatar.png" },
+    // Keep previous data on error
+    usePreviousDataOnError: true,
+    // Only fetch if userId exists
+    enabled: !!userId
+  });
+
+  if (isLoading) return <div>🎯 Loading user...</div>;
+  
+  if (error) {
+    return (
+      <div>
+        <p>❌ Failed to load user: {error.message}</p>
+        <button onClick={() => refetch()}>🔄 Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <img src={user.avatar} alt={user.name} />
+      <h2>{user.name}</h2>
+    </div>
+  );
+}
+```
+
+### 🎪 Optimistic Updates
+
+```tsx
+function AddTodo() {
+  const addTodo = async (title: string) => {
+    // Optimistically update the cache
+    const tempId = Date.now();
+    const newTodo = { id: tempId, title, completed: false };
+    
+    queryManager.setQueryData(["todos"], (oldData) => [
+      ...(oldData || []),
+      newTodo
+    ]);
+
+    try {
+      // Make the actual request
+      const savedTodo = await fetch("/api/todos", {
+        method: "POST",
+        body: JSON.stringify({ title })
+      }).then(r => r.json());
+
+      // Update with real data
+      queryManager.setQueryData(["todos"], (oldData) =>
+        oldData?.map(todo => 
+          todo.id === tempId ? savedTodo : todo
+        )
+      );
+    } catch (error) {
+      // Rollback on error
+      queryManager.setQueryData(["todos"], (oldData) =>
+        oldData?.filter(todo => todo.id !== tempId)
+      );
+      throw error;
+    }
+  };
+
+  return (
+    <button onClick={() => addTodo("New todo")}>
+      ➕ Add Todo
+    </button>
+  );
+}
+```
+
+### 🎭 Custom Equality Functions
+
+```ts
+import { isEqual } from "lodash";
+
+queryManager.registerFetcher(["complex-data"], {
+  fetcher: async () => fetch("/api/complex").then(r => r.json()),
+  equalityFn: isEqual // Deep equality comparison
+});
+```
+
+### 🎯 Conditional Fetching
+
+```tsx
+function UserDashboard({ userId, includeProfile }: { 
+  userId?: string; 
+  includeProfile?: boolean 
+}) {
+  const { data: user } = useQuery(["user", userId], {
+    enabled: !!userId // Only fetch when userId exists
+  });
+
+  const { data: profile } = useQuery(["user-profile", userId], {
+    enabled: !!userId && includeProfile // Only fetch when both conditions are met
+  });
+
+  return (
+    <div>
+      {user && <h1>Welcome, {user.name}!</h1>}
+      {profile && <p>Profile: {profile.bio}</p>}
+    </div>
+  );
+}
+```
+
+### 🎪 Background Refetching
+
+```tsx
+function TodosList() {
+  const { data, isFetching } = useQuery(["todos"], {
+    refetchOnSubscribe: "stale" // Refetch if stale when component mounts
+  });
+
+  return (
+    <div>
+      {isFetching && <div>🔄 Updating in background...</div>}
+      {/* Previous data remains visible during background fetch */}
+      {data?.map(todo => <div key={todo.id}>✅ {todo.title}</div>)}
+    </div>
+  );
+}
+```
+
+## 🎨 API Reference
 
 ### Core Runtime (`d-query`)
 
@@ -125,7 +266,9 @@ queryManager.registerFetcher(key, {
   cacheTime?: number, // Default: 5 minutes
   placeholderData?: T, // Default: undefined
   enabled?: boolean, // Default: true
-  equalityFn?: (a: T, b: T) => boolean // Default: shallow equality
+  equalityFn?: (a: T, b: T) => boolean, // Default: shallow equality
+  usePreviousDataOnError?: boolean, // Default: false
+  usePlaceholderOnError?: boolean // Default: false
 });
 ```
 
@@ -136,7 +279,10 @@ Manually fetch data for a query.
 ```ts
 const data = await queryManager.fetchQuery(key, {
   signal?: AbortSignal,
-  equalityFn?: (a: T, b: T) => boolean
+  equalityFn?: (a: T, b: T) => boolean,
+  fetcher?: Fetcher<T>,
+  staleTime?: number,
+  cacheTime?: number
 });
 ```
 
@@ -145,7 +291,14 @@ const data = await queryManager.fetchQuery(key, {
 Update query cache directly.
 
 ```ts
+// Direct update
 queryManager.setQueryData(["todos"], { data: newTodos });
+
+// Functional update
+queryManager.setQueryData(["todos"], (oldData) => [
+  ...(oldData || []),
+  newTodo
+]);
 ```
 
 #### `queryManager.getQueryData(key)`
@@ -162,7 +315,11 @@ Get current query state.
 
 ```ts
 const state = queryManager.getQueryState(["todos"]);
-// Returns: { data, error, isLoading, isFetching, isStale, lastFetched }
+// Returns: { 
+//   data, error, status, updatedAt, isStale, 
+//   isPlaceholderData, isLoading, isFetching, 
+//   isError, isSuccess 
+// }
 ```
 
 #### `queryManager.invalidateQuery(key)`
@@ -198,9 +355,28 @@ const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
 React hook for query data.
 
 ```tsx
-const { data, isLoading, isFetching, error, refetch } = useQuery(key, {
+const { 
+  data, 
+  isLoading, 
+  isFetching, 
+  error, 
+  refetch,
+  cancel,
+  status,
+  isStale,
+  updatedAt,
+  isPlaceholderData
+} = useQuery(key, {
   refetchOnSubscribe?: "stale" | "always" | false, // Default: false
-  enabled?: boolean // Default: true
+  enabled?: boolean, // Default: true
+  fetcher?: Fetcher<T>,
+  staleTime?: number,
+  cacheTime?: number,
+  equalityFn?: (a: T, b: T) => boolean,
+  signal?: AbortSignal,
+  placeholderData?: T,
+  usePreviousDataOnError?: boolean,
+  usePlaceholderOnError?: boolean
 });
 ```
 
@@ -210,79 +386,20 @@ const { data, isLoading, isFetching, error, refetch } = useQuery(key, {
 - `isFetching` - True if currently fetching (including background refetches)
 - `error` - Current error state
 - `refetch` - Function to manually trigger refetch
+- `cancel` - Function to cancel ongoing fetch
+- `status` - Current status: "idle" | "fetching" | "success" | "error"
+- `isStale` - True if data is stale
+- `updatedAt` - Timestamp of last successful fetch
+- `isPlaceholderData` - True if showing placeholder data
 
-## Advanced Usage
-
-### Custom Equality Function
-
-```ts
-import { isEqual } from "lodash";
-
-queryManager.registerFetcher(["todos"], {
-  fetcher: async () => fetch("/api/todos").then(r => r.json()),
-  equalityFn: isEqual // Deep equality comparison
-});
-```
-
-### Conditional Fetching
-
-```tsx
-function UserProfile({ userId }) {
-  const { data: user } = useQuery(["user", userId], {
-    enabled: !!userId // Only fetch when userId exists
-  });
-
-  return user ? <div>{user.name}</div> : null;
-}
-```
-
-### Background Refetching
-
-```tsx
-function TodosList() {
-  const { data, isFetching } = useQuery(["todos"], {
-    refetchOnSubscribe: "stale" // Refetch if stale when component mounts
-  });
-
-  return (
-    <div>
-      {isFetching && <div>Updating in background...</div>}
-      {/* Previous data remains visible during background fetch */}
-      {data?.map(todo => <div key={todo.id}>{todo.title}</div>)}
-    </div>
-  );
-}
-```
-
-### Manual Cache Management
-
-```tsx
-function AddTodo() {
-  const addTodo = async (title) => {
-    const newTodo = await fetch("/api/todos", {
-      method: "POST",
-      body: JSON.stringify({ title })
-    }).then(r => r.json());
-
-    // Update cache optimistically
-    queryManager.setQueryData(["todos"], (oldData) => [
-      ...(oldData || []),
-      newTodo
-    ]);
-  };
-
-  return <button onClick={() => addTodo("New todo")}>Add Todo</button>;
-}
-```
-
-## Configuration
+## 🎪 Configuration
 
 ### Query Keys
 
 Query keys can be strings or arrays:
 
 ```ts
-// String keys
+// String keys (simple)
 queryManager.registerFetcher("todos", { fetcher: ... });
 
 // Array keys (recommended for parameters)
@@ -300,22 +417,182 @@ queryManager.registerFetcher(["todos"], {
 });
 ```
 
-## Migration from Other Libraries
+## 🎭 Error Handling Patterns
+
+### 1. 🎯 Graceful Degradation
+
+```tsx
+function ProductList() {
+  const { data: products, error } = useQuery(["products"], {
+    placeholderData: [], // Show empty list while loading
+    usePlaceholderOnError: true // Show empty list on error
+  });
+
+  return (
+    <div>
+      {error && (
+        <div className="error-banner">
+          ⚠️ Some products couldn't be loaded, showing cached data
+        </div>
+      )}
+      {products?.map(product => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+}
+```
+
+### 2. 🎪 Retry Logic
+
+```tsx
+function DataComponent() {
+  const [retryCount, setRetryCount] = useState(0);
+  
+  const { data, error, refetch } = useQuery(["data"], {
+    enabled: retryCount < 3 // Stop retrying after 3 attempts
+  });
+
+  const handleRetry = async () => {
+    setRetryCount(prev => prev + 1);
+    await refetch();
+  };
+
+  if (error && retryCount < 3) {
+    return (
+      <div>
+        <p>❌ Something went wrong: {error.message}</p>
+        <button onClick={handleRetry}>
+          🔄 Try Again ({retryCount}/3)
+        </button>
+      </div>
+    );
+  }
+
+  return <div>{/* Your content */}</div>;
+}
+```
+
+### 3. 🎯 Fallback Data
+
+```tsx
+function UserProfile({ userId }: { userId: string }) {
+  const { data: user } = useQuery(["user", userId], {
+    placeholderData: {
+      name: "Loading...",
+      avatar: "/default-avatar.png",
+      bio: "User information is being loaded..."
+    },
+    usePlaceholderOnError: true
+  });
+
+  return (
+    <div>
+      <img src={user.avatar} alt={user.name} />
+      <h2>{user.name}</h2>
+      <p>{user.bio}</p>
+    </div>
+  );
+}
+```
+
+## 🎪 Migration from Other Libraries
 
 ### From React Query / TanStack Query
 
-- `keepPreviousData` is now the default behavior
+```tsx
+// Before (React Query)
+const { data, isLoading, error } = useQuery({
+  queryKey: ["todos"],
+  queryFn: fetchTodos,
+  keepPreviousData: true,
+  placeholderData: []
+});
+
+// After (d-query)
+queryManager.registerFetcher(["todos"], {
+  fetcher: fetchTodos,
+  placeholderData: []
+});
+const { data, isLoading, error } = useQuery(["todos"]);
+```
+
+**Key differences:**
+- `keepPreviousData` is now the default behavior ✅
 - `placeholderData` is set at the fetcher level, not per-hook
 - `refetchOnMount` becomes `refetchOnSubscribe`
 - No `suspense` mode - use `isLoading` states instead
 
 ### From SWR
 
+```tsx
+// Before (SWR)
+const { data, error, mutate } = useSWR("/api/todos", fetcher, {
+  keepPreviousData: true
+});
+
+// After (d-query)
+queryManager.registerFetcher(["todos"], {
+  fetcher: () => fetch("/api/todos").then(r => r.json())
+});
+const { data, error, refetch } = useQuery(["todos"], {
+  refetchOnSubscribe: "stale" // SWR's default behavior
+});
+```
+
+**Key differences:**
 - Register fetchers explicitly instead of passing fetcher to hook
 - Use `refetchOnSubscribe: "stale"` for SWR's default behavior
 - Previous data is always preserved (like SWR's `keepPreviousData: true`)
 
-## Development
+## 🎯 Performance Tips
+
+### 1. 🎪 Optimize Bundle Size
+
+```ts
+// Only import what you need
+import { queryManager } from "d-query";
+import { useQuery } from "d-query-react";
+```
+
+### 2. 🎯 Use Appropriate Cache Times
+
+```ts
+// Short-lived data (real-time)
+queryManager.registerFetcher(["live-data"], {
+  fetcher: fetchLiveData,
+  staleTime: 0, // Always stale
+  cacheTime: 30_000 // 30 seconds
+});
+
+// Long-lived data (user profiles)
+queryManager.registerFetcher(["user-profile"], {
+  fetcher: fetchUserProfile,
+  staleTime: 5 * 60 * 1000, // 5 minutes
+  cacheTime: 30 * 60 * 1000 // 30 minutes
+});
+```
+
+### 3. 🎪 Batch Related Queries
+
+```tsx
+function Dashboard() {
+  // These will be fetched in parallel
+  const { data: user } = useQuery(["user"]);
+  const { data: posts } = useQuery(["posts"]);
+  const { data: comments } = useQuery(["comments"]);
+
+  return (
+    <div>
+      <UserProfile user={user} />
+      <PostsList posts={posts} />
+      <CommentsList comments={comments} />
+    </div>
+  );
+}
+```
+
+## 🎭 Development
 
 ```bash
 # Install dependencies
@@ -329,8 +606,37 @@ pnpm run type-check
 
 # Run example app
 pnpm --filter react-app run dev
+
+# Publish packages
+pnpm run publish:packages
 ```
 
-## License
+## 🎪 Contributing
 
-MIT
+We love contributions! Here's how you can help:
+
+1. 🍴 Fork the repository
+2. 🌟 Create a feature branch: `git checkout -b feature/amazing-feature`
+3. 🎯 Make your changes
+4. 🧪 Add tests if applicable
+5. 📝 Update documentation
+6. 🚀 Submit a pull request
+
+## 📄 License
+
+MIT License - feel free to use this in your projects! 🎉
+
+## 🎯 Support
+
+Need help? Have questions? Want to chat about data fetching strategies?
+
+- 📧 **Email**: [darshannaik.com](https://darshannaik.com)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/your-repo/discussions)
+
+---
+
+<div align="center">
+  <p>Made with ❤️ by <a href="https://darshannaik.com">Darshan</a></p>
+  <p>⭐ Star this repo if you found it helpful!</p>
+</div>
