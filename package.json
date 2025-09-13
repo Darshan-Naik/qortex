@@ -2,6 +2,25 @@
   "name": "d-query-monorepo",
   "private": true,
   "version": "0.1.0",
+  "description": "A minimal, performant data fetching library with React integration",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Darshan-Naik/d-query.git"
+  },
+  "homepage": "https://github.com/Darshan-Naik/d-query#readme",
+  "bugs": {
+    "url": "https://github.com/Darshan-Naik/d-query/issues"
+  },
+  "keywords": [
+    "d-query",
+    "query",
+    "cache",
+    "react",
+    "data-fetching",
+    "typescript"
+  ],
+  "author": "Darshan Naik",
+  "license": "MIT",
   "workspaces": [
     "packages/*",
     "examples/*"

@@ -631,8 +631,9 @@ MIT License - feel free to use this in your projects! 🎉
 Need help? Have questions? Want to chat about data fetching strategies?
 
 - 📧 **Email**: [darshannaik.com](https://darshannaik.com)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/your-repo/discussions)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/d-query/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Darshan-Naik/d-query/discussions)
+- 🌟 **Repository**: [https://github.com/Darshan-Naik/d-query](https://github.com/Darshan-Naik/d-query)
 
 ---
 

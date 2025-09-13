@@ -24,14 +24,24 @@
     "publish:pkg": "npm publish --access public",
     "prepare": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Darshan-Naik/d-query.git"
+  },
+  "homepage": "https://github.com/Darshan-Naik/d-query#readme",
+  "bugs": {
+    "url": "https://github.com/Darshan-Naik/d-query/issues"
+  },
   "keywords": [
     "d-query",
     "query",
     "cache",
     "runtime",
-    "mfe"
+    "mfe",
+    "data-fetching",
+    "typescript"
   ],
-  "author": "Darshan",
+  "author": "Darshan Naik",
   "license": "MIT",
   "devDependencies": {
     "tsup": "^6.0.0",

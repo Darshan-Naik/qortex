@@ -23,14 +23,24 @@
     "clean": "rimraf dist",
     "publish:pkg": "npm publish --access public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Darshan-Naik/d-query.git"
+  },
+  "homepage": "https://github.com/Darshan-Naik/d-query#readme",
+  "bugs": {
+    "url": "https://github.com/Darshan-Naik/d-query/issues"
+  },
   "keywords": [
     "d-query",
     "react",
     "useQuery",
     "cache",
-    "mfe"
+    "mfe",
+    "data-fetching",
+    "typescript"
   ],
-  "author": "Darshan",
+  "author": "Darshan Naik",
   "license": "MIT",
   "dependencies": {
     "d-query": "workspace:*"
