@@ -1,0 +1,41 @@
+{
+  "name": "d-query",
+  "version": "0.1.0",
+  "description": "Framework-agnostic query cache & fetch registry (MFE friendly).",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf dist",
+    "publish:pkg": "npm publish --access public",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "d-query",
+    "query",
+    "cache",
+    "runtime",
+    "mfe"
+  ],
+  "author": "Darshan",
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^6.0.0",
+    "typescript": "^5.0.0",
+    "rimraf": "^3.0.2"
+  }
+}

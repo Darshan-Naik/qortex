@@ -1,0 +1,17 @@
+{
+  "name": "d-query-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build:packages": "pnpm -w -r --filter './packages/*' run build",
+    "bootstrap": "pnpm install",
+    "dev:example": "pnpm --filter d-query-react-example --parallel run dev",
+    "publish:d-query": "pnpm --filter d-query publish --access public",
+    "publish:d-query-react": "pnpm --filter d-query-react publish --access public",
+    "publish:packages": "pnpm -w -r --filter './packages/*' run build && pnpm -w -r --filter './packages/*' publish --access public"
+  }
+}

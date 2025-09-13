@@ -1,0 +1,46 @@
+{
+  "name": "d-query-react",
+  "version": "0.1.0",
+  "description": "React hook bridge for d-query runtime",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf dist",
+    "publish:pkg": "npm publish --access public"
+  },
+  "keywords": [
+    "d-query",
+    "react",
+    "useQuery",
+    "cache",
+    "mfe"
+  ],
+  "author": "Darshan",
+  "license": "MIT",
+  "dependencies": {
+    "d-query": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "tsup": "^6.0.0",
+    "typescript": "^5.0.0",
+    "rimraf": "^3.0.2"
+  }
+}
