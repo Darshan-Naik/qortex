@@ -1,4 +1,4 @@
-import { Fetcher, InferFetcherResult, QueryKey, HandleMountOptions } from "d-query";
+import { Fetcher, InferFetcherResult, QueryKey, HandleMountOptions } from "dquery-core";
 
 export type UseQueryOptions<F extends Fetcher | undefined = undefined> = {
   fetcher?: F;
@@ -31,4 +31,4 @@ export type UseQueryResult<T = unknown> = {
   cancel: () => void;
 };
 
-export { QueryKey, Fetcher, InferFetcherResult } from "d-query";
+export { QueryKey, Fetcher, InferFetcherResult } from "dquery-core";

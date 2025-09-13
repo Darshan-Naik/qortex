@@ -1,4 +1,4 @@
 // Re-export runtime APIs for convenience
-export * from "d-query";
+export * from "dquery-core";
 // Export React hooks
 export * from "./useQuery";

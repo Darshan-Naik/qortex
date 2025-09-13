@@ -1,6 +1,6 @@
 import { useSyncExternalStore, useMemo, useRef } from "react";
-import { queryManager } from "d-query";
-import { QueryKey, Fetcher, InferFetcherResult } from "d-query";
+import { queryManager } from "dquery-core";
+import { QueryKey, Fetcher, InferFetcherResult } from "dquery-core";
 import { UseQueryOptions, UseQueryResult } from "./types";
 import { subscribeToKey } from "./subscribe";
 import { snapshotEqual, computeStatusFlags } from "./utils";

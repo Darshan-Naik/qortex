@@ -1,9 +1,9 @@
-# 🎭 d-query-react
+# 🎭 dquery-react
 
 > **React hooks for the d-query runtime. Make your React apps data-fetching awesome! ⚛️**
 
-[![npm version](https://badge.fury.io/js/d-query-react.svg)](https://badge.fury.io/js/d-query-react)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/d-query-react)](https://bundlephobia.com/package/d-query-react)
+[![npm version](https://badge.fury.io/js/dquery-react.svg)](https://badge.fury.io/js/dquery-react)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/dquery-react)](https://bundlephobia.com/package/dquery-react)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 
@@ -21,20 +21,20 @@
 ## 🚀 Installation
 
 ```bash
-pnpm add d-query-react d-query
+pnpm add dquery-react dquery-core
 # or
-npm install d-query-react d-query
+npm install dquery-react dquery-core
 # or
-yarn add d-query-react d-query
+yarn add dquery-react dquery-core
 ```
 
-**Note:** This package depends on `react` (>=18) and `d-query`.
+**Note:** This package depends on `react` (>=18) and `dquery-core`.
 
 ## 🎯 Quick Start
 
 ```tsx
 import React from "react";
-import { queryManager, useQuery } from "d-query-react";
+import { queryManager, useQuery } from "dquery-react";
 
 // Register a fetcher (triggers immediate prefetch by default)
 queryManager.registerFetcher(["todos"], {
@@ -649,7 +649,7 @@ const { data, isLoading, error } = useQuery({
   placeholderData: []
 });
 
-// After (d-query-react)
+// After (dquery-react)
 queryManager.registerFetcher(["todos"], {
   fetcher: fetchTodos,
   placeholderData: []
@@ -665,7 +665,7 @@ const { data, error, mutate } = useSWR("/api/todos", fetcher, {
   keepPreviousData: true
 });
 
-// After (d-query-react)
+// After (dquery-react)
 queryManager.registerFetcher(["todos"], {
   fetcher: () => fetch("/api/todos").then(r => r.json())
 });
@@ -680,7 +680,7 @@ const { data, error, refetch } = useQuery(["todos"], {
 // Before (Apollo)
 const { data, loading, error } = useQuery(GET_TODOS);
 
-// After (d-query-react)
+// After (dquery-react)
 queryManager.registerFetcher(["todos"], {
   fetcher: async () => {
     const response = await fetch("/graphql", {

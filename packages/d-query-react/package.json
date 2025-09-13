@@ -1,5 +1,5 @@
 {
-  "name": "d-query-react",
+  "name": "dquery-react",
   "version": "0.1.0",
   "description": "React hook bridge for d-query runtime",
   "main": "dist/index.js",
@@ -43,7 +43,7 @@
   "author": "Darshan Naik",
   "license": "MIT",
   "dependencies": {
-    "d-query": "workspace:*"
+    "dquery-core": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18"
