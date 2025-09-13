@@ -3,3 +3,5 @@ dist/
 .pnpm-store/
 .DS_Store
 
+.pre-commit-config.yaml
+trufflehog/
