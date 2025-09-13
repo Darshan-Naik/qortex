@@ -1,9 +1,9 @@
-# 🎯 d-query (Core Runtime)
+# 🎯 dquery-core (Core Runtime)
 
 > **Framework-agnostic query cache & fetch registry. The brain behind d-query! 🧠**
 
-[![npm version](https://badge.fury.io/js/d-query.svg)](https://badge.fury.io/js/d-query)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/d-query)](https://bundlephobia.com/package/d-query)
+[![npm version](https://badge.fury.io/js/dquery-core.svg)](https://badge.fury.io/js/dquery-core)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/dquery-core)](https://bundlephobia.com/package/dquery-core)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
 ## ✨ What is d-query Core?
@@ -21,17 +21,17 @@ The **d-query** core runtime is a lightweight, framework-agnostic query manageme
 ## 🚀 Installation
 
 ```bash
-pnpm add d-query
+pnpm add dquery-core
 # or
-npm install d-query
+npm install dquery-core
 # or
-yarn add d-query
+yarn add dquery-core
 ```
 
 ## 🎯 Quick Start
 
 ```ts
-import { queryManager } from "d-query";
+import { queryManager } from "dquery-core";
 
 // Register a fetcher (triggers immediate prefetch by default)
 queryManager.registerFetcher(["todos"], {
@@ -453,8 +453,8 @@ console.log(`Cache contains ${cacheSize} entries`);
 ### React Integration
 
 ```tsx
-// Use with d-query-react
-import { useQuery } from "d-query-react";
+// Use with dquery-react
+import { useQuery } from "dquery-react";
 
 function TodosList() {
   const { data, isLoading, error } = useQuery(["todos"]);

@@ -10,7 +10,7 @@ importers:
 
   examples/react-app:
     dependencies:
-      d-query-react:
+      dquery-react:
         specifier: workspace:*
         version: link:../../packages/d-query-react
       react:
@@ -50,7 +50,7 @@ importers:
 
   packages/d-query-react:
     dependencies:
-      d-query:
+      dquery-core:
         specifier: workspace:*
         version: link:../d-query
       react:

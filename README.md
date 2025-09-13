@@ -2,10 +2,10 @@
 
 > **A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness! 🎉**
 
-[![npm version](https://badge.fury.io/js/d-query.svg)](https://badge.fury.io/js/d-query)
-[![npm version](https://badge.fury.io/js/d-query-react.svg)](https://badge.fury.io/js/d-query-react)
+[![npm version](https://badge.fury.io/js/dquery-core.svg)](https://badge.fury.io/js/dquery-core)
+[![npm version](https://badge.fury.io/js/dquery-react.svg)](https://badge.fury.io/js/dquery-react)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/d-query)](https://bundlephobia.com/package/d-query)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/dquery-core)](https://bundlephobia.com/package/dquery-core)
 
 ## ✨ Why d-query?
 
@@ -22,18 +22,18 @@ Tired of complex data fetching libraries that make simple tasks complicated? **d
 
 | Package | Description | Size |
 |---------|-------------|------|
-| **`d-query`** | Core runtime with query management | ~3KB gzipped |
-| **`d-query-react`** | React hooks and components | ~2KB gzipped |
+| **`dquery-core`** | Core runtime with query management | ~3KB gzipped |
+| **`dquery-react`** | React hooks and components | ~2KB gzipped |
 
 
 ## 📥 Installation
 
 ```bash
 # Core runtime (works everywhere!)
-npm install d-query
+npm install dquery-core
 
 # React integration (if you're using React)
-npm install d-query-react
+npm install dquery-react
 ```
 
 ## 🎯 Core Features
@@ -51,7 +51,7 @@ npm install d-query-react
 ### 1. 🎯 Basic Setup (The Happy Path)
 
 ```ts
-import { queryManager } from "d-query";
+import { queryManager } from "dquery-core";
 
 // Register a fetcher (triggers immediate prefetch by default)
 queryManager.registerFetcher(["todos"], {
@@ -70,7 +70,7 @@ queryManager.registerFetcher(["todos"], {
 ### 2. 🎭 React Integration (The Magic)
 
 ```tsx
-import { useQuery } from "d-query-react";
+import { useQuery } from "dquery-react";
 
 function TodosList() {
   const { data, isLoading, isFetching, error, refetch } = useQuery(["todos"], {
@@ -98,7 +98,7 @@ function TodosList() {
 ### 3. 🎪 Manual Query Management (The Power User)
 
 ```ts
-import { queryManager } from "d-query";
+import { queryManager } from "dquery-core";
 
 // Fetch data manually
 const todos = await queryManager.fetchQuery(["todos"]);
@@ -253,7 +253,7 @@ function TodosList() {
 
 ## 🎨 API Reference
 
-### Core Runtime (`d-query`)
+### Core Runtime (`dquery-core`)
 
 #### `queryManager.registerFetcher(key, options)`
 
@@ -348,7 +348,7 @@ const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
 });
 ```
 
-### React Integration (`d-query-react`)
+### React Integration (`dquery-react`)
 
 #### `useQuery(key, options?)`
 
@@ -509,7 +509,7 @@ const { data, isLoading, error } = useQuery({
   placeholderData: []
 });
 
-// After (d-query)
+// After (dquery)
 queryManager.registerFetcher(["todos"], {
   fetcher: fetchTodos,
   placeholderData: []
@@ -531,7 +531,7 @@ const { data, error, mutate } = useSWR("/api/todos", fetcher, {
   keepPreviousData: true
 });
 
-// After (d-query)
+// After (dquery)
 queryManager.registerFetcher(["todos"], {
   fetcher: () => fetch("/api/todos").then(r => r.json())
 });
@@ -551,8 +551,8 @@ const { data, error, refetch } = useQuery(["todos"], {
 
 ```ts
 // Only import what you need
-import { queryManager } from "d-query";
-import { useQuery } from "d-query-react";
+import { queryManager } from "dquery-core";
+import { useQuery } from "dquery-react";
 ```
 
 ### 2. 🎯 Use Appropriate Cache Times
