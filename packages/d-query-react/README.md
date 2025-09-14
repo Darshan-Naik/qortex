@@ -7,6 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 
+
 ## ✨ What is d-query-react?
 
 **d-query-react** is the React integration for the d-query runtime. It provides React hooks and components that make data fetching in React applications a breeze! 🎉
@@ -16,7 +17,10 @@
 - 🎯 **TypeScript support** - Full type safety with your data
 - 🔄 **Background updates** - Data refreshes without loading states
 - 💾 **Previous data preservation** - No loading flickers during refetches
-- 🛑 **Request cancellation** - Automatic cleanup on unmount
+- 🛑 **Smart cleanup** - Automatic resource management
+
+- ⚡ **Smart throttling** - Prevents duplicate fetches from re-renders
+- 🎯 **Inflight protection** - Prevents race conditions
 
 ## 🚀 Installation
 
@@ -38,8 +42,8 @@ import { queryManager, useQuery } from "dquery-react";
 
 // Register a fetcher (triggers immediate prefetch by default)
 queryManager.registerFetcher(["todos"], {
-  fetcher: async ({ signal }) => {
-    const response = await fetch("/api/todos", { signal });
+  fetcher: async () => {
+    const response = await fetch("/api/todos");
     if (!response.ok) throw new Error("Failed to fetch todos");
     return response.json();
   },
@@ -143,7 +147,6 @@ const {
   isFetching, 
   error, 
   refetch,
-  cancel,
   status,
   isStale,
   updatedAt,
@@ -168,7 +171,6 @@ const {
 - `isFetching` - True if currently fetching (including background refetches)
 - `error` - Current error state
 - `refetch` - Function to manually trigger refetch
-- `cancel` - Function to cancel ongoing fetch
 - `status` - Current status: "idle" | "fetching" | "success" | "error"
 - `isStale` - True if data is stale
 - `updatedAt` - Timestamp of last successful fetch
@@ -183,8 +185,8 @@ import { useQuery, queryManager } from "d-query-react";
 
 // Register fetcher
 queryManager.registerFetcher(["products"], {
-  fetcher: async ({ signal }) => {
-    const response = await fetch("/api/products", { signal });
+  fetcher: async () => {
+    const response = await fetch("/api/products");
     return response.json();
   },
   staleTime: 5 * 60 * 1000, // 5 minutes
@@ -383,10 +385,10 @@ function Dashboard() {
 ```tsx
 function UserProfile({ userId }: { userId: string }) {
   const { data: user } = useQuery(["user", userId], {
-    fetcher: async ({ signal }) => {
-      const response = await fetch(`/api/users/${userId}`, { signal });
-      return response.json();
-    },
+  fetcher: async () => {
+    const response = await fetch(`/api/users/${userId}`);
+    return response.json();
+  },
     staleTime: 5 * 60 * 1000 // 5 minutes
   });
 
@@ -405,25 +407,14 @@ function UserProfile({ userId }: { userId: string }) {
 }
 ```
 
-### 🎪 Request Cancellation
+### 🎪 Conditional Fetching
 
 ```tsx
 function SearchResults({ query }: { query: string }) {
-  const [abortController, setAbortController] = useState<AbortController | null>(null);
-
   const { data: results, isLoading } = useQuery(["search", query], {
     enabled: query.length > 2,
-    signal: abortController?.signal,
     staleTime: 0 // Always fresh for search
   });
-
-  // Cancel previous request when query changes
-  useEffect(() => {
-    if (abortController) {
-      abortController.abort();
-    }
-    setAbortController(new AbortController());
-  }, [query]);
 
   return (
     <div>
@@ -739,17 +730,15 @@ function Dashboard() {
 ### 3. 🎪 Smart Caching
 
 ```tsx
-// Use appropriate cache times
+// Use appropriate stale times
 queryManager.registerFetcher(["user-profile"], {
   fetcher: fetchUserProfile,
-  staleTime: 5 * 60 * 1000, // 5 minutes
-  cacheTime: 30 * 60 * 1000 // 30 minutes
+  staleTime: 5 * 60 * 1000 // 5 minutes
 });
 
 queryManager.registerFetcher(["live-data"], {
   fetcher: fetchLiveData,
-  staleTime: 0, // Always stale
-  cacheTime: 30_000 // 30 seconds
+  staleTime: 0 // Always stale
 });
 ```
 

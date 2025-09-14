@@ -46,4 +46,5 @@ export type QueryState<T = any> = {
   isFetching: boolean;
   isError: boolean;
   isSuccess: boolean;
+  refetch: () => Promise<T>;
 };

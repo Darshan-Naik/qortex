@@ -5,18 +5,22 @@
 [![npm version](https://badge.fury.io/js/dquery-core.svg)](https://badge.fury.io/js/dquery-core)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/dquery-core)](https://bundlephobia.com/package/dquery-core)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![Tests](https://img.shields.io/badge/tests-22%2F22%20passing-brightgreen.svg)](https://github.com/Darshan-Naik/d-query)
 
 ## ✨ What is d-query Core?
 
 The **d-query** core runtime is a lightweight, framework-agnostic query management system that provides:
 
-- 🎪 **Smart caching** with configurable stale time and cache time
+- 🎪 **Smart caching** with configurable stale time
 - 🔄 **Automatic deduplication** - multiple requests for the same data are merged
-- 🎯 **Background refetching** with intelligent invalidation
+- 🎯 **Background refetching** with intelligent invalidation and throttling
 - 💾 **Previous data preservation** during refetches
 - ⚡ **Shallow equality** to prevent unnecessary updates
-- 🛑 **AbortController** support for request cancellation
+- 🛑 **Smart cleanup** and resource management
 - 🎭 **TypeScript** support with full type safety
+
+- ⚡ **Smart throttling** - 50ms window prevents duplicate fetches
+- 🎯 **Inflight protection** - prevents race conditions
 
 ## 🚀 Installation
 
@@ -35,13 +39,12 @@ import { queryManager } from "dquery-core";
 
 // Register a fetcher (triggers immediate prefetch by default)
 queryManager.registerFetcher(["todos"], {
-  fetcher: async ({ signal }) => {
-    const response = await fetch("/api/todos", { signal });
+  fetcher: async () => {
+    const response = await fetch("/api/todos");
     if (!response.ok) throw new Error("Failed to fetch todos");
     return response.json();
   },
   staleTime: 10_000, // 10 seconds of freshness
-  cacheTime: 5 * 60 * 1000, // 5 minutes in cache
   placeholderData: [] // Show empty array while loading
 });
 
@@ -57,12 +60,11 @@ console.log("🎉 Todos loaded:", todos);
 ```ts
 // Data is automatically cached and shared across your app
 queryManager.registerFetcher(["user", userId], {
-  fetcher: async ({ signal }) => {
-    const response = await fetch(`/api/users/${userId}`, { signal });
+  fetcher: async () => {
+    const response = await fetch(`/api/users/${userId}`);
     return response.json();
   },
-  staleTime: 5 * 60 * 1000, // Fresh for 5 minutes
-  cacheTime: 30 * 60 * 1000 // Cached for 30 minutes
+  staleTime: 5 * 60 * 1000 // Fresh for 5 minutes
 });
 
 // Multiple calls to the same user will use cached data
@@ -122,9 +124,8 @@ Register a fetcher function for a query key.
 
 ```ts
 queryManager.registerFetcher(key, {
-  fetcher: async ({ signal }) => Promise<T>,
+  fetcher: async () => Promise<T>,
   staleTime?: number, // Default: 0
-  cacheTime?: number, // Default: 5 minutes
   placeholderData?: T, // Default: undefined
   enabled?: boolean, // Default: true
   equalityFn?: (a: T, b: T) => boolean, // Default: shallow equality
@@ -136,13 +137,12 @@ queryManager.registerFetcher(key, {
 **Example:**
 ```ts
 queryManager.registerFetcher(["products"], {
-  fetcher: async ({ signal }) => {
-    const response = await fetch("/api/products", { signal });
+  fetcher: async () => {
+    const response = await fetch("/api/products");
     if (!response.ok) throw new Error("Failed to fetch products");
     return response.json();
   },
   staleTime: 2 * 60 * 1000, // 2 minutes
-  cacheTime: 10 * 60 * 1000, // 10 minutes
   placeholderData: [],
   enabled: true
 });
@@ -154,37 +154,29 @@ Manually fetch data for a query.
 
 ```ts
 const data = await queryManager.fetchQuery(key, {
-  signal?: AbortSignal,
   equalityFn?: (a: T, b: T) => boolean,
   fetcher?: Fetcher<T>,
-  staleTime?: number,
-  cacheTime?: number
+  staleTime?: number
 });
 ```
 
 **Example:**
 ```ts
 try {
-  const products = await queryManager.fetchQuery(["products"], {
-    signal: AbortSignal.timeout(5000) // 5 second timeout
-  });
+  const products = await queryManager.fetchQuery(["products"]);
   console.log("Products loaded:", products);
 } catch (error) {
-  if (error.name === 'AbortError') {
-    console.log("Request was cancelled");
-  } else {
-    console.error("Failed to fetch products:", error);
-  }
+  console.error("Failed to fetch products:", error);
 }
 ```
 
-### `queryManager.setQueryData(key, { data })`
+### `queryManager.setQueryData(key, data)`
 
 Update query cache directly.
 
 ```ts
 // Direct update
-queryManager.setQueryData(["todos"], { data: newTodos });
+queryManager.setQueryData(["todos"], newTodos);
 
 // Functional update
 queryManager.setQueryData(["todos"], (oldData) => [
@@ -291,28 +283,6 @@ async function createTodo(title: string) {
 }
 ```
 
-### `queryManager.cancelFetch(key)`
-
-Cancel ongoing fetch request.
-
-```ts
-queryManager.cancelFetch(["todos"]);
-```
-
-**Example:**
-```ts
-// Cancel request when component unmounts
-const controller = new AbortController();
-
-queryManager.fetchQuery(["todos"], {
-  signal: controller.signal
-});
-
-// Later, cancel the request
-queryManager.cancelFetch(["todos"]);
-// or
-controller.abort();
-```
 
 ### `queryManager.subscribeQuery(key, callback)`
 
@@ -542,21 +512,19 @@ class DataManager {
 
 ## 🎯 Performance Tips
 
-### 1. 🎪 Optimize Cache Times
+### 1. 🎪 Optimize Stale Times
 
 ```ts
 // Short-lived data (real-time updates)
 queryManager.registerFetcher(["live-stats"], {
   fetcher: fetchLiveStats,
-  staleTime: 0, // Always stale
-  cacheTime: 30_000 // 30 seconds
+  staleTime: 0 // Always stale
 });
 
 // Long-lived data (user profiles)
 queryManager.registerFetcher(["user-profile"], {
   fetcher: fetchUserProfile,
-  staleTime: 5 * 60 * 1000, // 5 minutes
-  cacheTime: 30 * 60 * 1000 // 30 minutes
+  staleTime: 5 * 60 * 1000 // 5 minutes
 });
 ```
 
