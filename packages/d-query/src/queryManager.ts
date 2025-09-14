@@ -99,6 +99,7 @@ export class QueryManager {
     promise.then((result: T) => {
       state.data = result;
       state.status = "success";
+      state.updatedAt = Date.now();
       this.emit(key, state);
     }).catch((error: unknown) => {
       state.error = error;
@@ -227,7 +228,7 @@ export class QueryManager {
   ): void {
     const isThrottled = state.lastFetchTime && (Date.now() - state.lastFetchTime) < 50;
 
-    if (state?.status === "fetching" || !state?.enabled || isThrottled) return;
+    if (state?.status === "fetching" || !state?.enabled || isThrottled || !state?.fetcher) return;
 
     const now = Date.now();
     const isStale = state?.updatedAt == null || (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
