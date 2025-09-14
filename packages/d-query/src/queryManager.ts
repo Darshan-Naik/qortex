@@ -1,3 +1,4 @@
+import { THROTTLE_TIME } from "./constants";
 import {
   QueryKey,
   Fetcher,
@@ -100,13 +101,13 @@ export class QueryManager {
       state.data = result;
       state.status = "success";
       state.updatedAt = Date.now();
-      this.emit(key, state);
     }).catch((error: unknown) => {
       state.error = error;
       state.status = "error";
-      this.emit(key, state);
     }).finally(() => {
       state.fetchPromise = undefined;
+      this.emit(key, state);
+
     })
     return promise as Promise<T>
   }
@@ -218,7 +219,6 @@ export class QueryManager {
   }
 
 
-
   /**
    * Core mount logic that determines when to fetch
    * Implements robust throttling and race condition prevention
@@ -227,7 +227,7 @@ export class QueryManager {
     key: QueryKey,
     state: QueryStateInternal<T>
   ): void {
-    const isThrottled = state.lastFetchTime && (Date.now() - state.lastFetchTime) < 50;
+    const isThrottled = state.lastFetchTime && (Date.now() - state.lastFetchTime) < THROTTLE_TIME;
 
     if (state?.status === "fetching" || !state?.enabled || isThrottled || !state?.fetcher) return;
 

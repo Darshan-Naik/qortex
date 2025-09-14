@@ -44,7 +44,7 @@
   "author": "Darshan Naik",
   "license": "MIT",
   "dependencies": {
-    "dquery-core": "workspace:*"
+    "dquery-core": "0.1.1"
   },
   "peerDependencies": {
     "react": ">=18"

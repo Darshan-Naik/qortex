@@ -83,6 +83,74 @@ describe('QueryManager Core Tests', () => {
       expect(state.data).toEqual(testData);
       expect(state.status).toBe('success');
     });
+
+    test('should handle refetch function', async () => {
+      const key = ['test-key'];
+
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: true
+      });
+
+      // Wait for initial fetch
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Get query state and verify initial fetch
+      const state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('success');
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+
+      // Call refetch
+      state.refetch();
+
+      // Should trigger another fetch
+      expect(mockFetcher).toHaveBeenCalledTimes(2);
+
+      // Wait for refetch to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // State should still be success
+      const newState = queryManager.getQueryState(key, { enabled: false });
+      expect(newState.status).toBe('success');
+    });
+
+    test('should handle subscription callbacks with refetch', async () => {
+      const key = ['test-key'];
+      const callback = jest.fn();
+
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: true
+      });
+
+      // Wait for initial fetch
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Subscribe using subscribeOnly (like React does)
+      const unsubscribe = queryManager.subscribeOnly(key, callback);
+
+      // Get initial state
+      const state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('success');
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+
+      // Call refetch
+      state.refetch();
+
+      // Should trigger another fetch
+      expect(mockFetcher).toHaveBeenCalledTimes(2);
+
+      // Wait for refetch to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Callback should have been called when state changed
+      expect(callback).toHaveBeenCalled();
+
+      // Cleanup
+      unsubscribe();
+    });
   });
 
   describe('Fetching Logic', () => {

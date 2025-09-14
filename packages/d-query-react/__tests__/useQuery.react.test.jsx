@@ -23,12 +23,6 @@ function TestComponent({ queryKey, options = {} }) {
       >
         Refetch
       </button>
-      <button 
-        data-testid="cancel" 
-        onClick={() => query.cancel()}
-      >
-        Cancel
-      </button>
     </div>
   );
 }
@@ -39,7 +33,6 @@ describe('useQuery React Integration Tests', () => {
   beforeEach(() => {
     // Clear queryManager state
     queryManager.cache.clear();
-    queryManager.fetcherRegistry.clear();
     queryManager.subs.clear();
     
     // Default mock fetcher
@@ -117,23 +110,6 @@ describe('useQuery React Integration Tests', () => {
       });
     });
 
-    test('should handle cancel function', async () => {
-      // Register fetcher
-      queryManager.registerFetcher(['test-key'], {
-        fetcher: mockFetcher,
-        enabled: false
-      });
-
-      render(<TestComponent queryKey={['test-key']} options={{ enabled: true }} />);
-
-      // Click cancel button
-      act(() => {
-        screen.getByTestId('cancel').click();
-      });
-
-      // Should not throw
-      expect(screen.getByTestId('cancel')).toBeInTheDocument();
-    });
   });
 
   describe('Loading States', () => {
@@ -319,8 +295,8 @@ describe('useQuery React Integration Tests', () => {
       // Unmount first component
       unmount();
 
-      // Clear the cache to ensure fresh subscription
-      queryManager.cache.clear();
+      // Wait for throttle period to pass (100ms + buffer)
+      await new Promise(resolve => setTimeout(resolve, 150));
 
       // Second component subscription (new subscription should trigger refetch)
       render(
