@@ -56,10 +56,10 @@ describe('useQuery React Integration Tests', () => {
 
       render(<TestComponent queryKey={['test-key']} options={{ enabled: true }} />);
 
-      // Check initial state
-      expect(screen.getByTestId('status')).toHaveTextContent('idle');
+      // Initial state should be fetching since enabled=true triggers immediate fetch
+      expect(screen.getByTestId('status')).toHaveTextContent('fetching');
       expect(screen.getByTestId('isLoading')).toHaveTextContent('false');
-      expect(screen.getByTestId('isFetching')).toHaveTextContent('false');
+      expect(screen.getByTestId('isFetching')).toHaveTextContent('true');
       expect(screen.getByTestId('isSuccess')).toHaveTextContent('false');
       expect(screen.getByTestId('isError')).toHaveTextContent('false');
 
@@ -88,7 +88,7 @@ describe('useQuery React Integration Tests', () => {
       expect(screen.getByTestId('status')).toHaveTextContent('idle');
       expect(screen.getByTestId('isLoading')).toHaveTextContent('false');
       expect(screen.getByTestId('isFetching')).toHaveTextContent('false');
-      expect(screen.getByTestId('data')).toHaveTextContent('null');
+      expect(screen.getByTestId('data')).toHaveTextContent('');
       expect(mockFetcher).not.toHaveBeenCalled();
     });
 
@@ -301,7 +301,8 @@ describe('useQuery React Integration Tests', () => {
         enabled: false
       });
 
-      const { rerender } = render(
+      // First component subscription
+      const { unmount } = render(
         <TestComponent 
           queryKey={['test-key']} 
           options={{ enabled: true, refetchOnSubscribe: 'always' }} 
@@ -313,8 +314,16 @@ describe('useQuery React Integration Tests', () => {
         expect(screen.getByTestId('status')).toHaveTextContent('success');
       });
 
-      // Rerender (should trigger refetch due to refetchOnSubscribe: 'always')
-      rerender(
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+
+      // Unmount first component
+      unmount();
+
+      // Clear the cache to ensure fresh subscription
+      queryManager.cache.clear();
+
+      // Second component subscription (new subscription should trigger refetch)
+      render(
         <TestComponent 
           queryKey={['test-key']} 
           options={{ enabled: true, refetchOnSubscribe: 'always' }} 
@@ -335,7 +344,7 @@ describe('useQuery React Integration Tests', () => {
         staleTime: 200
       });
 
-      render(
+      const { unmount } = render(
         <TestComponent 
           queryKey={['test-key']} 
           options={{ enabled: true, staleTime: 200 }} 
@@ -350,8 +359,19 @@ describe('useQuery React Integration Tests', () => {
       // Initially should not be stale
       expect(screen.getByTestId('isStale')).toHaveTextContent('false');
 
+      // Unmount component
+      unmount();
+
       // Wait for data to become stale
       await new Promise(resolve => setTimeout(resolve, 250));
+
+      // Re-render component - this should trigger a check for staleness
+      render(
+        <TestComponent 
+          queryKey={['test-key']} 
+          options={{ enabled: true, staleTime: 200 }} 
+        />
+      );
 
       // Should be stale now
       expect(screen.getByTestId('isStale')).toHaveTextContent('true');

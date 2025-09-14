@@ -326,6 +326,9 @@ export class QueryManager {
       s.fetchController = null; 
     }
     s.fetchPromise = null;
+    // Reset to previous state - if there was data, keep success status
+    s.status = s.data !== undefined ? "success" : "idle";
+    this.emit(key);
   }
 
   /**

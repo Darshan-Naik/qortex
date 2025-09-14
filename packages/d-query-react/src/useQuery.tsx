@@ -3,7 +3,7 @@ import { queryManager } from "d-query";
 import { QueryKey, Fetcher, InferFetcherResult } from "d-query";
 import { UseQueryOptions, UseQueryResult } from "./types";
 import { subscribeToKey } from "./subscribe";
-import { snapshotEqual } from "./utils";
+import { snapshotEqual, computeStatusFlags } from "./utils";
 
 
 /**
@@ -49,7 +49,7 @@ export function useQuery<F extends Fetcher | undefined = undefined, T = F extend
       usePlaceholderOnError: (memoOpts as any).usePlaceholderOnError,
     });
 
-    const { isLoading, isFetching, isError, isSuccess } = state;
+    const { isLoading, isFetching, isError, isSuccess } = computeStatusFlags(state, memoOpts.enabled);
 
     const refetch = async () => {
       try {

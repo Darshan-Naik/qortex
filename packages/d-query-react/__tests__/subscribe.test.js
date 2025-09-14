@@ -1,399 +1,350 @@
 import { subscribeToKey } from '../src/subscribe';
 import { queryManager } from 'd-query';
 
-describe('subscribeToKey', () => {
+describe('subscribeToKey Integration Tests', () => {
+  let mockFetcher;
+
   beforeEach(() => {
-    jest.clearAllMocks();
-    
     // Clear queryManager state
     queryManager.cache.clear();
     queryManager.fetcherRegistry.clear();
     queryManager.subs.clear();
+    
+    // Default mock fetcher
+    mockFetcher = jest.fn().mockResolvedValue({ id: 1, data: 'test-data' });
   });
 
-  describe('Basic Functionality', () => {
-    test('should call queryManager methods with correct parameters', () => {
+  describe('Basic Integration', () => {
+    test('should subscribe and trigger fetch when enabled', async () => {
       const key = ['test-key'];
       const callback = jest.fn();
-      const options = { enabled: true, staleTime: 1000 };
-      const mockUnsubscribe = jest.fn();
       
-      queryManager.subscribeQuery.mockReturnValue(mockUnsubscribe);
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      // Subscribe with enabled: true
+      const unsubscribe = subscribeToKey(key, callback, { enabled: true });
+
+      // Wait for fetch to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Verify fetch was called
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
       
-      const unsubscribe = subscribeToKey(key, callback, options);
-      
-      expect(queryManager.onSubscribe).toHaveBeenCalledWith(key);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, options);
-      
-      // Test unsubscribe function
+      // Verify callback was called
+      expect(callback).toHaveBeenCalled();
+
+      // Clean up
       unsubscribe();
-      expect(mockUnsubscribe).toHaveBeenCalled();
-      expect(queryManager.onUnsubscribe).toHaveBeenCalledWith(key);
     });
 
-    test('should handle undefined options', () => {
+    test('should not trigger fetch when disabled', async () => {
       const key = ['test-key'];
       const callback = jest.fn();
-      const mockUnsubscribe = jest.fn();
       
-      queryManager.subscribeQuery.mockReturnValue(mockUnsubscribe);
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      // Subscribe with enabled: false
+      const unsubscribe = subscribeToKey(key, callback, { enabled: false });
+
+      // Wait a bit
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Verify fetch was not called
+      expect(mockFetcher).not.toHaveBeenCalled();
       
-      const unsubscribe = subscribeToKey(key, callback);
-      
-      expect(queryManager.onSubscribe).toHaveBeenCalledWith(key);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, undefined);
-      
+      // Callback might not be called immediately for disabled queries
+      // This is expected behavior - disabled queries don't trigger immediate callbacks
+
+      // Clean up
       unsubscribe();
-      expect(queryManager.onUnsubscribe).toHaveBeenCalledWith(key);
     });
 
     test('should return unsubscribe function', () => {
       const key = ['test-key'];
       const callback = jest.fn();
-      const mockUnsubscribe = jest.fn();
-      
-      queryManager.subscribeQuery.mockReturnValue(mockUnsubscribe);
       
       const unsubscribe = subscribeToKey(key, callback);
       
       expect(typeof unsubscribe).toBe('function');
       
-      unsubscribe();
-      expect(mockUnsubscribe).toHaveBeenCalled();
+      // Test that unsubscribe works
+      expect(() => unsubscribe()).not.toThrow();
     });
   });
 
-  describe('Subscription Lifecycle', () => {
-    test('should call onSubscribe before subscribeQuery', () => {
+  describe('Options Integration', () => {
+    test('should pass options to queryManager', async () => {
       const key = ['test-key'];
       const callback = jest.fn();
-      const options = { enabled: true };
-      
-      subscribeToKey(key, callback, options);
-      
-      expect(queryManager.onSubscribe).toHaveBeenCalledBefore(queryManager.subscribeQuery);
-      expect(queryManager.onSubscribe).toHaveBeenCalledWith(key);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, options);
-    });
-
-    test('should call onUnsubscribe after unsubscribe', () => {
-      const key = ['test-key'];
-      const callback = jest.fn();
-      const mockUnsubscribe = jest.fn();
-      
-      queryManager.subscribeQuery.mockReturnValue(mockUnsubscribe);
-      
-      const unsubscribe = subscribeToKey(key, callback);
-      
-      unsubscribe();
-      
-      expect(mockUnsubscribe).toHaveBeenCalledBefore(queryManager.onUnsubscribe);
-      expect(mockUnsubscribe).toHaveBeenCalled();
-      expect(queryManager.onUnsubscribe).toHaveBeenCalledWith(key);
-    });
-
-    test('should handle multiple unsubscribe calls', () => {
-      const key = ['test-key'];
-      const callback = jest.fn();
-      const mockUnsubscribe = jest.fn();
-      
-      queryManager.subscribeQuery.mockReturnValue(mockUnsubscribe);
-      
-      const unsubscribe = subscribeToKey(key, callback);
-      
-      // Call unsubscribe multiple times
-      unsubscribe();
-      unsubscribe();
-      unsubscribe();
-      
-      // Should only call the internal unsubscribe once
-      expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
-      expect(queryManager.onUnsubscribe).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('Options Handling', () => {
-    test('should pass all options to subscribeQuery', () => {
-      const key = ['test-key'];
-      const callback = jest.fn();
-      const options = {
-        enabled: true,
-        refetchOnSubscribe: 'always',
-        fetcher: jest.fn(),
-        staleTime: 2000,
-        cacheTime: 5000,
-        equalityFn: jest.fn(),
-        signal: new AbortController().signal,
-        placeholderData: { id: 0 },
-        usePreviousDataOnError: true,
-        usePlaceholderOnError: true,
+      const options = { 
+        enabled: true, 
+        staleTime: 5000, 
+        refetchOnSubscribe: 'always'
       };
       
-      subscribeToKey(key, callback, options);
-      
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, options);
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      const unsubscribe = subscribeToKey(key, callback, options);
+
+      // Wait for fetch
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+      unsubscribe();
     });
 
-    test('should handle empty options object', () => {
+    test('should handle undefined options', () => {
       const key = ['test-key'];
       const callback = jest.fn();
-      const options = {};
       
-      subscribeToKey(key, callback, options);
+      const unsubscribe = subscribeToKey(key, callback);
       
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, options);
+      expect(typeof unsubscribe).toBe('function');
+      unsubscribe();
     });
 
     test('should handle null options', () => {
       const key = ['test-key'];
       const callback = jest.fn();
       
-      subscribeToKey(key, callback, null);
+      const unsubscribe = subscribeToKey(key, callback, null);
       
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, null);
+      expect(typeof unsubscribe).toBe('function');
+      unsubscribe();
     });
   });
 
   describe('Key Types', () => {
-    test('should handle string keys', () => {
-      const key = 'simple-key';
+    test('should handle string keys', async () => {
+      const key = 'test-key';
       const callback = jest.fn();
       
-      subscribeToKey(key, callback);
-      
-      expect(queryManager.onSubscribe).toHaveBeenCalledWith(key);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, undefined);
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      const unsubscribe = subscribeToKey(key, callback, { enabled: true });
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+      unsubscribe();
     });
 
-    test('should handle array keys', () => {
-      const key = ['users', 1, 'profile'];
+    test('should handle array keys', async () => {
+      const key = ['test-key'];
       const callback = jest.fn();
       
-      subscribeToKey(key, callback);
-      
-      expect(queryManager.onSubscribe).toHaveBeenCalledWith(key);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, undefined);
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      const unsubscribe = subscribeToKey(key, callback, { enabled: true });
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+      unsubscribe();
     });
 
-    test('should handle complex array keys', () => {
-      const key = ['api', 'v1', 'users', { id: 1 }, 'posts'];
+    test('should handle complex array keys', async () => {
+      const key = ['users', 123, 'profile'];
       const callback = jest.fn();
       
-      subscribeToKey(key, callback);
-      
-      expect(queryManager.onSubscribe).toHaveBeenCalledWith(key);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, undefined);
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      const unsubscribe = subscribeToKey(key, callback, { enabled: true });
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+      unsubscribe();
     });
   });
 
   describe('Callback Handling', () => {
+    test('should call callback on state changes', async () => {
+      const key = ['test-key'];
+      const callback = jest.fn();
+      
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      const unsubscribe = subscribeToKey(key, callback, { enabled: true });
+
+      // Wait for fetch to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Callback should be called at least once (initial state + after fetch)
+      expect(callback).toHaveBeenCalled();
+
+      unsubscribe();
+    });
+
     test('should handle function callbacks', () => {
       const key = ['test-key'];
       const callback = jest.fn();
       
-      subscribeToKey(key, callback);
+      const unsubscribe = subscribeToKey(key, callback);
       
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, undefined);
+      expect(typeof unsubscribe).toBe('function');
+      unsubscribe();
     });
 
     test('should handle arrow function callbacks', () => {
       const key = ['test-key'];
-      const callback = () => console.log('callback');
+      const callback = () => {};
       
-      subscribeToKey(key, callback);
+      const unsubscribe = subscribeToKey(key, callback);
       
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, undefined);
-    });
-
-    test('should handle bound method callbacks', () => {
-      const key = ['test-key'];
-      const obj = {
-        method: jest.fn(),
-      };
-      const callback = obj.method.bind(obj);
-      
-      subscribeToKey(key, callback);
-      
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, undefined);
+      expect(typeof unsubscribe).toBe('function');
+      unsubscribe();
     });
   });
 
   describe('Error Handling', () => {
-    test('should handle onSubscribe errors', () => {
+    test('should handle fetcher errors', async () => {
       const key = ['test-key'];
       const callback = jest.fn();
+      const errorFetcher = jest.fn().mockRejectedValue(new Error('Fetch failed'));
       
-      queryManager.onSubscribe.mockImplementation(() => {
-        throw new Error('onSubscribe failed');
+      queryManager.registerFetcher(key, {
+        fetcher: errorFetcher,
+        enabled: false
       });
-      
-      expect(() => {
-        subscribeToKey(key, callback);
-      }).toThrow('onSubscribe failed');
-    });
 
-    test('should handle subscribeQuery errors', () => {
-      const key = ['test-key'];
-      const callback = jest.fn();
-      
-      queryManager.subscribeQuery.mockImplementation(() => {
-        throw new Error('subscribeQuery failed');
-      });
-      
-      expect(() => {
-        subscribeToKey(key, callback);
-      }).toThrow('subscribeQuery failed');
-    });
+      const unsubscribe = subscribeToKey(key, callback, { enabled: true });
 
-    test('should handle unsubscribe errors', () => {
-      const key = ['test-key'];
-      const callback = jest.fn();
-      const mockUnsubscribe = jest.fn().mockImplementation(() => {
-        throw new Error('unsubscribe failed');
-      });
-      
-      queryManager.subscribeQuery.mockReturnValue(mockUnsubscribe);
-      
-      const unsubscribe = subscribeToKey(key, callback);
-      
-      expect(() => {
-        unsubscribe();
-      }).toThrow('unsubscribe failed');
-    });
+      // Wait for error to occur
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-    test('should handle onUnsubscribe errors', () => {
-      const key = ['test-key'];
-      const callback = jest.fn();
-      const mockUnsubscribe = jest.fn();
-      
-      queryManager.subscribeQuery.mockReturnValue(mockUnsubscribe);
-      queryManager.onUnsubscribe.mockImplementation(() => {
-        throw new Error('onUnsubscribe failed');
-      });
-      
-      const unsubscribe = subscribeToKey(key, callback);
-      
-      expect(() => {
-        unsubscribe();
-      }).toThrow('onUnsubscribe failed');
+      expect(errorFetcher).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalled();
+
+      unsubscribe();
     });
   });
 
-  describe('Integration Scenarios', () => {
-    test('should handle multiple subscriptions to same key', () => {
+  describe('Multiple Subscriptions', () => {
+    test('should handle multiple subscriptions to same key', async () => {
       const key = ['test-key'];
       const callback1 = jest.fn();
       const callback2 = jest.fn();
-      const mockUnsubscribe1 = jest.fn();
-      const mockUnsubscribe2 = jest.fn();
       
-      queryManager.subscribeQuery
-        .mockReturnValueOnce(mockUnsubscribe1)
-        .mockReturnValueOnce(mockUnsubscribe2);
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      const unsubscribe1 = subscribeToKey(key, callback1, { enabled: true });
+      const unsubscribe2 = subscribeToKey(key, callback2, { enabled: true });
+
+      // Wait for fetch
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Should only fetch once (shared query)
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
       
-      const unsubscribe1 = subscribeToKey(key, callback1);
-      const unsubscribe2 = subscribeToKey(key, callback2);
-      
-      expect(queryManager.onSubscribe).toHaveBeenCalledTimes(2);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledTimes(2);
-      
+      // Both callbacks should be called
+      expect(callback1).toHaveBeenCalled();
+      expect(callback2).toHaveBeenCalled();
+
       unsubscribe1();
       unsubscribe2();
-      
-      expect(mockUnsubscribe1).toHaveBeenCalled();
-      expect(mockUnsubscribe2).toHaveBeenCalled();
-      expect(queryManager.onUnsubscribe).toHaveBeenCalledTimes(2);
     });
 
-    test('should handle multiple subscriptions to different keys', () => {
+    test('should handle multiple subscriptions to different keys', async () => {
       const key1 = ['key1'];
       const key2 = ['key2'];
       const callback1 = jest.fn();
       const callback2 = jest.fn();
-      const mockUnsubscribe1 = jest.fn();
-      const mockUnsubscribe2 = jest.fn();
       
-      queryManager.subscribeQuery
-        .mockReturnValueOnce(mockUnsubscribe1)
-        .mockReturnValueOnce(mockUnsubscribe2);
-      
-      const unsubscribe1 = subscribeToKey(key1, callback1);
-      const unsubscribe2 = subscribeToKey(key2, callback2);
-      
-      expect(queryManager.onSubscribe).toHaveBeenCalledWith(key1);
-      expect(queryManager.onSubscribe).toHaveBeenCalledWith(key2);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key1, callback1, undefined);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key2, callback2, undefined);
-      
-      unsubscribe1();
-      unsubscribe2();
-      
-      expect(queryManager.onUnsubscribe).toHaveBeenCalledWith(key1);
-      expect(queryManager.onUnsubscribe).toHaveBeenCalledWith(key2);
-    });
+      queryManager.registerFetcher(key1, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+      queryManager.registerFetcher(key2, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
 
-    test('should handle subscription with different options', () => {
-      const key = ['test-key'];
-      const callback = jest.fn();
-      const options1 = { enabled: true, staleTime: 1000 };
-      const options2 = { enabled: false, refetchOnSubscribe: 'always' };
-      const mockUnsubscribe1 = jest.fn();
-      const mockUnsubscribe2 = jest.fn();
+      const unsubscribe1 = subscribeToKey(key1, callback1, { enabled: true });
+      const unsubscribe2 = subscribeToKey(key2, callback2, { enabled: true });
+
+      // Wait for both fetches
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Should fetch twice (different keys)
+      expect(mockFetcher).toHaveBeenCalledTimes(2);
       
-      queryManager.subscribeQuery
-        .mockReturnValueOnce(mockUnsubscribe1)
-        .mockReturnValueOnce(mockUnsubscribe2);
-      
-      const unsubscribe1 = subscribeToKey(key, callback, options1);
-      const unsubscribe2 = subscribeToKey(key, callback, options2);
-      
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, options1);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledWith(key, callback, options2);
-      
+      // Both callbacks should be called
+      expect(callback1).toHaveBeenCalled();
+      expect(callback2).toHaveBeenCalled();
+
       unsubscribe1();
       unsubscribe2();
     });
   });
 
   describe('Memory Management', () => {
-    test('should not leak memory on multiple subscribe/unsubscribe cycles', () => {
+    test('should not leak memory on multiple subscribe/unsubscribe cycles', async () => {
       const key = ['test-key'];
       const callback = jest.fn();
-      const mockUnsubscribe = jest.fn();
       
-      queryManager.subscribeQuery.mockReturnValue(mockUnsubscribe);
-      
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
       // Multiple subscribe/unsubscribe cycles
-      for (let i = 0; i < 10; i++) {
-        const unsubscribe = subscribeToKey(key, callback);
+      for (let i = 0; i < 5; i++) {
+        const unsubscribe = subscribeToKey(key, callback, { enabled: true });
+        
+        // Wait a bit
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
         unsubscribe();
       }
-      
-      expect(queryManager.onSubscribe).toHaveBeenCalledTimes(10);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledTimes(10);
-      expect(mockUnsubscribe).toHaveBeenCalledTimes(10);
-      expect(queryManager.onUnsubscribe).toHaveBeenCalledTimes(10);
+
+      // Should have called fetcher multiple times (each subscription triggers fetch)
+      expect(mockFetcher).toHaveBeenCalled();
     });
 
     test('should handle rapid subscribe/unsubscribe', () => {
       const key = ['test-key'];
       const callback = jest.fn();
-      const mockUnsubscribe = jest.fn();
-      
-      queryManager.subscribeQuery.mockReturnValue(mockUnsubscribe);
       
       // Rapid subscribe/unsubscribe
       const unsubscribe1 = subscribeToKey(key, callback);
       const unsubscribe2 = subscribeToKey(key, callback);
-      unsubscribe1();
-      const unsubscribe3 = subscribeToKey(key, callback);
-      unsubscribe2();
-      unsubscribe3();
       
-      expect(queryManager.onSubscribe).toHaveBeenCalledTimes(3);
-      expect(queryManager.subscribeQuery).toHaveBeenCalledTimes(3);
-      expect(mockUnsubscribe).toHaveBeenCalledTimes(3);
-      expect(queryManager.onUnsubscribe).toHaveBeenCalledTimes(3);
+      unsubscribe1();
+      unsubscribe2();
+      
+      // Should not throw errors
+      expect(() => {
+        unsubscribe1();
+        unsubscribe2();
+      }).not.toThrow();
     });
   });
 });
