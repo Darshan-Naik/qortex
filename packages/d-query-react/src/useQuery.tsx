@@ -12,14 +12,11 @@ export function useQuery<F extends Fetcher | undefined = undefined, T = F extend
 
   // Memoize the getSnapshot function
   const getSnapshot = useCallback((): QueryState<T> => {
-    console.log("getSnapshot called");
     return queryManager.getQueryState<T>(key, opts);
   }, [key]);
 
   // Memoize the subscribe function
   const subscribe = useCallback((callback: () => void) => {
-    console.log("subscribe called");
-
     return queryManager.subscribeQuery(key, callback, opts);
   }, [key]);
 
