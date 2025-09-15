@@ -1,4 +1,4 @@
-import { useSyncExternalStore, useMemo, useCallback } from "react";
+import { useSyncExternalStore, useCallback } from "react";
 import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager } from "dquery-core";
 
 /**
@@ -9,24 +9,24 @@ export function useQuery<F extends Fetcher | undefined = undefined, T = F extend
   key: QueryKey,
   opts?: QueryOptions<T>
 ): QueryState<T> {
-  // Memoize options to prevent unnecessary re-renders
-  const memoOpts = useMemo(() => opts || {}, [opts]);
 
   // Memoize the getSnapshot function
   const getSnapshot = useCallback((): QueryState<T> => {
-    return queryManager.getQueryState<T>(key, memoOpts);
-  }, [key, memoOpts]);
+    console.log("getSnapshot called");
+    return queryManager.getQueryState<T>(key, opts);
+  }, [key]);
 
   // Memoize the subscribe function
   const subscribe = useCallback((callback: () => void) => {
-    return queryManager.subscribeQuery(key, callback, memoOpts);
-  }, [key, memoOpts]);
+    console.log("subscribe called");
+
+    return queryManager.subscribeQuery(key, callback, opts);
+  }, [key]);
 
   // Use React's useSyncExternalStore for optimal performance
   const state = useSyncExternalStore(
     subscribe,
     getSnapshot,
-    getSnapshot // Server snapshot (same as client for now)
   );
 
   return state;
