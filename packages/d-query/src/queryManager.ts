@@ -46,12 +46,9 @@ export class QueryManager {
     const sk = serializeKey(key);
     const state = this.cache.get(sk);
     if (state) {
-      const newState = {
-        ...state,
-        ...opts,
-        enabled: opts.enabled === false ? false : true,
-      };
-      this.cache.set(sk, newState);
+      Object.assign(state, opts);
+      state.enabled = opts.enabled === false ? false : true;
+      this.cache.set(sk, state);
     } else {
       this.cache.set(sk, createDefaultState(opts));
     }
@@ -144,7 +141,7 @@ export class QueryManager {
    * Handles mount logic to potentially start fetching
    */
   getQueryState<T = unknown>(key: QueryKey, opts?: QueryOptions<T>): QueryState<T> {
-    const state = this.ensureState(key, opts);
+    let state = this.ensureState(key, opts);
     this.handleMountLogic(key, state);
     const now = Date.now();
     const isStale = state.updatedAt == null || (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
@@ -173,7 +170,8 @@ export class QueryManager {
         break;
     }
 
-    return {
+    // update the state with return type QueryState<T>
+    Object.assign(state, {
       data: returnedData,
       error: state.error,
       status: state.status,
@@ -185,7 +183,10 @@ export class QueryManager {
       isError: state.status === "error",
       isSuccess: state.status === "success",
       refetch: () => this.fetchQuery(key),
-    };
+    });
+
+
+    return state as unknown as QueryState<T>;
   }
 
   /**

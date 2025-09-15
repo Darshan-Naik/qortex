@@ -128,8 +128,8 @@ describe('QueryManager Core Tests', () => {
       // Wait for initial fetch
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Subscribe using subscribeOnly (like React does)
-      const unsubscribe = queryManager.subscribeOnly(key, callback);
+      // Subscribe using subscribeQuery (like React does)
+      const unsubscribe = queryManager.subscribeQuery(key, callback, { enabled: false });
 
       // Get initial state
       const state = queryManager.getQueryState(key, { enabled: false });
