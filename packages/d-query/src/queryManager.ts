@@ -178,7 +178,7 @@ export class QueryManager {
       updatedAt: state.updatedAt,
       isStale,
       isPlaceholderData,
-      isLoading: state.status === "idle",
+      isLoading: state.status === "fetching" && !state.data,
       isFetching: state.status === "fetching",
       isError: state.status === "error",
       isSuccess: state.status === "success",
