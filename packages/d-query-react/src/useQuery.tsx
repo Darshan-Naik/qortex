@@ -12,8 +12,6 @@ export function useQuery<F extends Fetcher | undefined = undefined, T = F extend
 
   const serializedKey = serializeKey(key);
 
-
-
   // Memoize the getSnapshot function
   const getSnapshot = useCallback((): QueryState<T> => {
     return queryManager.getQueryState<T>(key, opts);
@@ -24,7 +22,6 @@ export function useQuery<F extends Fetcher | undefined = undefined, T = F extend
     return queryManager.subscribeQuery(key, callback, opts);
   }, [serializedKey]);
 
-  // Use React's useSyncExternalStore for optimal performance
   const state = useSyncExternalStore(
     subscribe,
     getSnapshot,

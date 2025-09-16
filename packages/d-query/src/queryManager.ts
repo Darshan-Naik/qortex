@@ -187,7 +187,7 @@ export class QueryManager {
       isFetching: state.status === "fetching",
       isError: state.status === "error",
       isSuccess: state.status === "success",
-      refetch: state.refetch, // Use the stable refetch function created in ensureState
+      refetch: state.refetch,
     };
 
     // Store the last returned state to detect changes
