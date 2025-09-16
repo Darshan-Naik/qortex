@@ -142,7 +142,6 @@ export class QueryManager {
    */
   getQueryState<T = unknown>(key: QueryKey, opts?: QueryOptions<T>): QueryState<T> {
     let state = this.ensureState(key, opts);
-    this.handleMountLogic(key, state);
     const now = Date.now();
     const isStale = state.updatedAt == null || (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
 
@@ -169,7 +168,7 @@ export class QueryManager {
         isPlaceholderData = state.data ? false : Boolean(state.placeholderData);
         break;
     }
-
+    this.handleMountLogic(key, state);
     // update the state with return type QueryState<T>
     Object.assign(state, {
       data: returnedData,
@@ -178,7 +177,7 @@ export class QueryManager {
       updatedAt: state.updatedAt,
       isStale,
       isPlaceholderData,
-      isLoading: state.status === "fetching" && !state.data,
+      isLoading: state.status === "fetching" && !state.updatedAt,
       isFetching: state.status === "fetching",
       isError: state.status === "error",
       isSuccess: state.status === "success",
