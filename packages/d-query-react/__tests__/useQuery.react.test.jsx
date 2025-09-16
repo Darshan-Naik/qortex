@@ -30,9 +30,10 @@ describe('useQuery React Integration Tests', () => {
   let mockFetcher;
 
   beforeEach(() => {
-    // Clear queryManager state
-    queryManager.cache.clear();
-    queryManager.subs.clear();
+    // Clear queryManager state by creating a new instance for each test
+    // This ensures test isolation
+    const newQueryManager = new (require('dquery-core').QueryManager)();
+    Object.assign(queryManager, newQueryManager);
     
     // Default mock fetcher
     mockFetcher = jest.fn().mockResolvedValue({ id: 1, data: 'test-data' });

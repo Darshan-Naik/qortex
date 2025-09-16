@@ -1,11 +1,26 @@
 import { useSyncExternalStore, useCallback, useRef } from "react";
-import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager, serializeKey } from "dquery-core";
+import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager, serializeKey, InferFetcherReturnType } from "dquery-core";
 
 /**
  * useQueryData hook for React integration with d-query
  * Provides reactive data fetching with automatic re-renders on state changes
+ * Enhanced with automatic type inference from fetchers
  */
-export function useQueryData<F extends Fetcher | undefined = undefined, T = F extends Fetcher ? InferFetcherResult<F> : unknown>(
+
+// Overload for when fetcher is provided - automatically infers return type
+export function useQueryData<F extends Fetcher>(
+  key: QueryKey,
+  opts: QueryOptions<InferFetcherReturnType<F>> & { fetcher: F }
+): InferFetcherReturnType<F> | undefined;
+
+// Overload for explicit type without fetcher
+export function useQueryData<T = any>(
+  key: QueryKey,
+  opts?: QueryOptions<T>
+): T | undefined;
+
+// Implementation
+export function useQueryData<T = any>(
   key: QueryKey,
   opts?: QueryOptions<T>
 ): T | undefined {

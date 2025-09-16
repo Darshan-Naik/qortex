@@ -5,18 +5,19 @@ import {
   EqualityFn,
   QueryOptions,
   QueryState,
+  QueryStatus,
+  InferFetcherResult,
 } from "./types";
 import { serializeKey, createDefaultState, shallowEqual } from "./utils";
 
-type Status = "idle" | "fetching" | "success" | "error";
-
 /**
  * Internal query state that tracks all aspects of a query's lifecycle
+ * Improved with better type safety and generic constraints
  */
 type QueryStateInternal<T = any> = {
   data?: T;
   error?: unknown;
-  status: Status;
+  status: QueryStatus;
   updatedAt?: number;
   staleTime: number;
   isInvalidated: boolean;
@@ -43,8 +44,9 @@ export class QueryManager {
 
   /**
    * Ensures a query state exists in cache, creating it if necessary
+   * User-friendly with any fallback for better developer experience
    */
-  private ensureState(key: QueryKey, opts: QueryOptions<any> = {}) {
+  private ensureState<T = any>(key: QueryKey, opts: QueryOptions<T> = {}): QueryStateInternal<T> {
     const sk = serializeKey(key);
     const state = this.cache.get(sk);
     if (state) {
@@ -70,10 +72,13 @@ export class QueryManager {
 
 
   /**
- * Registers a fetcher function for a query key
- * Automatically fetches if enabled is not false
- */
-  registerFetcher<T = any>(key: QueryKey, opts: QueryOptions<Fetcher<T>>): void {
+  * Registers a fetcher function for a query key
+  * Automatically fetches if enabled is not false
+  * Enhanced with automatic type inference from fetcher
+  */
+  registerFetcher<T = any>(key: QueryKey, opts: QueryOptions<T>): void;
+  registerFetcher<F extends Fetcher>(key: QueryKey, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): void;
+  registerFetcher<T = any>(key: QueryKey, opts: QueryOptions<T>): void {
     this.ensureState(key, opts);
     // Auto-fetch if enabled
     if (opts.enabled !== false) {
@@ -82,23 +87,27 @@ export class QueryManager {
   }
 
   /**
- * Executes a fetch operation with proper error handling and state management
- * Prevents duplicate fetches
- */
-  fetchQuery<T = any>(key: QueryKey, opts?: QueryOptions<Fetcher<T>>) {
+  * Executes a fetch operation with proper error handling and state management
+  * Prevents duplicate fetches
+  * Enhanced with automatic type inference from fetcher
+  */
+  fetchQuery<T = any>(key: QueryKey, opts?: QueryOptions<T>): Promise<T>;
+  fetchQuery<F extends Fetcher>(key: QueryKey, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): Promise<InferFetcherResult<F>>;
+  fetchQuery<T = any>(key: QueryKey, opts?: QueryOptions<T>): Promise<T> {
     const state = this.ensureState(key, opts);
     if (state.fetchPromise) return state.fetchPromise as Promise<T>;
 
     const fetcher = state.fetcher;
     if (!fetcher) {
       console.error("No fetcher found for key", key);
-      return Promise.resolve(state.data)
+      return Promise.resolve(state.data as T);
     };
     state.status = "fetching";
     state.lastFetchTime = Date.now();
     this.emit(key, state);
 
-    const promise = fetcher();
+    const result = fetcher();
+    const promise = Promise.resolve(result);
     state.fetchPromise = promise;
 
     // Attach callbacks to the promise
@@ -114,7 +123,7 @@ export class QueryManager {
       this.emit(key, state);
     });
 
-    return promise as Promise<T>;
+    return promise;
   }
 
   /**
