@@ -1,177 +1,127 @@
-# 🎯 dquery-core (Core Runtime)
+# 🎯 dquery-core
 
-> **Framework-agnostic query cache & fetch registry. The brain behind d-query! 🧠**
+> **Framework-agnostic query cache. Set and read data from anywhere! 🧠**
 
 [![npm version](https://badge.fury.io/js/dquery-core.svg)](https://badge.fury.io/js/dquery-core)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/dquery-core)](https://bundlephobia.com/package/dquery-core)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
-## ✨ What is d-query Core?
+## ✨ What makes this special?
 
-The **d-query** core runtime is a lightweight, framework-agnostic query management system that provides:
+**d-query-core** lets you **set and read data from anywhere** - not just within a specific framework! Perfect for:
 
-- 🎪 **Smart caching** with configurable stale time
-- 🔄 **Automatic deduplication** - multiple requests for the same data are merged
-- 🎯 **Background refetching** with intelligent invalidation and throttling
-- 💾 **Previous data preservation** during refetches
-- ⚡ **Shallow equality** to prevent unnecessary updates
-- 🛑 **Smart cleanup** and resource management
-- 🎭 **TypeScript** support with full type safety
-
-- ⚡ **Smart throttling** - 50ms window prevents duplicate fetches
-- 🎯 **Inflight protection** - prevents race conditions
-
-## 🚀 Installation
+- 🔐 **App core data** - Authentication, user profiles accessible from anywhere
+- 🎯 **Cross-framework** - Share data between React, Vue, vanilla JS, Node.js
+- 🔄 **Background services** - WebSocket updates, timers, external events
+- ⚡ **Real-time apps** - Push changes from anywhere, see them everywhere instantly
 
 ```bash
 pnpm add dquery-core
-# or
-npm install dquery-core
-# or
-yarn add dquery-core
 ```
-
-## 🎯 Quick Start
 
 ```ts
 import { queryManager } from "dquery-core";
 
-// Register a fetcher (triggers immediate prefetch by default)
+// Register a fetcher
 queryManager.registerFetcher(["todos"], {
   fetcher: async () => {
     const response = await fetch("/api/todos");
-    if (!response.ok) throw new Error("Failed to fetch todos");
     return response.json();
   },
-  staleTime: 10_000, // 10 seconds of freshness
-  placeholderData: [] // Show empty array while loading
+  staleTime: 10_000, // 10 seconds
+  placeholderData: []
 });
 
-// Fetch data manually
+// Fetch data
 const todos = await queryManager.fetchQuery(["todos"]);
-console.log("🎉 Todos loaded:", todos);
+console.log("Todos loaded:", todos);
 ```
 
-## 🎪 Core Features
-
-### 🎯 Automatic Caching
+## 🔐 Perfect for Authentication
 
 ```ts
-// Data is automatically cached and shared across your app
-queryManager.registerFetcher(["user", userId], {
-  fetcher: async () => {
-    const response = await fetch(`/api/users/${userId}`);
-    return response.json();
-  },
-  staleTime: 5 * 60 * 1000 // Fresh for 5 minutes
-});
+// Auth service - update from anywhere
+class AuthService {
+  async login(email: string, password: string) {
+    const { user, token } = await fetch("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password })
+    }).then(r => r.json());
+    
+    // 🎯 Update auth state - accessible everywhere!
+    queryManager.setQueryData(["auth", "user"], user);
+    queryManager.setQueryData(["auth", "isAuthenticated"], true);
+  }
+  
+  logout() {
+    // 🎯 Clear auth state from anywhere
+    queryManager.setQueryData(["auth", "user"], null);
+    queryManager.setQueryData(["auth", "isAuthenticated"], false);
+  }
+}
 
-// Multiple calls to the same user will use cached data
-const user1 = await queryManager.fetchQuery(["user", "123"]);
-const user2 = await queryManager.fetchQuery(["user", "123"]); // Uses cache!
-```
+// Access from any environment
+// React
+function useAuth() {
+  const user = queryManager.getQueryData(["auth", "user"]);
+  const isAuthenticated = queryManager.getQueryData(["auth", "isAuthenticated"]);
+  return { user, isAuthenticated };
+}
 
-### 🔄 Background Refetching
+// React with hooks (dquery-react package)
+import { useQuery, useQueryData } from "dquery-react";
 
-```ts
-// Data is automatically refetched in the background when stale
-queryManager.registerFetcher(["live-data"], {
-  fetcher: fetchLiveData,
-  staleTime: 30_000 // Considered stale after 30 seconds
-});
+function AuthComponent() {
+  const { data: user, isLoading } = useQuery(["auth", "user"]);
+  const isAuthenticated = useQueryData(["auth", "isAuthenticated"]);
+  
+  if (isLoading) return <div>Loading...</div>;
+  return <div>Welcome {user?.name}</div>;
+}
 
-// First call fetches data
-const data1 = await queryManager.fetchQuery(["live-data"]);
+// Vue
+function useAuth() {
+  const user = ref(queryManager.getQueryData(["auth", "user"]));
+  const isAuthenticated = ref(queryManager.getQueryData(["auth", "isAuthenticated"]));
+  
+  queryManager.subscribeQuery(["auth", "user"], (state) => {
+    user.value = state.data;
+  });
+  
+  return { user, isAuthenticated };
+}
 
-// Wait 35 seconds...
-setTimeout(async () => {
-  // This will return cached data immediately, but trigger background refetch
-  const data2 = await queryManager.fetchQuery(["live-data"]);
-  console.log("Immediate response:", data2); // Cached data
-  // Fresh data will be available on next call
-}, 35000);
-```
-
-### 💾 Previous Data Preservation
-
-```ts
-// Previous data is always preserved during refetches
-queryManager.registerFetcher(["posts"], {
-  fetcher: fetchPosts,
-  staleTime: 0 // Always stale
-});
-
-const posts1 = await queryManager.fetchQuery(["posts"]);
-console.log("Initial posts:", posts1);
-
-// Refetch in background
-const posts2 = await queryManager.fetchQuery(["posts"]);
-console.log("Still showing old posts:", posts2); // Same as posts1
-
-// Fresh data available after fetch completes
-setTimeout(() => {
-  const posts3 = queryManager.getQueryData(["posts"]);
-  console.log("Fresh posts:", posts3); // New data
-}, 1000);
+// Vanilla JS
+function checkAuth() {
+  const user = queryManager.getQueryData(["auth", "user"]);
+  const isAuthenticated = queryManager.getQueryData(["auth", "isAuthenticated"]);
+  return { user, isAuthenticated };
+}
 ```
 
 ## 🎨 API Reference
 
 ### `queryManager.registerFetcher(key, options)`
 
-Register a fetcher function for a query key.
-
 ```ts
 queryManager.registerFetcher(key, {
   fetcher: async () => Promise<T>,
   staleTime?: number, // Default: 0
-  placeholderData?: T, // Default: undefined
-  enabled?: boolean, // Default: true
-  equalityFn?: (a: T, b: T) => boolean, // Default: shallow equality
-  usePreviousDataOnError?: boolean, // Default: false
-  usePlaceholderOnError?: boolean // Default: false
-});
-```
-
-**Example:**
-```ts
-queryManager.registerFetcher(["products"], {
-  fetcher: async () => {
-    const response = await fetch("/api/products");
-    if (!response.ok) throw new Error("Failed to fetch products");
-    return response.json();
-  },
-  staleTime: 2 * 60 * 1000, // 2 minutes
-  placeholderData: [],
-  enabled: true
+  placeholderData?: T,
+  enabled?: boolean // Default: true
 });
 ```
 
 ### `queryManager.fetchQuery(key, options?)`
 
-Manually fetch data for a query.
-
 ```ts
 const data = await queryManager.fetchQuery(key, {
-  equalityFn?: (a: T, b: T) => boolean,
   fetcher?: Fetcher<T>,
   staleTime?: number
 });
 ```
 
-**Example:**
-```ts
-try {
-  const products = await queryManager.fetchQuery(["products"]);
-  console.log("Products loaded:", products);
-} catch (error) {
-  console.error("Failed to fetch products:", error);
-}
-```
-
 ### `queryManager.setQueryData(key, data)`
-
-Update query cache directly.
 
 ```ts
 // Direct update
@@ -184,108 +134,26 @@ queryManager.setQueryData(["todos"], (oldData) => [
 ]);
 ```
 
-**Example:**
-```ts
-// Optimistic update
-queryManager.setQueryData(["todos"], (oldTodos) => [
-  ...(oldTodos || []),
-  { id: Date.now(), title: "New todo", completed: false }
-]);
-
-// Later, sync with server
-try {
-  const savedTodo = await fetch("/api/todos", {
-    method: "POST",
-    body: JSON.stringify({ title: "New todo" })
-  }).then(r => r.json());
-
-  // Update with real data
-  queryManager.setQueryData(["todos"], (oldTodos) =>
-    oldTodos?.map(todo => 
-      todo.id === Date.now() ? savedTodo : todo
-    )
-  );
-} catch (error) {
-  // Rollback on error
-  queryManager.setQueryData(["todos"], (oldTodos) =>
-    oldTodos?.filter(todo => todo.id !== Date.now())
-  );
-}
-```
-
 ### `queryManager.getQueryData(key)`
 
-Get cached data for a query.
-
 ```ts
-const cachedData = queryManager.getQueryData(["todos"]);
+const user = queryManager.getQueryData(["auth", "user"]);
+const isAuthenticated = queryManager.getQueryData(["auth", "isAuthenticated"]);
 ```
 
-**Example:**
-```ts
-// Check if data exists before making a request
-const cachedTodos = queryManager.getQueryData(["todos"]);
-if (cachedTodos) {
-  console.log("Using cached todos:", cachedTodos);
-} else {
-  console.log("No cached data, will fetch from server");
-}
+### React Hooks (dquery-react package)
+
+```tsx
+import { useQuery, useQueryData } from "dquery-react";
+
+// Full query state with loading, error, refetch
+const { data, isLoading, error, refetch } = useQuery(["todos"]);
+
+// Just the data - simpler API
+const todos = useQueryData(["todos"]);
 ```
-
-### `queryManager.getQueryState(key)`
-
-Get current query state.
-
-```ts
-const state = queryManager.getQueryState(["todos"]);
-// Returns: { 
-//   data, error, status, updatedAt, isStale, 
-//   isPlaceholderData, isLoading, isFetching, 
-//   isError, isSuccess 
-// }
-```
-
-**Example:**
-```ts
-const state = queryManager.getQueryState(["user", userId]);
-console.log("Query state:", {
-  hasData: !!state.data,
-  isLoading: state.isLoading,
-  isFetching: state.isFetching,
-  isStale: state.isStale,
-  lastUpdated: state.updatedAt ? new Date(state.updatedAt) : null,
-  hasError: !!state.error
-});
-```
-
-### `queryManager.invalidateQuery(key)`
-
-Mark query as stale and trigger refetch.
-
-```ts
-queryManager.invalidateQuery(["todos"]);
-```
-
-**Example:**
-```ts
-// Invalidate after creating a new todo
-async function createTodo(title: string) {
-  const newTodo = await fetch("/api/todos", {
-    method: "POST",
-    body: JSON.stringify({ title })
-  }).then(r => r.json());
-
-  // Invalidate to refetch fresh data
-  queryManager.invalidateQuery(["todos"]);
-  
-  return newTodo;
-}
-```
-
 
 ### `queryManager.subscribeQuery(key, callback)`
-
-Subscribe to query state changes.
 
 ```ts
 const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
@@ -293,284 +161,62 @@ const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
 });
 ```
 
-**Example:**
-```ts
-// Subscribe to real-time updates
-const unsubscribe = queryManager.subscribeQuery(["live-data"], (state) => {
-  if (state.isFetching) {
-    console.log("🔄 Fetching fresh data...");
-  }
-  
-  if (state.data) {
-    console.log("📊 New data received:", state.data);
-  }
-  
-  if (state.error) {
-    console.error("❌ Error occurred:", state.error);
-  }
-});
+## 🎯 More Examples
 
-// Clean up subscription
-unsubscribe();
+### WebSocket Updates
+
+```ts
+// Update data from WebSocket
+const ws = new WebSocket("ws://localhost:8080");
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  queryManager.setQueryData(["live-stats"], data);
+};
+
+// Access from any environment
+const stats = queryManager.getQueryData(["live-stats"]);
+console.log("Users online:", stats?.users);
 ```
 
-## 🎪 Advanced Usage
-
-### 🎯 Custom Equality Functions
+### Cross-Framework Data Sharing
 
 ```ts
-import { isEqual } from "lodash";
-
-queryManager.registerFetcher(["complex-data"], {
-  fetcher: async () => fetch("/api/complex").then(r => r.json()),
-  equalityFn: isEqual // Deep equality comparison
-});
-
-// Or create your own
-queryManager.registerFetcher(["user-preferences"], {
-  fetcher: fetchUserPreferences,
-  equalityFn: (a, b) => {
-    // Custom comparison logic
-    return a?.theme === b?.theme && a?.language === b?.language;
-  }
-});
-```
-
-### 🎪 Error Handling
-
-```ts
-queryManager.registerFetcher(["risky-data"], {
-  fetcher: async () => {
-    const response = await fetch("/api/risky");
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    return response.json();
-  },
-  placeholderData: { message: "Loading..." },
-  usePlaceholderOnError: true, // Show placeholder on error
-  usePreviousDataOnError: true // Keep previous data on error
-});
-
-// Handle errors when fetching
-try {
-  const data = await queryManager.fetchQuery(["risky-data"]);
-  console.log("Success:", data);
-} catch (error) {
-  console.error("Failed to fetch:", error.message);
-  
-  // Get cached data as fallback
-  const cachedData = queryManager.getQueryData(["risky-data"]);
-  if (cachedData) {
-    console.log("Using cached data:", cachedData);
-  }
+// React component updates data
+function ReactComponent() {
+  const updateTheme = () => {
+    queryManager.setQueryData(["user", "preferences"], { theme: "dark" });
+  };
+  return <button onClick={updateTheme}>Update Theme</button>;
 }
-```
 
-### 🎯 Conditional Fetching
-
-```ts
-// Only register fetcher when conditions are met
-function setupUserFetcher(userId: string | null) {
-  if (!userId) return;
+// Vue component automatically reflects changes
+function VueComponent() {
+  const preferences = ref(queryManager.getQueryData(["user", "preferences"]));
   
-  queryManager.registerFetcher(["user", userId], {
-    fetcher: async ({ signal }) => {
-      const response = await fetch(`/api/users/${userId}`, { signal });
-      return response.json();
-    },
-    enabled: !!userId // Only fetch when userId exists
+  queryManager.subscribeQuery(["user", "preferences"], (state) => {
+    preferences.value = state.data;
   });
-}
-
-// Usage
-setupUserFetcher("123"); // Will fetch
-setupUserFetcher(null); // Won't fetch
-```
-
-### 🎪 Request Deduplication
-
-```ts
-// Multiple simultaneous requests for the same data are automatically deduplicated
-const promises = [
-  queryManager.fetchQuery(["todos"]),
-  queryManager.fetchQuery(["todos"]),
-  queryManager.fetchQuery(["todos"])
-];
-
-// All three will resolve to the same data
-const [todos1, todos2, todos3] = await Promise.all(promises);
-console.log(todos1 === todos2 && todos2 === todos3); // true
-```
-
-### 🎯 Cache Management
-
-```ts
-// Clear specific cache entry
-queryManager.setQueryData(["todos"], { data: undefined });
-
-// Or remove it entirely
-queryManager.invalidateQuery(["todos"]);
-
-// Check cache size (internal)
-const cacheSize = queryManager.cache.size;
-console.log(`Cache contains ${cacheSize} entries`);
-```
-
-## 🎭 Framework Integration
-
-### React Integration
-
-```tsx
-// Use with dquery-react
-import { useQuery } from "dquery-react";
-
-function TodosList() {
-  const { data, isLoading, error } = useQuery(["todos"]);
   
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  
-  return (
-    <ul>
-      {data?.map(todo => (
-        <li key={todo.id}>{todo.title}</li>
-      ))}
-    </ul>
-  );
+  return { preferences };
 }
-```
 
-### Vue Integration
-
-```ts
-// Use with Vue's reactivity system
-import { ref, watchEffect } from 'vue';
-
-export function useQuery(key) {
-  const data = ref(null);
-  const isLoading = ref(false);
-  const error = ref(null);
-
-  watchEffect(() => {
-    isLoading.value = true;
-    queryManager.fetchQuery(key)
-      .then(result => {
-        data.value = result;
-        error.value = null;
-      })
-      .catch(err => {
-        error.value = err;
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
-  });
-
-  return { data, isLoading, error };
+// Vanilla JS also gets updates
+function vanillaJSFunction() {
+  const preferences = queryManager.getQueryData(["user", "preferences"]);
+  console.log("Current theme:", preferences?.theme);
 }
-```
-
-### Vanilla JavaScript
-
-```ts
-// Use in vanilla JavaScript
-class DataManager {
-  constructor() {
-    this.subscriptions = new Map();
-  }
-
-  async loadData(key) {
-    try {
-      const data = await queryManager.fetchQuery(key);
-      this.notifySubscribers(key, { data, error: null });
-      return data;
-    } catch (error) {
-      this.notifySubscribers(key, { data: null, error });
-      throw error;
-    }
-  }
-
-  subscribe(key, callback) {
-    if (!this.subscriptions.has(key)) {
-      this.subscriptions.set(key, new Set());
-    }
-    this.subscriptions.get(key).add(callback);
-
-    // Return unsubscribe function
-    return () => {
-      this.subscriptions.get(key)?.delete(callback);
-    };
-  }
-
-  notifySubscribers(key, state) {
-    this.subscriptions.get(key)?.forEach(callback => callback(state));
-  }
-}
-```
-
-## 🎯 Performance Tips
-
-### 1. 🎪 Optimize Stale Times
-
-```ts
-// Short-lived data (real-time updates)
-queryManager.registerFetcher(["live-stats"], {
-  fetcher: fetchLiveStats,
-  staleTime: 0 // Always stale
-});
-
-// Long-lived data (user profiles)
-queryManager.registerFetcher(["user-profile"], {
-  fetcher: fetchUserProfile,
-  staleTime: 5 * 60 * 1000 // 5 minutes
-});
-```
-
-### 2. 🎯 Use Appropriate Equality Functions
-
-```ts
-// For simple data structures, shallow equality is perfect
-queryManager.registerFetcher(["simple-data"], {
-  fetcher: fetchSimpleData
-  // equalityFn defaults to shallow equality
-});
-
-// For complex nested objects, use deep equality
-queryManager.registerFetcher(["complex-data"], {
-  fetcher: fetchComplexData,
-  equalityFn: isEqual // From lodash
-});
-```
-
-### 3. 🎪 Batch Related Requests
-
-```ts
-// These will be fetched in parallel
-const [users, posts, comments] = await Promise.all([
-  queryManager.fetchQuery(["users"]),
-  queryManager.fetchQuery(["posts"]),
-  queryManager.fetchQuery(["comments"])
-]);
 ```
 
 ## 🎭 TypeScript Support
 
 ```ts
-// Full type safety
 interface User {
   id: string;
   name: string;
   email: string;
 }
 
-interface Todo {
-  id: string;
-  title: string;
-  completed: boolean;
-}
-
-// Type-safe fetcher
+// Type-safe usage
 queryManager.registerFetcher<User[]>(["users"], {
   fetcher: async (): Promise<User[]> => {
     const response = await fetch("/api/users");
@@ -578,15 +224,9 @@ queryManager.registerFetcher<User[]>(["users"], {
   }
 });
 
-// Type-safe data access
 const users = await queryManager.fetchQuery<User[]>(["users"]);
 // users is typed as User[] | undefined
-
-const userState = queryManager.getQueryState<User[]>(["users"]);
-// userState.data is typed as User[] | undefined
 ```
-
-
 
 ## 📄 License
 
@@ -594,11 +234,10 @@ MIT License - feel free to use this in your projects! 🎉
 
 ## 🎯 Support
 
-Need help? Have questions? Want to chat about data fetching strategies?
+Need help? Have questions?
 
 - 📧 **Email**: [darshannaik.com](https://darshannaik.com)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/d-query/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/Darshan-Naik/d-query/discussions)
 - 🌟 **Repository**: [https://github.com/Darshan-Naik/d-query](https://github.com/Darshan-Naik/d-query)
 
 ---

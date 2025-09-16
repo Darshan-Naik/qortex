@@ -1,7 +1,6 @@
 {
   "name": "dquery-react",
-  "version": "0.1.2",
-  "private": true,
+  "version": "0.1.4",
   "description": "React hook bridge for d-query runtime",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -44,7 +43,7 @@
   "author": "Darshan Naik",
   "license": "MIT",
   "dependencies": {
-    "dquery-core": "0.1.1"
+    "dquery-core": "0.1.4"
   },
   "peerDependencies": {
     "react": ">=18"

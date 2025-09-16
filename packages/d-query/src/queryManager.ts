@@ -90,7 +90,10 @@ export class QueryManager {
     if (state.fetchPromise) return state.fetchPromise as Promise<T>;
 
     const fetcher = state.fetcher;
-    if (!fetcher) return Promise.resolve(state.data);
+    if (!fetcher) {
+      console.error("No fetcher found for key", key);
+      return Promise.resolve(state.data)
+    };
     state.status = "fetching";
     state.lastFetchTime = Date.now();
     this.emit(key, state);
