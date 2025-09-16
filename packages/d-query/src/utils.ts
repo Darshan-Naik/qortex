@@ -43,7 +43,7 @@ export function shallowEqual<T = unknown>(a: T | undefined, b: T | undefined): b
  * Creates a new query state with default values
  * Used when initializing queries that don't exist in cache
  */
-export function createDefaultState(opts?: QueryOptions) {
+export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<any>) {
   return {
     status: "idle" as const,
     updatedAt: undefined,
@@ -56,5 +56,6 @@ export function createDefaultState(opts?: QueryOptions) {
     usePlaceholderOnError: opts?.usePlaceholderOnError ?? false,
     refetchOnSubscribe: opts?.refetchOnSubscribe ?? "stale" as const,
     enabled: opts?.enabled === false ? false : true,
+    refetch: refetch || (() => Promise.resolve(undefined)),
   };
 }

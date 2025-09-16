@@ -1,5 +1,5 @@
-import { useSyncExternalStore, useCallback } from "react";
-import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager } from "dquery-core";
+import { useSyncExternalStore, useCallback, useRef } from "react";
+import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager, serializeKey } from "dquery-core";
 
 /**
  * useQuery hook for React integration with d-query
@@ -10,15 +10,19 @@ export function useQuery<F extends Fetcher | undefined = undefined, T = F extend
   opts?: QueryOptions<T>
 ): QueryState<T> {
 
+  const serializedKey = serializeKey(key);
+
+
+
   // Memoize the getSnapshot function
   const getSnapshot = useCallback((): QueryState<T> => {
     return queryManager.getQueryState<T>(key, opts);
-  }, [key]);
+  }, [serializedKey]);
 
   // Memoize the subscribe function
   const subscribe = useCallback((callback: () => void) => {
     return queryManager.subscribeQuery(key, callback, opts);
-  }, [key]);
+  }, [serializedKey]);
 
   // Use React's useSyncExternalStore for optimal performance
   const state = useSyncExternalStore(

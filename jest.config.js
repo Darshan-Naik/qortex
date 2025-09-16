@@ -1,6 +1,7 @@
 module.exports = {
   // Default configuration
   testEnvironment: 'node',
+  testTimeout: 15000,
   roots: ['<rootDir>/packages'],
   testMatch: [
     '**/__tests__/**/*.test.js',
@@ -23,8 +24,6 @@ module.exports = {
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
-  testTimeout: 15000,
-  
   // Projects configuration for different packages
   projects: [
     {
@@ -49,7 +48,6 @@ module.exports = {
         '^.+\\.(js|ts)$': 'babel-jest',
       },
       moduleFileExtensions: ['js', 'ts', 'json'],
-      testTimeout: 15000,
     },
     {
       displayName: 'd-query-react',
@@ -73,9 +71,8 @@ module.exports = {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
       },
       moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
-      testTimeout: 15000,
-      moduleNameMapping: {
-        '^d-query$': '<rootDir>/packages/d-query/dist/index.js',
+      moduleNameMapper: {
+        '^dquery-core$': '<rootDir>/packages/d-query/dist/index.js',
       },
     }
   ]

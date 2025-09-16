@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { useQuery } from '../src/useQuery';
-import { queryManager } from 'd-query';
+import { queryManager ,useQuery} from '../src/index';
 
 // Test component that uses useQuery
 function TestComponent({ queryKey, options = {} }) {
@@ -51,7 +50,7 @@ describe('useQuery React Integration Tests', () => {
 
       // Initial state should be fetching since enabled=true triggers immediate fetch
       expect(screen.getByTestId('status')).toHaveTextContent('fetching');
-      expect(screen.getByTestId('isLoading')).toHaveTextContent('false');
+      expect(screen.getByTestId('isLoading')).toHaveTextContent('true'); // true for first fetch
       expect(screen.getByTestId('isFetching')).toHaveTextContent('true');
       expect(screen.getByTestId('isSuccess')).toHaveTextContent('false');
       expect(screen.getByTestId('isError')).toHaveTextContent('false');

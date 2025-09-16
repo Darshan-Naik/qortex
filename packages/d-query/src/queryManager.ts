@@ -6,7 +6,7 @@ import {
   QueryOptions,
   QueryState,
 } from "./types";
-import { serializeKey, createDefaultState } from "./utils";
+import { serializeKey, createDefaultState, shallowEqual } from "./utils";
 
 type Status = "idle" | "fetching" | "success" | "error";
 
@@ -29,6 +29,7 @@ type QueryStateInternal<T = any> = {
   enabled: boolean;
   lastFetchTime?: number;
   fetchPromise?: Promise<T>;
+  refetch?: () => Promise<T>;
 };
 
 /**
@@ -38,6 +39,7 @@ type QueryStateInternal<T = any> = {
 export class QueryManager {
   private cache = new Map<string, QueryStateInternal>();
   private subs = new Map<string, Set<() => void>>();
+  private lastReturnedState = new Map<string, any>();
 
   /**
    * Ensures a query state exists in cache, creating it if necessary
@@ -50,7 +52,8 @@ export class QueryManager {
       state.enabled = opts.enabled === false ? false : true;
       this.cache.set(sk, state);
     } else {
-      this.cache.set(sk, createDefaultState(opts));
+      const newState = createDefaultState(opts, () => this.fetchQuery(key));
+      this.cache.set(sk, newState);
     }
     return this.cache.get(sk)!;
   }
@@ -94,6 +97,8 @@ export class QueryManager {
 
     const promise = fetcher();
     state.fetchPromise = promise;
+
+    // Attach callbacks to the promise
     promise.then((result: T) => {
       state.data = result;
       state.status = "success";
@@ -104,9 +109,9 @@ export class QueryManager {
     }).finally(() => {
       state.fetchPromise = undefined;
       this.emit(key, state);
+    });
 
-    })
-    return promise as Promise<T>
+    return promise as Promise<T>;
   }
 
   /**
@@ -169,23 +174,37 @@ export class QueryManager {
         break;
     }
     this.handleMountLogic(key, state);
-    // update the state with return type QueryState<T>
-    Object.assign(state, {
+
+    // Check if we need to return a new object (only when state actually changes)
+    const currentState = {
       data: returnedData,
       error: state.error,
       status: state.status,
       updatedAt: state.updatedAt,
       isStale,
       isPlaceholderData,
-      isLoading: state.status === "fetching" && !state.updatedAt,
+      isLoading: state.status === "fetching" && !state.updatedAt, // true only for first fetch
       isFetching: state.status === "fetching",
       isError: state.status === "error",
       isSuccess: state.status === "success",
-      refetch: () => this.fetchQuery(key),
-    });
+      refetch: state.refetch, // Use the stable refetch function created in ensureState
+    };
 
+    // Store the last returned state to detect changes
+    const stateKey = serializeKey(key);
+    const lastState = this.lastReturnedState?.get(stateKey);
 
-    return state as unknown as QueryState<T>;
+    // Only return a new object if the state has actually changed
+    if (!lastState || !shallowEqual(lastState, currentState)) {
+      // Store the new state
+      if (!this.lastReturnedState) this.lastReturnedState = new Map();
+      this.lastReturnedState.set(stateKey, currentState);
+
+      return currentState as QueryState<T>;
+    }
+
+    // Return the same object reference if nothing changed
+    return lastState as QueryState<T>;
   }
 
   /**
