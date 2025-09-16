@@ -23,14 +23,20 @@ pnpm add dquery-react dquery-core
 ```tsx
 import { queryManager, useQuery, useQueryData } from "dquery-react";
 
+// Set global defaults for all queries
+queryManager.setDefaultConfig({
+  staleTime: 5 * 60 * 1000, // 5 minutes default
+  throttleTime: 100, // 100ms throttle
+  usePreviousDataOnError: true
+});
+
 // Register a fetcher
 queryManager.registerFetcher(["todos"], {
   fetcher: async () => {
     const response = await fetch("/api/todos");
     return response.json();
   },
-  staleTime: 10_000, // 10 seconds
-  placeholderData: []
+  placeholderData: [] // Uses global staleTime: 5 minutes
 });
 
 // Use in React component - full query state
@@ -176,6 +182,29 @@ Read data from anywhere:
 const user = queryManager.getQueryData(["auth", "user"]);
 const isAuthenticated = queryManager.getQueryData(["auth", "isAuthenticated"]);
 ```
+
+### `queryManager.setDefaultConfig(config)`
+
+Set global default configuration for all queries:
+
+```tsx
+queryManager.setDefaultConfig({
+  staleTime: 5 * 60 * 1000, // 5 minutes
+  refetchOnSubscribe: "stale",
+  throttleTime: 100, // 100ms throttle
+  usePreviousDataOnError: true,
+  equalityFn: shallowEqual
+});
+```
+
+**Available options:**
+- `enabled?: boolean` - Whether queries are enabled by default
+- `refetchOnSubscribe?: "stale" | "always" | false` - Default refetch behavior
+- `staleTime?: number` - Default time before data is considered stale
+- `usePreviousDataOnError?: boolean` - Keep previous data on error
+- `usePlaceholderOnError?: boolean` - Use placeholder data on error
+- `equalityFn?: EqualityFn<any>` - Default equality function
+- `throttleTime?: number` - Default throttle time for duplicate request prevention
 
 ## 🎯 More Examples
 

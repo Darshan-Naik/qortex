@@ -1,6 +1,6 @@
 {
   "name": "dquery-core",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Framework-agnostic query cache & fetch registry (MFE friendly).",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

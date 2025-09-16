@@ -7,6 +7,7 @@ import {
   QueryState,
   QueryStatus,
   InferFetcherResult,
+  DefaultConfig,
 } from "./types";
 import { serializeKey, createDefaultState, shallowEqual } from "./utils";
 
@@ -41,6 +42,20 @@ export class QueryManager {
   private cache = new Map<string, QueryStateInternal>();
   private subs = new Map<string, Set<() => void>>();
   private lastReturnedState = new Map<string, any>();
+  private defaultConfig: DefaultConfig = {};
+  private throttleTime: number = THROTTLE_TIME;
+
+  /**
+   * Set default configuration for all queries
+   */
+  setDefaultConfig({ throttleTime, ...config }: DefaultConfig): void {
+    this.defaultConfig = { ...this.defaultConfig, ...config };
+
+    // Handle throttleTime separately since it's not part of QueryOptions
+    if (throttleTime !== undefined) {
+      this.throttleTime = throttleTime;
+    }
+  }
 
   /**
    * Ensures a query state exists in cache, creating it if necessary
@@ -49,12 +64,16 @@ export class QueryManager {
   private ensureState<T = any>(key: QueryKey, opts: QueryOptions<T> = {}): QueryStateInternal<T> {
     const sk = serializeKey(key);
     const state = this.cache.get(sk);
+
+    // Merge with default config 
+    const mergedOpts = { ...this.defaultConfig, ...opts };
+
     if (state) {
-      Object.assign(state, opts);
-      state.enabled = opts.enabled === false ? false : true;
+      Object.assign(state, mergedOpts);
+      state.enabled = mergedOpts.enabled === false ? false : true;
       this.cache.set(sk, state);
     } else {
-      const newState = createDefaultState(opts, () => this.fetchQuery(key));
+      const newState = createDefaultState(mergedOpts, () => this.fetchQuery(key));
       this.cache.set(sk, newState);
     }
     return this.cache.get(sk)!;
@@ -258,7 +277,7 @@ export class QueryManager {
     key: QueryKey,
     state: QueryStateInternal<T>
   ): void {
-    const isThrottled = state.lastFetchTime && (Date.now() - state.lastFetchTime) < THROTTLE_TIME;
+    const isThrottled = state.lastFetchTime && (Date.now() - state.lastFetchTime) < this.throttleTime;
 
     if (state?.status === "fetching" || !state?.enabled || isThrottled || !state?.fetcher) return;
 

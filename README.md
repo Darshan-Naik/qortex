@@ -249,6 +249,43 @@ function TodosList() {
 }
 ```
 
+### 🎯 Global Configuration Setup
+
+```tsx
+// app.tsx - Set up global defaults for your entire app
+import { queryManager } from "dquery-core";
+
+// Configure global defaults for your app
+queryManager.setDefaultConfig({
+  staleTime: 2 * 60 * 1000, // 2 minutes default
+  refetchOnSubscribe: "stale",
+  throttleTime: 100, // 100ms throttle
+  usePreviousDataOnError: true, // Keep previous data on errors
+  usePlaceholderOnError: true // Show placeholders on errors
+});
+
+// Now all your queries will use these sensible defaults
+function App() {
+  return (
+    <div>
+      <UserProfile />
+      <TodosList />
+      <PostsList />
+    </div>
+  );
+}
+
+// Individual components can still override when needed
+function LiveDataComponent() {
+  const { data } = useQuery(["live-data"], {
+    staleTime: 0, // Override: always fetch fresh data
+    refetchOnSubscribe: "always" // Override: always refetch
+  });
+  
+  return <div>{data}</div>;
+}
+```
+
 ## 🎨 API Reference
 
 ### Core Runtime (`dquery-core`)
@@ -336,6 +373,29 @@ const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
 });
 ```
 
+#### `queryManager.setDefaultConfig(config)`
+
+Set global default configuration for all queries.
+
+```ts
+queryManager.setDefaultConfig({
+  staleTime: 5 * 60 * 1000, // 5 minutes
+  refetchOnSubscribe: "stale",
+  throttleTime: 100, // 100ms throttle
+  usePreviousDataOnError: true,
+  equalityFn: shallowEqual
+});
+```
+
+**Configuration options:**
+- `enabled?: boolean` - Whether queries are enabled by default
+- `refetchOnSubscribe?: "stale" | "always" | false` - Default refetch behavior
+- `staleTime?: number` - Default time before data is considered stale
+- `usePreviousDataOnError?: boolean` - Keep previous data on error
+- `usePlaceholderOnError?: boolean` - Use placeholder data on error
+- `equalityFn?: EqualityFn<any>` - Default equality function
+- `throttleTime?: number` - Default throttle time for duplicate request prevention
+
 ### React Integration (`dquery-react`)
 
 #### `useQuery(key, options?)`
@@ -377,6 +437,42 @@ const {
 - `isPlaceholderData` - True if showing placeholder data
 
 ## 🎪 Configuration
+
+### Global Default Configuration
+
+Set default options for all queries using `setDefaultConfig`:
+
+```ts
+import { queryManager } from "dquery-core";
+
+// Set global defaults
+queryManager.setDefaultConfig({
+  staleTime: 5 * 60 * 1000, // 5 minutes default stale time
+  refetchOnSubscribe: "stale", // Default refetch behavior
+  throttleTime: 100, // 100ms throttle (instead of default 50ms)
+  usePreviousDataOnError: true, // Keep previous data on error
+  equalityFn: shallowEqual // Default equality function
+});
+
+// All new queries will use these defaults
+queryManager.registerFetcher(["users"], { fetcher: fetchUsers });
+// This query will have staleTime: 5 minutes, throttleTime: 100ms, etc.
+
+// Individual queries can still override defaults
+queryManager.registerFetcher(["live-data"], { 
+  fetcher: fetchLiveData,
+  staleTime: 0 // Override: always stale
+});
+```
+
+**Available default options:**
+- `enabled` - Whether queries are enabled by default
+- `refetchOnSubscribe` - Default refetch behavior ("stale" | "always" | false)
+- `staleTime` - Default time before data is considered stale
+- `usePreviousDataOnError` - Keep previous data when errors occur
+- `usePlaceholderOnError` - Use placeholder data on errors
+- `equalityFn` - Default equality function for data comparison
+- `throttleTime` - Default throttle time for preventing duplicate requests
 
 ### Query Keys
 

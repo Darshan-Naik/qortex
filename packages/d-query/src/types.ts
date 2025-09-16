@@ -50,6 +50,20 @@ export type QueryOptions<T = any> = {
 };
 
 /**
+ * Default configuration options that can be set globally
+ * Includes throttleTime which is not part of regular QueryOptions
+ */
+export type DefaultConfig = {
+  enabled?: boolean;
+  refetchOnSubscribe?: "always" | "stale" | false;
+  staleTime?: number;
+  usePreviousDataOnError?: boolean;
+  usePlaceholderOnError?: boolean;
+  equalityFn?: EqualityFn<any>;
+  throttleTime?: number;
+};
+
+/**
  * Public query state returned by getQueryState
  * Improved with stricter error typing and better generic constraints
  */

@@ -22,14 +22,20 @@ pnpm add dquery-core
 ```ts
 import { queryManager } from "dquery-core";
 
+// Set global defaults for all queries
+queryManager.setDefaultConfig({
+  staleTime: 5 * 60 * 1000, // 5 minutes default
+  throttleTime: 100, // 100ms throttle
+  usePreviousDataOnError: true
+});
+
 // Register a fetcher
 queryManager.registerFetcher(["todos"], {
   fetcher: async () => {
     const response = await fetch("/api/todos");
     return response.json();
   },
-  staleTime: 10_000, // 10 seconds
-  placeholderData: []
+  placeholderData: [] // Uses global staleTime: 5 minutes
 });
 
 // Fetch data
@@ -160,6 +166,29 @@ const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
   console.log("State changed:", state);
 });
 ```
+
+### `queryManager.setDefaultConfig(config)`
+
+Set global default configuration for all queries.
+
+```ts
+queryManager.setDefaultConfig({
+  staleTime: 5 * 60 * 1000, // 5 minutes
+  refetchOnSubscribe: "stale",
+  throttleTime: 100, // 100ms throttle
+  usePreviousDataOnError: true,
+  equalityFn: shallowEqual
+});
+```
+
+**Available options:**
+- `enabled?: boolean` - Whether queries are enabled by default
+- `refetchOnSubscribe?: "stale" | "always" | false` - Default refetch behavior
+- `staleTime?: number` - Default time before data is considered stale
+- `usePreviousDataOnError?: boolean` - Keep previous data on error
+- `usePlaceholderOnError?: boolean` - Use placeholder data on error
+- `equalityFn?: EqualityFn<any>` - Default equality function
+- `throttleTime?: number` - Default throttle time for duplicate request prevention
 
 ## 🎯 More Examples
 
