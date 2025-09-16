@@ -742,21 +742,6 @@ queryManager.registerFetcher(["live-data"], {
 });
 ```
 
-## 🎭 Development
-
-```bash
-# Install dependencies
-pnpm install
-
-# Build the package
-pnpm run build
-
-# Run type checking
-pnpm run type-check
-
-# Clean build artifacts
-pnpm run clean
-```
 
 ## 📄 License
 

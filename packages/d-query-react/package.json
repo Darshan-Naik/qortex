@@ -1,6 +1,6 @@
 {
   "name": "dquery-react",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "React hook bridge for d-query runtime",
   "main": "dist/index.js",

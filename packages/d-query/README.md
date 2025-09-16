@@ -5,7 +5,6 @@
 [![npm version](https://badge.fury.io/js/dquery-core.svg)](https://badge.fury.io/js/dquery-core)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/dquery-core)](https://bundlephobia.com/package/dquery-core)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/tests-22%2F22%20passing-brightgreen.svg)](https://github.com/Darshan-Naik/d-query)
 
 ## ✨ What is d-query Core?
 
@@ -588,21 +587,6 @@ const userState = queryManager.getQueryState<User[]>(["users"]);
 ```
 
 
-## 🎯 Development
-
-```bash
-# Install dependencies
-pnpm install
-
-# Build the package
-pnpm run build
-
-# Run type checking
-pnpm run type-check
-
-# Clean build artifacts
-pnpm run clean
-```
 
 ## 📄 License
 

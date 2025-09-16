@@ -573,67 +573,15 @@ function Dashboard() {
 }
 ```
 
-## 🧪 Testing Status
+## 🎪 Why Choose d-query?
 
-**✅ All tests passing!**
-
-- **Core Package**: 22/22 tests passing
-- **React Package**: 71/71 tests passing
-- **Total Coverage**: 93/93 tests passing
-
-The packages are fully tested with comprehensive coverage including:
-- Basic functionality and edge cases
-- Throttling and inflight protection
-- Subscription management
-- Options integration (staleTime, refetchOnSubscribe, etc.)
-- React integration and re-render handling
-- Error handling and recovery
-- Cache management and persistence
-
-## 🚀 Recent Improvements
-
-**Latest updates include:**
-
-- **🎯 Smart Throttling**: 50ms window prevents duplicate fetches from rapid re-renders
-- **🛡️ Inflight Protection**: Prevents race conditions and duplicate requests
-- **⚡ Optimized Re-renders**: React components only re-render when data actually changes
-- **🔧 Robust Error Handling**: Better error recovery and fallback mechanisms
-- **📊 Enhanced State Management**: Improved `isStale` calculations and state tracking
-- **🧪 Comprehensive Testing**: Full test coverage with edge cases and complex scenarios
-- **🎨 Clean API**: Simplified method signatures and better TypeScript support
-
-## 🎭 Development
-
-```bash
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm run build
-
-# Run type checking
-pnpm run type-check
-
-# Run tests
-pnpm run test
-
-# Run example app
-pnpm --filter react-app run dev
-
-# Publish packages
-pnpm run publish:packages
-```
-
-## 🎪 Contributing
-
-We love contributions! Here's how you can help:
-
-1. 🍴 Fork the repository
-2. 🌟 Create a feature branch: `git checkout -b feature/amazing-feature`
-3. 🎯 Make your changes
-4. 🧪 Add tests if applicable
-5. 📝 Update documentation
-6. 🚀 Submit a pull request
+- **🎯 Simple & Intuitive**: Get started in seconds, not minutes
+- **⚡ Lightning Fast**: Minimal bundle size with maximum performance
+- **🛡️ Production Ready**: Battle-tested with comprehensive error handling
+- **🎭 Framework Agnostic**: Use with React, Vue, Svelte, or vanilla JS
+- **🔄 Smart Caching**: Automatic deduplication and background updates
+- **💾 Previous Data**: No loading flickers during refetches
+- **🎨 TypeScript First**: Full type safety out of the box
 
 ## 📄 License
 
