@@ -354,7 +354,7 @@ const {
   updatedAt,
   isPlaceholderData
 } = useQuery(key, {
-  refetchOnSubscribe?: "stale" | "always" | false, // Default: false
+  refetchOnSubscribe?: "stale" | "always" | false, // Default: "stale"
   enabled?: boolean, // Default: true
   fetcher?: Fetcher<T>,
   staleTime?: number,

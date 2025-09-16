@@ -125,7 +125,7 @@ const {
   isStale,
   updatedAt
 } = useQuery(key, {
-  refetchOnSubscribe?: "stale" | "always" | false, // Default: false
+  refetchOnSubscribe?: "stale" | "always" | false, // Default: "stale"
   enabled?: boolean, // Default: true
   fetcher?: Fetcher<T>,
   staleTime?: number,
@@ -139,7 +139,7 @@ Returns just the data - perfect for simple data access without loading states:
 
 ```tsx
 const data = useQueryData(key, {
-  refetchOnSubscribe?: "stale" | "always" | false, // Default: false
+  refetchOnSubscribe?: "stale" | "always" | false, // Default: "stale"
   enabled?: boolean, // Default: true
   fetcher?: Fetcher<T>,
   staleTime?: number,
