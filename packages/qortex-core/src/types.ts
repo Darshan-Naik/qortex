@@ -14,19 +14,25 @@ export type Fetcher<T = any> = () => Promise<T> | T;
 export type EqualityFn<T = any> = (a: T | undefined, b: T | undefined) => boolean;
 
 /** 
- * Infers the resolved return type of a fetcher function
- * Falls back to any for user-friendly experience
+ * Infers the return type of a fetcher function
+ * 
+ * This utility type extracts the return type from a fetcher function,
+ * handling both synchronous and asynchronous fetchers.
+ * 
+ * @example
+ * ```typescript
+ * const fetchUser = async (id: string): Promise<User> => { ... };
+ * type UserType = InferFetcherResult<typeof fetchUser>; // Promise<User>
+ * 
+ * const fetchConfig = (): Config => { ... };
+ * type ConfigType = InferFetcherResult<typeof fetchConfig>; // Config
+ * ```
+ * 
+ * @template F - The fetcher function type
+ * @returns The inferred return type of the fetcher, or `any` if inference fails
  */
-export type InferFetcherResult<F> =
-  F extends (...args: any[]) => Promise<infer R> ? R :
-  F extends (...args: any[]) => infer R ? R :
-  any;
+export type InferFetcherResult<F> = F extends Fetcher<infer R> ? R : any;
 
-/** 
- * Infers the return type of a fetcher, handling both sync and async cases
- * Falls back to any for user-friendly experience
- */
-export type InferFetcherReturnType<T> = T extends Fetcher<infer R> ? R : any;
 
 /**
  * Query status types for better type safety

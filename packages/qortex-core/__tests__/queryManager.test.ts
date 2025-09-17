@@ -301,6 +301,164 @@ describe('QueryManager Core Tests', () => {
       expect(() => unsubscribe()).not.toThrow();
     });
 
+    test('should handle callback without state parameter', async () => {
+      const key = ['test-key'];
+      const callback = jest.fn();
+
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      // Subscribe with callback that doesn't use state parameter
+      const unsubscribe = queryManager.subscribeQuery(key, () => {
+        callback();
+      }, { enabled: true });
+
+      // Wait for fetch to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Callback should have been called
+      expect(callback).toHaveBeenCalled();
+
+      // Cleanup
+      unsubscribe();
+    });
+
+    test('should handle callback with state parameter', async () => {
+      const key = ['test-key'];
+      const callback = jest.fn();
+
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      // Subscribe with callback that uses state parameter
+      const unsubscribe = queryManager.subscribeQuery(key, (state) => {
+        callback(state);
+      }, { enabled: true });
+
+      // Wait for fetch to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Callback should have been called with state
+      expect(callback).toHaveBeenCalled();
+      const stateArg = callback.mock.calls[0][0];
+      expect(stateArg).toHaveProperty('status');
+      expect(stateArg).toHaveProperty('data');
+      expect(stateArg).toHaveProperty('isLoading');
+      expect(stateArg).toHaveProperty('isFetching');
+      expect(stateArg).toHaveProperty('isSuccess');
+      expect(stateArg).toHaveProperty('refetch');
+
+      // Cleanup
+      unsubscribe();
+    });
+
+    test('should handle callback with optional state parameter (ignoring state)', async () => {
+      const key = ['test-key'];
+      const callback = jest.fn();
+
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      // Subscribe with callback that has state parameter but doesn't use it
+      const unsubscribe = queryManager.subscribeQuery(key, (state) => {
+        // User chooses not to use the state parameter
+        callback('callback-called');
+      }, { enabled: true });
+
+      // Wait for fetch to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Callback should have been called
+      expect(callback).toHaveBeenCalledWith('callback-called');
+
+      // Cleanup
+      unsubscribe();
+    });
+
+    test('should handle callback with optional state parameter (using state)', async () => {
+      const key = ['test-key'];
+      const callback = jest.fn();
+
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      // Subscribe with callback that conditionally uses state parameter
+      const unsubscribe = queryManager.subscribeQuery(key, (state) => {
+        if (state && state.status === 'success') {
+          callback('success-state', state.data);
+        } else {
+          callback('other-state');
+        }
+      }, { enabled: true });
+
+      // Wait for fetch to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Callback should have been called with success state
+      expect(callback).toHaveBeenCalled();
+      const calls = callback.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      expect(lastCall[0]).toBe('success-state');
+      expect(lastCall[1]).toEqual({ id: 1, data: 'test-data' });
+
+      // Cleanup
+      unsubscribe();
+    });
+
+    test('should handle multiple callbacks with different state usage patterns', async () => {
+      const key = ['test-key'];
+      const callback1 = jest.fn();
+      const callback2 = jest.fn();
+      const callback3 = jest.fn();
+
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      // Subscribe with different callback patterns
+      const unsubscribe1 = queryManager.subscribeQuery(key, () => {
+        callback1('no-state');
+      }, { enabled: true });
+
+      const unsubscribe2 = queryManager.subscribeQuery(key, (state) => {
+        callback2('with-state', state?.status);
+      }, { enabled: true });
+
+      const unsubscribe3 = queryManager.subscribeQuery(key, (state) => {
+        // Conditional usage
+        if (state) {
+          callback3('conditional', state.data);
+        }
+      }, { enabled: true });
+
+      // Wait for fetch to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // All callbacks should have been called
+      expect(callback1).toHaveBeenCalledWith('no-state');
+      expect(callback2).toHaveBeenCalledWith('with-state', 'success');
+      expect(callback3).toHaveBeenCalledWith('conditional', { id: 1, data: 'test-data' });
+
+      // Cleanup
+      unsubscribe1();
+      unsubscribe2();
+      unsubscribe3();
+    });
+
     test('should notify subscribers on state changes', async () => {
       const key = ['test-key'];
       const callback = jest.fn();
@@ -499,6 +657,152 @@ describe('QueryManager Core Tests', () => {
       // Should use second fetcher
       expect(fetcher2).toHaveBeenCalledTimes(1);
       expect(fetcher1).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('isSuccess and isError Behavior', () => {
+    test('should maintain isSuccess=true during refetch and only set false on error', async () => {
+      const key = ['test-key'];
+      const successData = { id: 1, data: 'success' };
+      const refetchData = { id: 2, data: 'refetch-success' };
+
+      // Start with successful fetcher
+      mockFetcher.mockResolvedValue(successData);
+
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      // Initial fetch
+      await queryManager.fetchQuery(key);
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Check initial state - should be success
+      let state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('success');
+      expect(state.isSuccess).toBe(true);
+      expect(state.isError).toBe(false);
+      expect(state.data).toEqual(successData);
+
+      // Update fetcher to return different data for refetch
+      mockFetcher.mockResolvedValue(refetchData);
+
+      // Refetch - isSuccess should remain true during refetch
+      const refetchPromise = state.refetch();
+
+      // Check state during refetch
+      state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('fetching');
+      expect(state.isFetching).toBe(true);
+      expect(state.isSuccess).toBe(true); // Should remain true during refetch
+      expect(state.isError).toBe(false);
+      expect(state.data).toEqual(successData); // Should still have previous data
+
+      // Wait for refetch to complete
+      await refetchPromise;
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Check state after successful refetch
+      state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('success');
+      expect(state.isSuccess).toBe(true); // Should still be true after successful refetch
+      expect(state.isError).toBe(false);
+      expect(state.data).toEqual(refetchData); // Should have new data
+
+      // Now test error scenario - update fetcher to fail
+      const errorData = new Error('Fetch failed');
+      mockFetcher.mockRejectedValue(errorData);
+
+      // Refetch that will fail - isSuccess should become false
+      const errorRefetchPromise = state.refetch();
+
+      // Check state during error fetch
+      state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('fetching');
+      expect(state.isFetching).toBe(true);
+      expect(state.isSuccess).toBe(true); // Should still be true during fetch
+      expect(state.isError).toBe(false);
+
+      // Wait for error to occur
+      try {
+        await errorRefetchPromise;
+      } catch (err) {
+        // Expected to throw
+      }
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Check state after error
+      state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('error');
+      expect(state.isSuccess).toBe(false); // Should be false after error
+      expect(state.isError).toBe(true); // Should be true after error
+      expect(state.error).toBe(errorData);
+      expect(state.data).toEqual(refetchData); // Should still have previous data
+
+      // Test recovery - successful fetch after error
+      const recoveryData = { id: 3, data: 'recovery-success' };
+      mockFetcher.mockResolvedValue(recoveryData);
+
+      // Refetch that will succeed - isSuccess should become true again
+      const recoveryPromise = state.refetch();
+
+      // Wait for recovery to complete
+      await recoveryPromise;
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Check state after recovery
+      state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('success');
+      expect(state.isSuccess).toBe(true); // Should be true again after successful recovery
+      expect(state.isError).toBe(false); // Should be false after successful recovery
+      expect(state.data).toEqual(recoveryData); // Should have new data
+    });
+
+    test('should handle isSuccess=false on first fetch with no data', async () => {
+      const key = ['test-key'];
+      const errorData = new Error('First fetch failed');
+
+      // Start with failing fetcher
+      mockFetcher.mockRejectedValue(errorData);
+
+      // Register fetcher
+      queryManager.registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false
+      });
+
+      // First fetch that will fail
+      try {
+        await queryManager.fetchQuery(key);
+      } catch (err) {
+        // Expected to throw
+      }
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Check state after first fetch error
+      const state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('error');
+      expect(state.isSuccess).toBe(false); // Should be false on first fetch error
+      expect(state.isError).toBe(true); // Should be true on first fetch error
+      expect(state.data).toBeUndefined(); // Should have no data
+      expect(state.error).toBe(errorData);
+    });
+
+    test('should handle isSuccess=true when data is set manually', () => {
+      const key = ['test-key'];
+      const testData = { id: 1, data: 'manual-data' };
+
+      // Set data manually
+      queryManager.setQueryData(key, testData);
+
+      // Check state after manual data set
+      const state = queryManager.getQueryState(key, { enabled: false });
+      expect(state.status).toBe('success');
+      expect(state.isSuccess).toBe(true); // Should be true when data is set manually
+      expect(state.isError).toBe(false); // Should be false when data is set manually
+      expect(state.data).toEqual(testData);
     });
   });
 

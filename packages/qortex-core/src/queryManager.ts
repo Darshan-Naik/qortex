@@ -2,37 +2,14 @@ import { THROTTLE_TIME } from "./constants";
 import {
   QueryKey,
   Fetcher,
-  EqualityFn,
   QueryOptions,
   QueryState,
-  QueryStatus,
   InferFetcherResult,
   DefaultConfig,
 } from "./types";
-import { serializeKey, createDefaultState, shallowEqual } from "./utils";
+import type { QueryStateInternal } from "./internal-types";
+import { serializeKey, createDefaultState, shallowEqual, createPublicState } from "./utils";
 
-/**
- * Internal query state that tracks all aspects of a query's lifecycle
- * Improved with better type safety and generic constraints
- */
-type QueryStateInternal<T = any> = {
-  data?: T;
-  error?: unknown;
-  status: QueryStatus;
-  updatedAt?: number;
-  staleTime: number;
-  isInvalidated: boolean;
-  fetcher?: Fetcher<T> | null;
-  equalityFn: EqualityFn<T>;
-  placeholderData?: T;
-  usePreviousDataOnError?: boolean;
-  usePlaceholderOnError?: boolean;
-  refetchOnSubscribe: "always" | "stale" | false;
-  enabled: boolean;
-  lastFetchTime?: number;
-  fetchPromise?: Promise<T>;
-  refetch?: () => Promise<T>;
-};
 
 /**
  * Core query manager that handles caching, fetching, and state management
@@ -40,7 +17,7 @@ type QueryStateInternal<T = any> = {
  */
 export class QueryManager {
   private cache = new Map<string, QueryStateInternal>();
-  private subs = new Map<string, Set<() => void>>();
+  private subs = new Map<string, Set<(state: QueryState) => void>>();
   private lastReturnedState = new Map<string, any>();
   private defaultConfig: DefaultConfig = {};
   private throttleTime: number = THROTTLE_TIME;
@@ -83,10 +60,16 @@ export class QueryManager {
    * Notifies all subscribers of a query state change
    */
   private emit(key: QueryKey, state: QueryStateInternal) {
-    this.cache.set(serializeKey(key), state);
-    const set = this.subs.get(serializeKey(key));
+    const stateKey = serializeKey(key);
+    this.cache.set(stateKey, state);
+    const set = this.subs.get(stateKey);
     if (!set) return;
-    for (const cb of Array.from(set)) cb();
+
+    // Create public QueryState object for callbacks
+    const publicState = createPublicState(state);
+
+    // Call all callbacks with the new state
+    for (const cb of Array.from(set)) cb(publicState);
   }
 
 
@@ -134,9 +117,13 @@ export class QueryManager {
       state.data = result;
       state.status = "success";
       state.updatedAt = Date.now();
+      state.isError = false;
+      state.isSuccess = true;
     }).catch((error: unknown) => {
       state.error = error;
       state.status = "error";
+      state.isError = true;
+      state.isSuccess = false;
     }).finally(() => {
       state.fetchPromise = undefined;
       this.emit(key, state);
@@ -158,6 +145,8 @@ export class QueryManager {
     state.error = undefined;
     state.status = "success";
     state.isInvalidated = false;
+    state.isError = false;
+    state.isSuccess = true;
     this.emit(key, state);
   }
 
@@ -165,6 +154,8 @@ export class QueryManager {
    * Gets query data
    * Handles mount logic to potentially start fetching
    */
+  getQueryData<T = any>(key: QueryKey, opts?: QueryOptions<T>): T | undefined;
+  getQueryData<F extends Fetcher>(key: QueryKey, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): InferFetcherResult<F> | undefined;
   getQueryData<T = any>(key: QueryKey, opts?: QueryOptions<T>): T | undefined {
     const state = this.ensureState(key, opts);
     this.handleMountLogic(key, state);
@@ -176,50 +167,14 @@ export class QueryManager {
    * Handles placeholder data and error states appropriately
    * Handles mount logic to potentially start fetching
    */
+  getQueryState<T = unknown>(key: QueryKey, opts?: QueryOptions<T>): QueryState<T>;
+  getQueryState<F extends Fetcher>(key: QueryKey, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): QueryState<InferFetcherResult<F>>;
   getQueryState<T = unknown>(key: QueryKey, opts?: QueryOptions<T>): QueryState<T> {
     let state = this.ensureState(key, opts);
-    const now = Date.now();
-    const isStale = state.updatedAt == null || (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
-
-    let returnedData = state.data;
-    let isPlaceholderData = false;
-    const status = state.status;
-
-    switch (status) {
-      case "error":
-        if (state.usePlaceholderOnError && state.placeholderData !== undefined) {
-          returnedData = state.placeholderData;
-          isPlaceholderData = true;
-        }
-        break;
-      case "fetching":
-        if (!state.data && state.placeholderData) {
-          returnedData = state.placeholderData;
-          isPlaceholderData = true;
-        }
-        break;
-      case "success":
-      case "idle":
-        returnedData = state.data ?? state.placeholderData;
-        isPlaceholderData = state.data ? false : Boolean(state.placeholderData);
-        break;
-    }
     this.handleMountLogic(key, state);
 
-    // Check if we need to return a new object (only when state actually changes)
-    const currentState = {
-      data: returnedData,
-      error: state.error,
-      status: state.status,
-      updatedAt: state.updatedAt,
-      isStale,
-      isPlaceholderData,
-      isLoading: state.status === "fetching" && !state.updatedAt, // true only for first fetch
-      isFetching: state.status === "fetching",
-      isError: state.status === "error",
-      isSuccess: state.status === "success",
-      refetch: state.refetch,
-    };
+    // Create public state using the shared utility function
+    const currentState = createPublicState(state);
 
     // Store the last returned state to detect changes
     const stateKey = serializeKey(key);
@@ -231,7 +186,7 @@ export class QueryManager {
       if (!this.lastReturnedState) this.lastReturnedState = new Map();
       this.lastReturnedState.set(stateKey, currentState);
 
-      return currentState as QueryState<T>;
+      return currentState;
     }
 
     // Return the same object reference if nothing changed
@@ -253,7 +208,10 @@ export class QueryManager {
    * Subscribes to query state changes with automatic subscription management
    * Handles mount logic to potentially start fetching
    */
-  subscribeQuery<T = any>(key: QueryKey, cb: () => void, opts?: QueryOptions<T>): () => void {
+  subscribeQuery(key: QueryKey, cb: (state: QueryState<any>) => void): () => void;
+  subscribeQuery<F extends Fetcher>(key: QueryKey, cb: (state: QueryState<InferFetcherResult<F>>) => void, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): () => void;
+  subscribeQuery<T = any>(key: QueryKey, cb: (state: QueryState<T>) => void, opts?: QueryOptions<T>): () => void;
+  subscribeQuery<T = any>(key: QueryKey, cb: (state: QueryState<T>) => void, opts?: QueryOptions<T>): () => void {
     const sk = serializeKey(key);
     const state = this.ensureState(key, opts);
 

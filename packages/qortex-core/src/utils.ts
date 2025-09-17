@@ -1,6 +1,7 @@
 import type {
-  QueryKey, QueryOptions,
+  QueryKey, QueryOptions, QueryState,
 } from "./types";
+import type { QueryStateInternal } from "./internal-types";
 import { DEFAULT_STALE_TIME } from "./constants";
 
 /**
@@ -57,5 +58,53 @@ export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<
     refetchOnSubscribe: opts?.refetchOnSubscribe ?? "stale" as const,
     enabled: opts?.enabled === false ? false : true,
     refetch: refetch || (() => Promise.resolve(undefined)),
+    isSuccess: false,
+    isError: false,
+  };
+}
+
+/**
+ * Creates a public QueryState object from internal state
+ * Handles placeholder data, stale state logic, and computed properties
+ */
+export function createPublicState<T = any>(state: QueryStateInternal<T>): QueryState<T> {
+  const now = Date.now();
+  const isStale = state.updatedAt == null || (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
+
+  let returnedData = state.data;
+  let isPlaceholderData = false;
+
+  switch (state.status) {
+    case "error":
+      if (state.usePlaceholderOnError && state.placeholderData !== undefined) {
+        returnedData = state.placeholderData;
+        isPlaceholderData = true;
+      }
+      break;
+    case "fetching":
+      if (!state.data && state.placeholderData) {
+        returnedData = state.placeholderData;
+        isPlaceholderData = true;
+      }
+      break;
+    case "success":
+    case "idle":
+      returnedData = state.data ?? state.placeholderData;
+      isPlaceholderData = state.data ? false : Boolean(state.placeholderData);
+      break;
+  }
+
+  return {
+    data: returnedData,
+    error: state.error as Error | undefined,
+    status: state.status,
+    updatedAt: state.updatedAt,
+    isStale,
+    isPlaceholderData,
+    isLoading: state.status === "fetching" && !state.updatedAt,
+    isFetching: state.status === "fetching",
+    isError: state.isError,
+    isSuccess: state.isSuccess,
+    refetch: state.refetch!,
   };
 }

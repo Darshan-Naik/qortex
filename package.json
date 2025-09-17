@@ -55,8 +55,5 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:packages": "pnpm -w -r --filter './packages/*' run test"
-  },
-  "overrides": {  
-    "qortex-core": "workspace:*"
   }
 }

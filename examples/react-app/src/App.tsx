@@ -7,7 +7,7 @@ import "./App.css";
 
 export default function App() {
 
-  const { data, isLoading, error } = useQuery<any>(["todos"], {
+  const { data, isLoading, error } = useQuery(["todos"], {
     staleTime: 200,
     fetcher: async () => {
       console.log("fetcher called");

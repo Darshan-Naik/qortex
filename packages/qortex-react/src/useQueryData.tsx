@@ -1,5 +1,5 @@
-import { useSyncExternalStore, useCallback, useRef } from "react";
-import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager, serializeKey, InferFetcherReturnType } from "qortex-core";
+import { useSyncExternalStore, useCallback } from "react";
+import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, queryManager, serializeKey } from "qortex-core";
 
 /**
  * useQueryData hook for React integration with qortex
@@ -10,8 +10,8 @@ import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryM
 // Overload for when fetcher is provided - automatically infers return type
 export function useQueryData<F extends Fetcher>(
   key: QueryKey,
-  opts: QueryOptions<InferFetcherReturnType<F>> & { fetcher: F }
-): InferFetcherReturnType<F> | undefined;
+  opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }
+): InferFetcherResult<F> | undefined;
 
 // Overload for explicit type without fetcher
 export function useQueryData<T = any>(
