@@ -11,6 +11,7 @@ export function BundleSize() {
                     <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
                         Both packages are incredibly lightweight and optimized for performance.
                     </p>
+                    <p className="font-semibold text-primary-600 text-lg ">Both packages are &lt; 2KB gzipped!</p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -91,7 +92,14 @@ export function BundleSize() {
                     </div>
                 </div>
 
-                <div className="mt-8 text-center">
+                <div className="mt-8 text-center space-y-4">
+
+                    <div className="text-xs text-gray-500 max-w-md mx-auto italic">
+                        <p>
+                            <span className="font-medium">Note:</span> Sometimes BundlePhobia can show incorrect data due to caching issues.
+                            Visit the site directly to cross-check and confirm the actual bundle sizes.
+                        </p>
+                    </div>
                     <div className="inline-flex items-center rounded-full glass-effect px-4 py-2 text-sm font-medium text-gray-700">
                         <Zap className="h-4 w-4 mr-2 text-primary-600" />
                         Both packages are tree-shakeable and optimized for minimal bundle impact
