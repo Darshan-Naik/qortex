@@ -4,6 +4,7 @@
 
 [![npm version](https://badge.fury.io/js/qortex-react.svg)](https://badge.fury.io/js/qortex-react)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/qortex-react)](https://bundlephobia.com/package/qortex-react)
+[![Bundle Size](https://img.shields.io/badge/gzipped-0.4KB-brightgreen)](https://bundlephobia.com/package/qortex-react)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 
@@ -125,6 +126,8 @@ const {
   data, 
   isLoading, 
   isFetching, 
+  isSuccess,
+  isError,
   error, 
   refetch,
   status,
@@ -281,18 +284,20 @@ queryManager.registerFetcher<User[]>(["users"], {
 });
 
 function UsersList() {
-  const { data: users, isLoading, error } = useQuery<User[]>(["users"]);
+  const { data: users, isLoading, isSuccess, isError, error } = useQuery<User[]>(["users"]);
   
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
-  return (
-    <ul>
-      {users?.map(user => (
-        <li key={user.id}>{user.name} - {user.email}</li>
-      ))}
-    </ul>
-  );
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (isSuccess && users) {
+    return (
+      <ul>
+        {users.map(user => (
+          <li key={user.id}>{user.name} - {user.email}</li>
+        ))}
+      </ul>
+    );
+  }
+  return <div>No users found</div>;
 }
 
 // Or use useQueryData for simpler typed access

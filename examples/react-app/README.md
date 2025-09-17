@@ -111,7 +111,7 @@ queryManager.registerFetcher(["users"], {
 ### React Integration
 ```typescript
 // Simple hook usage with full TypeScript support
-const { data: users, isLoading, error, refetch } = useQuery(["users"]);
+const { data: users, isLoading, isSuccess, isError, error, refetch } = useQuery(["users"]);
 ```
 
 ## 📱 Demo Sections

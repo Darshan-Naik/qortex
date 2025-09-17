@@ -4,6 +4,7 @@
 
 [![npm version](https://badge.fury.io/js/qortex-core.svg)](https://badge.fury.io/js/qortex-core)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/qortex-core)](https://bundlephobia.com/package/qortex-core)
+[![Bundle Size](https://img.shields.io/badge/gzipped-2.1KB-brightgreen)](https://bundlephobia.com/package/qortex-core)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
 ## ✨ What makes this special?
@@ -92,6 +93,7 @@ function useAuth() {
   
   queryManager.subscribeQuery(["auth", "user"], (state) => {
     user.value = state.data;
+    console.log("Auth state:", state.isSuccess, state.isLoading);
   });
   
   return { user, isAuthenticated };
@@ -159,12 +161,23 @@ const { data, isLoading, error, refetch } = useQuery(["todos"]);
 const todos = useQueryData(["todos"]);
 ```
 
-### `queryManager.subscribeQuery(key, callback)`
+### `queryManager.subscribeQuery(key, callback, options?)`
+
+Subscribe to query state changes with flexible callback signatures.
 
 ```ts
+// Callback receives the current state
 const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
   console.log("State changed:", state);
+  console.log("Data:", state.data);
+  console.log("Loading:", state.isLoading);
+  console.log("Success:", state.isSuccess);
 });
+
+// With fetcher for automatic type inference
+const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
+  console.log("Todos:", state.data); // Automatically typed
+}, { fetcher: fetchTodos });
 ```
 
 ### `queryManager.setDefaultConfig(config)`

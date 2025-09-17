@@ -22,7 +22,7 @@ Tired of complex data fetching libraries that make simple tasks complicated? **q
 
 | Package | Description | Size |
 |---------|-------------|------|
-| **`qortex-core`** | Core runtime with query management | ~3KB gzipped |
+| **`qortex-core`** | Core runtime with query management | ~2KB gzipped |
 | **`qortex-react`** | React hooks and components | ~2KB gzipped |
 
 
@@ -363,14 +363,22 @@ queryManager.invalidateQuery(["todos"]);
 ```
 
 
-#### `queryManager.subscribeQuery(key, callback)`
+#### `queryManager.subscribeQuery(key, callback, options?)`
 
-Subscribe to query state changes.
+Subscribe to query state changes with flexible callback signatures.
 
 ```ts
+// Callback receives the current state
 const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
   console.log("State changed:", state);
+  console.log("Data:", state.data);
+  console.log("Loading:", state.isLoading);
 });
+
+// With fetcher for automatic type inference
+const unsubscribe = queryManager.subscribeQuery(["todos"], (state) => {
+  console.log("Todos:", state.data); // Automatically typed
+}, { fetcher: fetchTodos });
 ```
 
 #### `queryManager.setDefaultConfig(config)`
@@ -429,6 +437,8 @@ const {
 - `data` - Current query data (or placeholder data)
 - `isLoading` - True if no cached data and currently fetching
 - `isFetching` - True if currently fetching (including background refetches)
+- `isSuccess` - True if data exists and no error occurred
+- `isError` - True if an error occurred during fetch
 - `error` - Current error state
 - `refetch` - Function to manually trigger refetch
 - `status` - Current status: "idle" | "fetching" | "success" | "error"
