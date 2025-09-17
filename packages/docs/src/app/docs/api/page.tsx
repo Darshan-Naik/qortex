@@ -1,0 +1,489 @@
+import { Metadata } from 'next'
+import { Code, Zap, Settings, Database } from 'lucide-react'
+
+export const metadata: Metadata = {
+    title: 'API Reference',
+    description: 'Complete API reference for qortex-core and qortex-react. All functions, hooks, and configuration options.',
+}
+
+const apiSections = [
+    {
+        title: 'Core API',
+        description: 'Framework-agnostic query management functions',
+        icon: Database,
+        items: [
+            {
+                name: 'queryManager.registerFetcher(key, options)',
+                description: 'Register a data fetcher function for a specific query key',
+                parameters: [
+                    { name: 'key', type: 'string | string[]', description: 'Query key (string or array)' },
+                    { name: 'options', type: 'FetcherOptions<T>', description: 'Fetcher configuration options' }
+                ],
+                example: `queryManager.registerFetcher(["users"], {
+  fetcher: async () => {
+    const response = await fetch("/api/users");
+    return response.json();
+  },
+  staleTime: 5 * 60 * 1000,
+  placeholderData: []
+});`
+            },
+            {
+                name: 'queryManager.setQueryData(key, data)',
+                description: 'Manually update query data',
+                parameters: [
+                    { name: 'key', type: 'string | string[]', description: 'Query key' },
+                    { name: 'data', type: 'T | (oldData: T) => T', description: 'New data or updater function' }
+                ],
+                example: `// Direct update
+queryManager.setQueryData(["todos"], newTodos);
+
+// Functional update
+queryManager.setQueryData(["todos"], (oldData) => [
+  ...(oldData || []),
+  newTodo
+]);`
+            },
+            {
+                name: 'queryManager.fetchQuery(key, options?)',
+                description: 'Execute a fetch operation with proper error handling and state management',
+                parameters: [
+                    { name: 'key', type: 'string | string[]', description: 'Query key' },
+                    { name: 'options', type: 'QueryOptions<T>', description: 'Optional query configuration' }
+                ],
+                example: `// Fetch data manually
+const userData = await queryManager.fetchQuery(["user", userId]);
+
+// With options
+const userData = await queryManager.fetchQuery(["user", userId], {
+  staleTime: 10 * 60 * 1000
+});`
+            },
+            {
+                name: 'queryManager.getQueryData(key, options?)',
+                description: 'Get current query data without subscribing to updates',
+                parameters: [
+                    { name: 'key', type: 'string | string[]', description: 'Query key' },
+                    { name: 'options', type: 'QueryOptions<T>', description: 'Optional query configuration' }
+                ],
+                example: `const user = queryManager.getQueryData(["user", userId]);
+const isAuthenticated = queryManager.getQueryData(["auth", "isAuthenticated"]);`
+            },
+            {
+                name: 'queryManager.getQueryState(key, options?)',
+                description: 'Get comprehensive query state including computed flags',
+                parameters: [
+                    { name: 'key', type: 'string | string[]', description: 'Query key' },
+                    { name: 'options', type: 'QueryOptions<T>', description: 'Optional query configuration' }
+                ],
+                example: `const state = queryManager.getQueryState(["users"]);
+console.log({
+  data: state.data,
+  isLoading: state.isLoading,
+  isFetching: state.isFetching,
+  isError: state.isError,
+  isStale: state.isStale
+});`
+            },
+            {
+                name: 'queryManager.invalidateQuery(key)',
+                description: 'Mark a query as invalidated, triggering refetch',
+                parameters: [
+                    { name: 'key', type: 'string | string[]', description: 'Query key to invalidate' }
+                ],
+                example: `// Invalidate and refetch
+queryManager.invalidateQuery(["users"]);
+
+// Invalidate specific user
+queryManager.invalidateQuery(["user", userId]);`
+            },
+            {
+                name: 'queryManager.subscribeQuery(key, callback, options?)',
+                description: 'Subscribe to query state changes with automatic subscription management',
+                parameters: [
+                    { name: 'key', type: 'string | string[]', description: 'Query key' },
+                    { name: 'callback', type: '() => void', description: 'Callback function' },
+                    { name: 'options', type: 'QueryOptions<T>', description: 'Optional query configuration' }
+                ],
+                example: `const unsubscribe = queryManager.subscribeQuery(
+  ["users"],
+  () => {
+    console.log("Query state changed");
+  }
+);
+
+// Cleanup subscription
+unsubscribe();`
+            },
+            {
+                name: 'queryManager.setDefaultConfig(config)',
+                description: 'Set global default configuration for all queries',
+                parameters: [
+                    { name: 'config', type: 'DefaultConfig', description: 'Default configuration options' }
+                ],
+                example: `queryManager.setDefaultConfig({
+  staleTime: 5 * 60 * 1000,
+  refetchOnSubscribe: "stale",
+  throttleTime: 100,
+  usePreviousDataOnError: true
+});`
+            }
+        ]
+    },
+    {
+        title: 'React Hooks',
+        description: 'React-specific hooks for data fetching',
+        icon: Zap,
+        items: [
+            {
+                name: 'useQuery(key, options?)',
+                description: 'React hook for query data with full state management',
+                parameters: [
+                    { name: 'key', type: 'string | string[]', description: 'Query key' },
+                    { name: 'options', type: 'UseQueryOptions<T>', description: 'Optional query options' }
+                ],
+                returns: 'UseQueryResult<T>',
+                example: `const { data, isLoading, error, refetch } = useQuery(["todos"], {
+  refetchOnSubscribe: "stale",
+  enabled: true,
+  staleTime: 10000
+});`
+            },
+            {
+                name: 'useQueryData(key, options?)',
+                description: 'React hook for simple data access without loading states',
+                parameters: [
+                    { name: 'key', type: 'string | string[]', description: 'Query key' },
+                    { name: 'options', type: 'UseQueryDataOptions<T>', description: 'Optional query options' }
+                ],
+                returns: 'T | undefined',
+                example: `const todos = useQueryData(["todos"]);
+const user = useQueryData(["user", userId]);`
+            }
+        ]
+    },
+    {
+        title: 'TypeScript Types',
+        description: 'Type definitions and interfaces',
+        icon: Code,
+        items: [
+            {
+                name: 'QueryKey',
+                description: 'Type for query keys - can be string or array of strings/numbers',
+                example: `type QueryKey = string | readonly (string | number)[];
+
+// Examples:
+const key1: QueryKey = "users";
+const key2: QueryKey = ["user", 123];
+const key3: QueryKey = ["posts", "published", 2024];`
+            },
+            {
+                name: 'Fetcher<T>',
+                description: 'Type for data fetching functions',
+                example: `type Fetcher<T = any> = () => Promise<T> | T;
+
+// Examples:
+const userFetcher: Fetcher<User[]> = async () => {
+  const response = await fetch("/api/users");
+  return response.json();
+};
+
+const syncFetcher: Fetcher<string> = () => "Hello World";`
+            },
+            {
+                name: 'QueryOptions<T>',
+                description: 'Configuration options for queries',
+                example: `type QueryOptions<T = any> = {
+  enabled?: boolean;
+  refetchOnSubscribe?: "always" | "stale" | false;
+  fetcher?: Fetcher<T>;
+  equalityFn?: EqualityFn<T>;
+  staleTime?: number;
+  signal?: AbortSignal;
+  placeholderData?: T;
+  usePreviousDataOnError?: boolean;
+  usePlaceholderOnError?: boolean;
+};`
+            },
+            {
+                name: 'QueryState<T>',
+                description: 'Return type for query state',
+                example: `type QueryState<T = any, E = Error> = {
+  data?: T;
+  error?: E;
+  status: QueryStatus;
+  updatedAt?: number;
+  isStale: boolean;
+  isPlaceholderData: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
+  isError: boolean;
+  isSuccess: boolean;
+  refetch: () => Promise<T>;
+};`
+            },
+            {
+                name: 'QueryStatus',
+                description: 'Possible query status values',
+                example: `type QueryStatus = "idle" | "fetching" | "success" | "error";
+
+// Usage in components:
+const { status } = useQuery(["users"]);
+if (status === "fetching") return <Spinner />;
+if (status === "error") return <ErrorMessage />;
+if (status === "success") return <DataComponent />;`
+            },
+            {
+                name: 'EqualityFn<T>',
+                description: 'Function type for data equality comparison',
+                example: `type EqualityFn<T = any> = (a: T | undefined, b: T | undefined) => boolean;
+
+// Example custom equality function:
+const arrayEquality: EqualityFn<User[]> = (a, b) => {
+  return a?.length === b?.length && 
+         a?.every((user, index) => user.id === b?.[index]?.id);
+};`
+            },
+            {
+                name: 'DefaultConfig',
+                description: 'Global configuration options',
+                example: `type DefaultConfig = {
+  enabled?: boolean;
+  refetchOnSubscribe?: "always" | "stale" | false;
+  staleTime?: number;
+  usePreviousDataOnError?: boolean;
+  usePlaceholderOnError?: boolean;
+  equalityFn?: EqualityFn<any>;
+  throttleTime?: number;
+};`
+            }
+        ]
+    },
+    {
+        title: 'Utility Functions',
+        description: 'Helper functions and utilities',
+        icon: Settings,
+        items: [
+            {
+                name: 'serializeKey(key)',
+                description: 'Convert query key to string for internal use',
+                parameters: [
+                    { name: 'key', type: 'QueryKey', description: 'Query key to serialize' }
+                ],
+                example: `import { serializeKey } from "qortex-core";
+
+const key1 = serializeKey("users"); // "users"
+const key2 = serializeKey(["user", 123]); // "user,123"
+const key3 = serializeKey(["posts", "published"]); // "posts,published"`
+            }
+        ]
+    },
+    {
+        title: 'Configuration',
+        description: 'Configuration options and types',
+        icon: Settings,
+        items: [
+            {
+                name: 'FetcherOptions<T>',
+                description: 'Options for registering a fetcher',
+                properties: [
+                    { name: 'fetcher', type: 'Fetcher<T>', description: 'Function that fetches data' },
+                    { name: 'staleTime?', type: 'number', description: 'Time before data is considered stale (ms)' },
+                    { name: 'placeholderData?', type: 'T', description: 'Data to show while loading' },
+                    { name: 'equalityFn?', type: '(a: T, b: T) => boolean', description: 'Function to compare data equality' }
+                ]
+            },
+            {
+                name: 'UseQueryOptions<T>',
+                description: 'Options for useQuery hook',
+                properties: [
+                    { name: 'refetchOnSubscribe?', type: '"stale" | "always" | false', description: 'When to refetch on subscription' },
+                    { name: 'enabled?', type: 'boolean', description: 'Whether the query is enabled' },
+                    { name: 'staleTime?', type: 'number', description: 'Time before data is considered stale' },
+                    { name: 'placeholderData?', type: 'T', description: 'Data to show while loading' }
+                ]
+            },
+            {
+                name: 'DefaultConfig',
+                description: 'Global default configuration',
+                properties: [
+                    { name: 'staleTime?', type: 'number', description: 'Default stale time for all queries' },
+                    { name: 'refetchOnSubscribe?', type: '"stale" | "always" | false', description: 'Default refetch behavior' },
+                    { name: 'throttleTime?', type: 'number', description: 'Default throttle time for duplicate requests' },
+                    { name: 'usePreviousDataOnError?', type: 'boolean', description: 'Keep previous data on error' }
+                ]
+            }
+        ]
+    }
+]
+
+export default function APIPage() {
+    return (
+        <div className="bg-white">
+            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16">
+                <div className="mb-12">
+                    <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                        <span className="gradient-text">API Reference</span>
+                    </h1>
+                    <p className="mt-4 text-xl text-gray-600">
+                        Complete API reference for qortex-core and qortex-react. All functions, hooks, and configuration options.
+                    </p>
+                </div>
+
+                {apiSections.map((section) => (
+                    <div key={section.title} className="mb-16">
+                        <div className="flex items-center mb-8">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 text-primary-600">
+                                <section.icon className="h-6 w-6" />
+                            </div>
+                            <div className="ml-4">
+                                <h2 className="text-2xl font-bold text-gray-900">{section.title}</h2>
+                                <p className="text-gray-600">{section.description}</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-8">
+                            {section.items.map((item) => (
+                                <div key={item.name} className="card">
+                                    <div className="mb-4">
+                                        <h3 className="text-lg font-semibold text-gray-900 font-mono">
+                                            {item.name}
+                                        </h3>
+                                        <p className="mt-2 text-gray-600">{item.description}</p>
+                                    </div>
+
+                                    {'parameters' in item && item.parameters && (
+                                        <div className="mb-4">
+                                            <h4 className="text-sm font-medium text-gray-900 mb-2">Parameters:</h4>
+                                            <div className="space-y-2">
+                                                {item.parameters.map((param) => (
+                                                    <div key={param.name} className="flex items-start">
+                                                        <code className="text-sm bg-gray-100 px-2 py-1 rounded font-mono text-primary-600">
+                                                            {param.name}
+                                                        </code>
+                                                        <span className="text-sm text-gray-500 ml-2">({param.type})</span>
+                                                        <span className="text-sm text-gray-600 ml-2">{param.description}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {'returns' in item && item.returns && (
+                                        <div className="mb-4">
+                                            <h4 className="text-sm font-medium text-gray-900 mb-2">Returns:</h4>
+                                            <code className="text-sm bg-gray-100 px-2 py-1 rounded font-mono text-primary-600">
+                                                {item.returns}
+                                            </code>
+                                        </div>
+                                    )}
+
+                                    {'properties' in item && item.properties && (
+                                        <div className="mb-4">
+                                            <h4 className="text-sm font-medium text-gray-900 mb-2">Properties:</h4>
+                                            <div className="space-y-2">
+                                                {item.properties.map((prop) => (
+                                                    <div key={prop.name} className="flex items-start">
+                                                        <code className="text-sm bg-gray-100 px-2 py-1 rounded font-mono text-primary-600">
+                                                            {prop.name}
+                                                        </code>
+                                                        <span className="text-sm text-gray-500 ml-2">({prop.type})</span>
+                                                        <span className="text-sm text-gray-600 ml-2">{prop.description}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {'example' in item && item.example && (
+                                        <div>
+                                            <h4 className="text-sm font-medium text-gray-900 mb-2">Example:</h4>
+                                            <pre className="code-block">
+                                                <code>{item.example}</code>
+                                            </pre>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+
+                {/* TypeScript Types */}
+                <div className="mb-16">
+                    <div className="flex items-center mb-8">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent-100 text-accent-600">
+                            <Code className="h-6 w-6" />
+                        </div>
+                        <div className="ml-4">
+                            <h2 className="text-2xl font-bold text-gray-900">TypeScript Types</h2>
+                            <p className="text-gray-600">Type definitions for better development experience</p>
+                        </div>
+                    </div>
+
+                    <div className="card">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Core Types</h3>
+                        <pre className="code-block">
+                            <code>{`// Core types
+type Fetcher<T> = (key: string | string[]) => Promise<T>;
+type EqualityFn<T> = (a: T, b: T) => boolean;
+
+// Query result types
+interface UseQueryResult<T> {
+  data: T | undefined;
+  isLoading: boolean;
+  isFetching: boolean;
+  error: Error | null;
+  refetch: () => Promise<void>;
+  status: 'idle' | 'fetching' | 'success' | 'error';
+  isStale: boolean;
+  updatedAt: number | null;
+  isPlaceholderData: boolean;
+}
+
+// Configuration types
+interface FetcherOptions<T> {
+  fetcher: Fetcher<T>;
+  staleTime?: number;
+  placeholderData?: T;
+  equalityFn?: EqualityFn<T>;
+}
+
+interface UseQueryOptions<T> {
+  refetchOnSubscribe?: 'stale' | 'always' | false;
+  enabled?: boolean;
+  fetcher?: Fetcher<T>;
+  staleTime?: number;
+  placeholderData?: T;
+  usePreviousDataOnError?: boolean;
+  usePlaceholderOnError?: boolean;
+}`}</code>
+                        </pre>
+                    </div>
+                </div>
+
+                {/* Next Steps */}
+                <div className="bg-primary-50 rounded-lg p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Need More Help?</h2>
+                    <p className="text-gray-600 mb-4">
+                        Check out our guides and examples to learn more about using qortex effectively.
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                        <a
+                            href="/docs/basic-usage"
+                            className="btn-primary"
+                        >
+                            Basic Usage Guide
+                        </a>
+                        <a
+                            href="/docs/configuration"
+                            className="btn-secondary"
+                        >
+                            Configuration Guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
