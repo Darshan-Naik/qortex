@@ -16,6 +16,15 @@ export const metadata: Metadata = {
   authors: [{ name: 'Darshan Naik' }],
   creator: 'Darshan Naik',
   publisher: 'Darshan Naik',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon.svg', type: 'image/svg+xml' }
+    ],
+    apple: [
+      { url: '/apple-touch-icon.svg', type: 'image/svg+xml' }
+    ]
+  },
   formatDetection: {
     email: false,
     address: false,
