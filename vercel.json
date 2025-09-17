@@ -1,6 +1,6 @@
 {
-  "buildCommand": "pnpm --filter qortex-docs build",
+  "buildCommand": "cd packages/docs && pnpm build",
   "framework": "nextjs",
   "installCommand": "pnpm install",
-  "devCommand": "pnpm --filter qortex-docs dev"
+  "devCommand": "cd packages/docs && pnpm dev"
 }
