@@ -3,6 +3,12 @@ module.exports = {
   testEnvironment: 'node',
   testTimeout: 15000,
   roots: ['<rootDir>/packages'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    '/build/',
+    '/coverage/'
+  ],
   testMatch: [
     '**/__tests__/**/*.test.js',
     '**/__tests__/**/*.test.jsx',
@@ -30,6 +36,12 @@ module.exports = {
       displayName: 'qortex-core',
       testEnvironment: 'node',
       roots: ['<rootDir>/packages/qortex-core'],
+      testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+        '/coverage/'
+      ],
       testMatch: [
         '**/__tests__/**/*.test.js',
         '**/__tests__/**/*.test.ts',
@@ -53,6 +65,12 @@ module.exports = {
       displayName: 'qortex-react',
       testEnvironment: 'jsdom',
       roots: ['<rootDir>/packages/qortex-react'],
+      testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+        '/coverage/'
+      ],
       testMatch: [
         '**/__tests__/**/*.test.js',
         '**/__tests__/**/*.test.jsx',
