@@ -58,6 +58,7 @@ function createPublishablePackageJson(pkg) {
     main: "index.js",
     module: "index.mjs",
     types: "index.d.ts",
+    sideEffects: srcPackageJson.sideEffects || false,
     exports: {
       ".": {
         "types": "./index.d.ts",
