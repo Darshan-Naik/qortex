@@ -120,7 +120,7 @@ const optimizationStrategies = [
 const performanceMetrics = [
     {
         metric: 'Bundle Size',
-        value: '< 8KB',
+        value: '< 2KB',
         description: 'Total gzipped size including qortex-core and qortex-react'
     },
     {

@@ -37,19 +37,31 @@ export function BundleSize() {
                             </a>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4 text-center">
-                            <div className="bg-gray-50 rounded-lg p-3">
-                                <div className="text-2xl font-bold text-gray-900">4.5 kB</div>
-                                <div className="text-xs text-gray-600">Minified</div>
-                            </div>
-                            <div className="bg-gray-50 rounded-lg p-3">
-                                <div className="text-2xl font-bold text-gray-900">1.8 kB</div>
-                                <div className="text-xs text-gray-600">Gzipped</div>
-                            </div>
-                            <div className="bg-gray-50 rounded-lg p-3">
-                                <div className="text-2xl font-bold text-gray-900">14.4 kB</div>
-                                <div className="text-xs text-gray-600">Unpacked</div>
-                            </div>
+                        <div className="flex flex-wrap gap-3 justify-center">
+                            <a
+                                href="https://bundlephobia.com/package/qortex-react"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:opacity-80 transition-opacity"
+                            >
+                                <img
+                                    src="https://img.shields.io/bundlephobia/minzip/qortex-react"
+                                    alt="qortex-react bundle size"
+                                    className="h-6"
+                                />
+                            </a>
+                            <a
+                                href="https://bundlephobia.com/package/qortex-react"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:opacity-80 transition-opacity"
+                            >
+                                <img
+                                    src="https://img.shields.io/bundlephobia/min/qortex-react"
+                                    alt="qortex-react minified size"
+                                    className="h-6"
+                                />
+                            </a>
                         </div>
                     </div>
 
@@ -75,36 +87,43 @@ export function BundleSize() {
                             </a>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4 text-center">
-                            <div className="bg-gray-50 rounded-lg p-3">
-                                <div className="text-2xl font-bold text-gray-900">6.9 kB</div>
-                                <div className="text-xs text-gray-600">Minified</div>
-                            </div>
-                            <div className="bg-gray-50 rounded-lg p-3">
-                                <div className="text-2xl font-bold text-gray-900">2.8 kB</div>
-                                <div className="text-xs text-gray-600">Gzipped</div>
-                            </div>
-                            <div className="bg-gray-50 rounded-lg p-3">
-                                <div className="text-2xl font-bold text-gray-900">31.1 kB</div>
-                                <div className="text-xs text-gray-600">Unpacked</div>
-                            </div>
+                        <div className="flex flex-wrap gap-3 justify-center">
+                            <a
+                                href="https://bundlephobia.com/package/qortex-core"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:opacity-80 transition-opacity"
+                            >
+                                <img
+                                    src="https://img.shields.io/bundlephobia/minzip/qortex-core"
+                                    alt="qortex-core bundle size"
+                                    className="h-6"
+                                />
+                            </a>
+                            <a
+                                href="https://bundlephobia.com/package/qortex-core"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:opacity-80 transition-opacity"
+                            >
+                                <img
+                                    src="https://img.shields.io/bundlephobia/min/qortex-core"
+                                    alt="qortex-core minified size"
+                                    className="h-6"
+                                />
+                            </a>
                         </div>
                     </div>
                 </div>
 
                 <div className="mt-8 text-center space-y-4">
 
-                    <div className="text-xs text-gray-500 max-w-md mx-auto italic">
-                        <p>
-                            <span className="font-medium">Note:</span> Sometimes BundlePhobia can show incorrect data due to caching issues.
-                            Visit the site directly to cross-check and confirm the actual bundle sizes.
-                        </p>
-                    </div>
                     <div className="inline-flex items-center rounded-full glass-effect px-4 py-2 text-sm font-medium text-gray-700">
                         <Zap className="h-4 w-4 mr-2 text-primary-600" />
                         Both packages are tree-shakeable and optimized for minimal bundle impact
                     </div>
                 </div>
+
             </div>
         </section>
     )

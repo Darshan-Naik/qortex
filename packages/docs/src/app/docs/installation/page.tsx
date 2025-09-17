@@ -109,14 +109,14 @@ const packageInfo = [
     {
         name: 'qortex-react',
         description: 'Complete React data fetching solution (includes qortex-core)',
-        size: '< 8KB total',
+        size: '< 2KB gzipped',
         features: ['useQuery hook', 'useQueryData hook', 'Query management', 'Caching', 'Deduplication', 'Background updates', 'React integration'],
         useCase: 'React applications',
     },
     {
         name: 'qortex-core',
         description: 'Framework-agnostic data fetching library',
-        size: '< 5KB',
+        size: '< 2KB gzipped',
         features: ['Query management', 'Caching', 'Deduplication', 'Background updates', 'TypeScript support', 'Framework agnostic'],
         useCase: 'Vue, Svelte, vanilla JS',
     },

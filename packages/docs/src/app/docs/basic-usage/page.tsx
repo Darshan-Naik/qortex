@@ -23,18 +23,20 @@ queryManager.registerFetcher(["users"], {
 
 // Use in component
 function UsersList() {
-  const { data, isLoading, error } = useQuery(["users"]);
+  const { data, isLoading, isSuccess, isError, error } = useQuery(["users"]);
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
-  return (
-    <ul>
-      {data?.map(user => (
-        <li key={user.id}>{user.name}</li>
-      ))}
-    </ul>
-  );
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (isSuccess && data) {
+    return (
+      <ul>
+        {data.map(user => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    );
+  }
+  return <div>No users found</div>;
 }`,
   },
   {
@@ -52,16 +54,19 @@ queryManager.registerFetcher(["user", "id"], {
 
 // Use with parameters
 function UserProfile({ userId }: { userId: string }) {
-  const { data: user, isLoading } = useQuery(["user", "id", userId]);
+  const { data: user, isLoading, isSuccess, isError, error } = useQuery(["user", "id", userId]);
 
   if (isLoading) return <div>Loading user...</div>;
-
-  return (
-    <div>
-      <h2>{user?.name}</h2>
-      <p>{user?.email}</p>
-    </div>
-  );
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (isSuccess && user) {
+    return (
+      <div>
+        <h2>{user.name}</h2>
+        <p>{user.email}</p>
+      </div>
+    );
+  }
+  return <div>User not found</div>;
 }`,
   },
   {
@@ -69,7 +74,7 @@ function UserProfile({ userId }: { userId: string }) {
     description: 'Proper error handling and fallback data',
     icon: Shield,
     code: `function TodosList() {
-  const { data, isLoading, error, refetch } = useQuery(["todos"], {
+  const { data, isLoading, isSuccess, isError, error, refetch } = useQuery(["todos"], {
     placeholderData: [], // Show empty list while loading
     usePlaceholderOnError: true // Keep placeholder on error
   });
@@ -78,17 +83,19 @@ function UserProfile({ userId }: { userId: string }) {
 
   return (
     <div>
-      {error && (
+      {isError && (
         <div className="error-banner">
-          <p>Error: {error.message}</p>
+          <p>Error: {error?.message}</p>
           <button onClick={() => refetch()}>Retry</button>
         </div>
       )}
-      <ul>
-        {data?.map(todo => (
-          <li key={todo.id}>{todo.title}</li>
-        ))}
-      </ul>
+      {isSuccess && data && (
+        <ul>
+          {data.map(todo => (
+            <li key={todo.id}>{todo.title}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }`,
@@ -107,14 +114,15 @@ queryManager.registerFetcher(["live-data"], {
 });
 
 function LiveData() {
-  const { data, isFetching } = useQuery(["live-data"], {
+  const { data, isFetching, isSuccess, isError, error } = useQuery(["live-data"], {
     refetchOnSubscribe: "always" // Refetch on every subscription
   });
 
   return (
     <div>
       {isFetching && <div className="loading-indicator">Updating...</div>}
-      <div>Live data: {data?.value}</div>
+      {isError && <div className="error">Error: {error?.message}</div>}
+      {isSuccess && data && <div>Live data: {data.value}</div>}
     </div>
   );
 }`,

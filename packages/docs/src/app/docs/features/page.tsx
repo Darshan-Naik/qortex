@@ -26,7 +26,7 @@ const features = [
       'Intelligent request deduplication',
       'Background refetching',
       'Optimistic updates',
-      'Minimal bundle size (< 8KB)'
+      'Minimal bundle size (< 2KB)'
     ]
   },
   {
@@ -89,7 +89,7 @@ const features = [
 const comparisons = [
   {
     feature: 'Bundle Size',
-    qortex: '< 8KB',
+    qortex: '< 2KB',
     reactQuery: '~45KB',
     swr: '~12KB'
   },
@@ -214,7 +214,7 @@ export default function FeaturesPage() {
                 <Zap className="h-6 w-6" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Minimal Bundle</h3>
-              <p className="text-gray-600">Less than 8KB gzipped, making it one of the smallest data fetching libraries available.</p>
+              <p className="text-gray-600">Less than 2KB gzipped, making it one of the smallest data fetching libraries available.</p>
             </div>
             <div className="card text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 text-primary-600 mx-auto mb-4">

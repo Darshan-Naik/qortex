@@ -99,17 +99,30 @@ queryManager.invalidateQuery(["user", userId]);`
             },
             {
                 name: 'queryManager.subscribeQuery(key, callback, options?)',
-                description: 'Subscribe to query state changes with automatic subscription management',
+                description: 'Subscribe to query state changes with flexible callback signatures',
                 parameters: [
                     { name: 'key', type: 'string | string[]', description: 'Query key' },
-                    { name: 'callback', type: '() => void', description: 'Callback function' },
+                    { name: 'callback', type: '(state: QueryState<T>) => void', description: 'Callback function that receives current state' },
                     { name: 'options', type: 'QueryOptions<T>', description: 'Optional query configuration' }
                 ],
-                example: `const unsubscribe = queryManager.subscribeQuery(
+                example: `// Callback receives the current state
+const unsubscribe = queryManager.subscribeQuery(
   ["users"],
-  () => {
-    console.log("Query state changed");
+  (state) => {
+    console.log("Query state changed:", state);
+    console.log("Data:", state.data);
+    console.log("Loading:", state.isLoading);
+    console.log("Success:", state.isSuccess);
   }
+);
+
+// With fetcher for automatic type inference
+const unsubscribe = queryManager.subscribeQuery(
+  ["users"],
+  (state) => {
+    console.log("Users:", state.data); // Automatically typed
+  },
+  { fetcher: fetchUsers }
 );
 
 // Cleanup subscription
@@ -143,7 +156,7 @@ unsubscribe();`
                     { name: 'options', type: 'UseQueryOptions<T>', description: 'Optional query options' }
                 ],
                 returns: 'UseQueryResult<T>',
-                example: `const { data, isLoading, error, refetch } = useQuery(["todos"], {
+                example: `const { data, isLoading, isSuccess, isError, error, refetch } = useQuery(["todos"], {
   refetchOnSubscribe: "stale",
   enabled: true,
   staleTime: 10000
