@@ -87,6 +87,18 @@ function createPublishablePackageJson(pkg) {
   
   // Write the publishable package.json to dist folder
   fs.writeFileSync(distPackageJsonPath, JSON.stringify(publishablePackageJson, null, 2));
+  
+  // Copy README.md to dist folder
+  const srcReadmePath = path.join(pkg.path, 'README.md');
+  const distReadmePath = path.join(pkg.path, 'dist', 'README.md');
+  
+  if (fs.existsSync(srcReadmePath)) {
+    fs.copyFileSync(srcReadmePath, distReadmePath);
+    console.log(`✅ Copied README.md for ${pkg.name}`);
+  } else {
+    console.log(`⚠️  No README.md found for ${pkg.name}`);
+  }
+  
   console.log(`✅ Created publishable package.json for ${pkg.name}`);
 }
 
