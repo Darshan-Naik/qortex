@@ -5,8 +5,8 @@ describe('QueryManager Core Tests', () => {
 
   beforeEach(() => {
     // Clear all state before each test
-    queryManager.cache.clear();
-    queryManager.subs.clear();
+    // ⚠️ Using dangerClearCache() is safe here in test environment only
+    queryManager.dangerClearCache();
 
     // Default mock fetcher
     mockFetcher = jest.fn().mockResolvedValue({ id: 1, data: 'test-data' });
@@ -852,5 +852,43 @@ describe('QueryManager Core Tests', () => {
       const evictedData = queryManager.getQueryData(key, { enabled: false });
       expect(evictedData).toEqual({ id: 1, data: 'test-data' });
     });
+  });
+
+  describe('Developer Experience', () => {
+    test('should warn when fetchQuery is called without fetcher and no data', async () => {
+      const key = ['no-fetcher-key'];
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+
+      // Try to fetch without registering a fetcher and without setting data
+      const result = await queryManager.fetchQuery(key);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[qortex] No fetcher or data for key "no-fetcher-key"')
+      );
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Register a fetcher or set initial data')
+      );
+      expect(result).toBeUndefined();
+
+      consoleSpy.mockRestore();
+    });
+
+    test('should not warn when fetchQuery is called without fetcher but updatedAt exists', async () => {
+      const key = ['no-fetcher-with-updatedAt'];
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+      const testData = { id: 1, name: 'test' };
+
+      // Set data first (this sets updatedAt)
+      queryManager.setQueryData(key, testData);
+
+      // Try to fetch without registering a fetcher but with existing updatedAt
+      const result = await queryManager.fetchQuery(key);
+
+      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(result).toEqual(testData);
+
+      consoleSpy.mockRestore();
+    });
+
   });
 });

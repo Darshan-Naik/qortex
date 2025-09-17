@@ -140,6 +140,19 @@ unsubscribe();`
   throttleTime: 100,
   usePreviousDataOnError: true
 });`
+            },
+            {
+                name: 'queryManager.dangerClearCache()',
+                description: '⚠️ DANGER: Clear all cached data and subscriptions (testing only)',
+                parameters: [],
+                warning: 'This method should ONLY be used in testing environments. Using this in production will cause all active queries to lose their data and subscriptions to break.',
+                example: `// ✅ Safe usage in tests
+beforeEach(() => {
+  queryManager.dangerClearCache();
+});
+
+// ❌ Dangerous usage in production
+// queryManager.dangerClearCache(); // Don't do this!`
             }
         ]
     },
@@ -414,6 +427,20 @@ export default function APIPage() {
                                             <pre className="code-block">
                                                 <code>{item.example}</code>
                                             </pre>
+                                        </div>
+                                    )}
+
+                                    {'warning' in item && item.warning && (
+                                        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                            <div className="flex items-start">
+                                                <div className="flex-shrink-0">
+                                                    <span className="text-red-400 text-lg">⚠️</span>
+                                                </div>
+                                                <div className="ml-3">
+                                                    <h4 className="text-sm font-medium text-red-800 mb-1">Warning</h4>
+                                                    <p className="text-sm text-red-700">{item.warning}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

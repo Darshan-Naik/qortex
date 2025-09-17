@@ -30,10 +30,9 @@ describe('useQuery React Integration Tests', () => {
   let mockFetcher;
 
   beforeEach(() => {
-    // Clear queryManager state by creating a new instance for each test
-    // This ensures test isolation
-    const newQueryManager = new (require('qortex-core').QueryManager)();
-    Object.assign(queryManager, newQueryManager);
+    // Clear queryManager state for each test
+    // ⚠️ Using dangerClearCache() is safe here in test environment only
+    queryManager.dangerClearCache();
     
     // Default mock fetcher
     mockFetcher = jest.fn().mockResolvedValue({ id: 1, data: 'test-data' });

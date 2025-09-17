@@ -8,7 +8,7 @@ import {
   DefaultConfig,
 } from "./types";
 import type { QueryStateInternal } from "./internal-types";
-import { serializeKey, createDefaultState, shallowEqual, createPublicState } from "./utils";
+import { serializeKey, createDefaultState, shallowEqual, createPublicState, warnNoFetcherOrData } from "./utils";
 
 
 /**
@@ -21,6 +21,33 @@ export class QueryManager {
   private lastReturnedState = new Map<string, any>();
   private defaultConfig: DefaultConfig = {};
   private throttleTime: number = THROTTLE_TIME;
+
+  /**
+   * ⚠️ DANGER: Clear all cached data and subscriptions
+   * 
+   * This method completely wipes all internal state including:
+   * - All cached query data
+   * - All active subscriptions
+   * - All state references
+   * 
+   * @warning This should ONLY be used in testing environments or when you need to completely reset the query manager state. Using this in production will cause all active queries to lose their data and subscriptions to break.
+   * 
+   * @example
+   * ```typescript
+   * // ✅ Safe usage in tests
+   * beforeEach(() => {
+   *   queryManager.dangerClearCache();
+   * });
+   * 
+   * // ❌ Dangerous usage in production
+   * // queryManager.dangerClearCache(); // Don't do this!
+   * ```
+   */
+  dangerClearCache(): void {
+    this.cache.clear();
+    this.subs.clear();
+    this.lastReturnedState.clear();
+  }
 
   /**
    * Set default configuration for all queries
@@ -101,7 +128,11 @@ export class QueryManager {
 
     const fetcher = state.fetcher;
     if (!fetcher) {
-      console.error("No fetcher found for key", key);
+      // If no fetcher is registered, return existing data (if any)
+      // This handles cases where data was set via setQueryData() without a fetcher
+      if (state.updatedAt === undefined) {
+        warnNoFetcherOrData(key);
+      }
       return Promise.resolve(state.data as T);
     };
     state.status = "fetching";

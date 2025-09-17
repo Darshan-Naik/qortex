@@ -4,8 +4,6 @@
  */
 export type QueryKey = string | readonly (string | number)[];
 
-/** Valid query key values - only strings and numbers are allowed */
-export type QueryKeyValue = string | number;
 
 /** Function that fetches data, can be async or sync */
 export type Fetcher<T = any> = () => Promise<T> | T;

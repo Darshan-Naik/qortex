@@ -1,4 +1,4 @@
-import { useSyncExternalStore, useCallback, useRef } from "react";
+import { useSyncExternalStore, useCallback } from "react";
 import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager, serializeKey } from "qortex-core";
 
 /**

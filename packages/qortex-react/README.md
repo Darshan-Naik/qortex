@@ -4,7 +4,7 @@
 
 [![npm version](https://badge.fury.io/js/qortex-react.svg)](https://badge.fury.io/js/qortex-react)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/qortex-react)](https://bundlephobia.com/package/qortex-react)
-[![Bundle Size](https://img.shields.io/badge/gzipped-0.4KB-brightgreen)](https://bundlephobia.com/package/qortex-react)
+[![Bundle Size](https://img.shields.io/badge/gzipped-2KB-brightgreen)](https://bundlephobia.com/package/qortex-react)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 

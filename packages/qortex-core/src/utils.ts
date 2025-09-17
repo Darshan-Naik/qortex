@@ -108,3 +108,14 @@ export function createPublicState<T = any>(state: QueryStateInternal<T>): QueryS
     refetch: state.refetch!,
   };
 }
+
+/**
+ * Logs a developer-friendly warning when no fetcher or data is available
+ * @param key - The query key that's missing fetcher/data
+ */
+export function warnNoFetcherOrData(key: QueryKey): void {
+  console.warn(
+    `[qortex] No fetcher or data for key "${serializeKey(key)}". ` +
+    `Register a fetcher or set initial data.`
+  );
+}
