@@ -1,5 +1,5 @@
 {
-  "name": "d-query-monorepo",
+  "name": "qortex",
   "private": true,
   "version": "0.2.0",
   "description": "A minimal, performant data fetching library with React integration",
@@ -12,7 +12,7 @@
     "url": "https://github.com/Darshan-Naik/d-query/issues"
   },
   "keywords": [
-    "d-query",
+    "qortex",
     "query",
     "cache",
     "react",
@@ -42,17 +42,17 @@
   "scripts": {
     "build:packages": "pnpm -w -r --filter './packages/*' run build",
     "bootstrap": "pnpm install",
-    "dev:example": "pnpm --filter d-query-react-example --parallel run dev",
+    "dev:example": "pnpm --filter qortex-react-example --parallel run dev",
     "prepare:publish": "node scripts/prepare-publish.js",
-    "publish:d-query": "cd packages/d-query/dist && npm publish --access public",
-    "publish:d-query-react": "cd packages/d-query-react/dist && npm publish --access public",
-    "publish:packages": "pnpm run build:packages && pnpm run prepare:publish && pnpm run publish:d-query && pnpm run publish:d-query-react",
+    "publish:qortex-core": "cd packages/qortex-core/dist && npm publish --access public",
+    "publish:qortex-react": "cd packages/qortex-react/dist && npm publish --access public",
+    "publish:packages": "pnpm run build:packages && pnpm run prepare:publish && pnpm run publish:qortex-core && pnpm run publish:qortex-react",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:packages": "pnpm -w -r --filter './packages/*' run test"
   },
   "overrides": {  
-    "dquery-core": "workspace:*"
+    "qortex-core": "workspace:*"
   }
 }

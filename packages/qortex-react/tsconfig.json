@@ -15,8 +15,8 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "d-query": [
-        "../d-query/src"
+      "qortex-core": [
+        "../qortex-core/src"
       ]
     }
   },

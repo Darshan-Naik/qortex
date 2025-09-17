@@ -1,6 +1,6 @@
-# 🚀 d-query React Example
+# 🚀 qortex React Example
 
-This comprehensive example demonstrates the full power of `d-query-react` using real API data from [JSONPlaceholder](https://jsonplaceholder.typicode.com/). It showcases various data fetching patterns, caching strategies, and error handling techniques with actual network requests.
+This comprehensive example demonstrates the full power of `qortex-react` using real API data from [JSONPlaceholder](https://jsonplaceholder.typicode.com/). It showcases various data fetching patterns, caching strategies, and error handling techniques with actual network requests.
 
 ## 🌟 Features Demonstrated
 
@@ -35,7 +35,7 @@ This comprehensive example demonstrates the full power of `d-query-react` using 
 - User selection with cached data
 
 ### ✨ Feature Highlights
-- Visual showcase of all d-query capabilities
+- Visual showcase of all qortex capabilities
 - Smart caching, background updates, and request deduplication
 
 ## 🚀 Quick Start
@@ -50,7 +50,7 @@ pnpm install
 pnpm run build:packages
 
 # Run the example dev server
-pnpm --filter d-query-react-example run dev
+pnpm --filter qortex-react-example run dev
 ```
 
 Open http://localhost:5173
@@ -60,7 +60,7 @@ Open http://localhost:5173
 ### 1. **Real API Integration**
 - Uses JSONPlaceholder for authentic network requests
 - Demonstrates proper error handling with real HTTP status codes
-- Shows how d-query works with actual REST APIs
+- Shows how qortex works with actual REST APIs
 
 ### 2. **Advanced Caching Patterns**
 - Different stale times for different data types
@@ -126,7 +126,7 @@ const { data: users, isLoading, error, refetch } = useQuery(["users"]);
 
 ## 🔧 Development Notes
 
-- The example depends on `dquery-react` via the workspace protocol
+- The example depends on `qortex-react` via the workspace protocol
 - Local packages are automatically linked by pnpm
 - Changes to packages require rebuilding: `pnpm -w -r run build`
 - Vite + workspace linking works during development
@@ -139,4 +139,4 @@ const { data: users, isLoading, error, refetch } = useQuery(["users"]);
 - **Albums**: `GET /albums` - Photo albums
 - **Photos**: `GET /albums/{id}/photos` - Album photos
 
-This example provides a complete showcase of d-query's capabilities in a real-world scenario with actual network requests and data management patterns.
+This example provides a complete showcase of qortex's capabilities in a real-world scenario with actual network requests and data management patterns.

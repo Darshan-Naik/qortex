@@ -9,19 +9,19 @@ const path = require('path');
 
 const packages = [
   {
-    name: 'dquery-core',
-    path: 'packages/d-query',
-    publishName: 'dquery-core',
+    name: 'qortex-core',
+    path: 'packages/qortex-core',
+    publishName: 'qortex-core',
     description: 'Framework-agnostic query cache & fetch registry (MFE friendly).'
   },
   {
-    name: 'dquery-react',
-    path: 'packages/d-query-react',
-    publishName: 'dquery-react',
-    description: 'React hook bridge for d-query runtime',
+    name: 'qortex-react',
+    path: 'packages/qortex-react',
+    publishName: 'qortex-react',
+    description: 'React hook bridge for qortex runtime',
     // Transform workspace dependencies to published versions
     dependencyTransforms: {
-      'dquery-core': 'dquery-core' // workspace:* -> dquery-core (same version)
+      'qortex-core': 'qortex-core' // workspace:* -> qortex-core (same version)
     }
   }
 ];

@@ -6,5 +6,5 @@ export default defineConfig({
   format: ["cjs", "esm"],
   sourcemap: false,
   clean: true,
-  onSuccess: "cd ../../ && node scripts/prepare-publish.js && cp packages/d-query/README.md packages/d-query/dist/ 2>/dev/null || true"
+  onSuccess: "cd ../../ && node scripts/prepare-publish.js && cp packages/qortex/README.md packages/qortex/dist/ 2>/dev/null || true"
 });

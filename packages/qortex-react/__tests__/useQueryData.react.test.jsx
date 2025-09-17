@@ -35,7 +35,7 @@ describe('useQueryData React Integration Tests', () => {
   beforeEach(() => {
     // Clear queryManager state by creating a new instance for each test
     // This ensures test isolation
-    const newQueryManager = new (require('dquery-core').QueryManager)();
+    const newQueryManager = new (require('qortex-core').QueryManager)();
     Object.assign(queryManager, newQueryManager);
     
     // Default mock fetcher

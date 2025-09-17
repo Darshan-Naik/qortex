@@ -1,7 +1,7 @@
 {
-  "name": "dquery-react",
+  "name": "qortex-react",
   "version": "0.2.0",
-  "description": "React hook bridge for d-query runtime",
+  "description": "React hook bridge for qortex runtime",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -32,7 +32,7 @@
     "url": "https://github.com/Darshan-Naik/d-query/issues"
   },
   "keywords": [
-    "d-query",
+    "qortex",
     "react",
     "useQuery",
     "cache",
@@ -43,7 +43,7 @@
   "author": "Darshan Naik",
   "license": "MIT",
   "dependencies": {
-    "dquery-core": "0.2.0"
+    "qortex-core": "0.2.0"
   },
   "peerDependencies": {
     "react": ">=18"

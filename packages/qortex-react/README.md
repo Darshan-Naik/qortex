@@ -1,15 +1,15 @@
-# 🎭 dquery-react
+# 🎭 qortex-react
 
 > **React hooks for universal data access. Set and read data from anywhere! ⚛️**
 
-[![npm version](https://badge.fury.io/js/dquery-react.svg)](https://badge.fury.io/js/dquery-react)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/dquery-react)](https://bundlephobia.com/package/dquery-react)
+[![npm version](https://badge.fury.io/js/qortex-react.svg)](https://badge.fury.io/js/qortex-react)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/qortex-react)](https://bundlephobia.com/package/qortex-react)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 
 ## ✨ What makes this special?
 
-**d-query-react** lets you **set and read data from anywhere** - not just React components! Perfect for:
+**qortex-react** lets you **set and read data from anywhere** - not just React components! Perfect for:
 
 - 🔐 **App core data** - Authentication, user profiles accessible from anywhere
 - 🔄 **Background services** - WebSocket updates, timers, external events
@@ -17,11 +17,11 @@
 - ⚡ **Real-time updates** - Push changes from anywhere, see them in React instantly
 
 ```bash
-pnpm add dquery-react dquery-core
+pnpm add qortex-react qortex-core
 ```
 
 ```tsx
-import { queryManager, useQuery, useQueryData } from "dquery-react";
+import { queryManager, useQuery, useQueryData } from "qortex-react";
 
 // Set global defaults for all queries
 queryManager.setDefaultConfig({
@@ -311,8 +311,8 @@ MIT License - feel free to use this in your projects! 🎉
 Need help? Have questions?
 
 - 📧 **Email**: [darshannaik.com](https://darshannaik.com)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/d-query/issues)
-- 🌟 **Repository**: [https://github.com/Darshan-Naik/d-query](https://github.com/Darshan-Naik/d-query)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/qortex/issues)
+- 🌟 **Repository**: [https://github.com/Darshan-Naik/qortex](https://github.com/Darshan-Naik/qortex)
 
 ---
 

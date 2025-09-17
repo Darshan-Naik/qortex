@@ -1,14 +1,14 @@
-# 🎯 dquery-core
+# 🎯 qortex-core
 
 > **Framework-agnostic query cache. Set and read data from anywhere! 🧠**
 
-[![npm version](https://badge.fury.io/js/dquery-core.svg)](https://badge.fury.io/js/dquery-core)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/dquery-core)](https://bundlephobia.com/package/dquery-core)
+[![npm version](https://badge.fury.io/js/qortex-core.svg)](https://badge.fury.io/js/qortex-core)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/qortex-core)](https://bundlephobia.com/package/qortex-core)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
 ## ✨ What makes this special?
 
-**d-query-core** lets you **set and read data from anywhere** - not just within a specific framework! Perfect for:
+**qortex-core** lets you **set and read data from anywhere** - not just within a specific framework! Perfect for:
 
 - 🔐 **App core data** - Authentication, user profiles accessible from anywhere
 - 🎯 **Cross-framework** - Share data between React, Vue, vanilla JS, Node.js
@@ -16,11 +16,11 @@
 - ⚡ **Real-time apps** - Push changes from anywhere, see them everywhere instantly
 
 ```bash
-pnpm add dquery-core
+pnpm add qortex-core
 ```
 
 ```ts
-import { queryManager } from "dquery-core";
+import { queryManager } from "qortex-core";
 
 // Set global defaults for all queries
 queryManager.setDefaultConfig({
@@ -74,8 +74,8 @@ function useAuth() {
   return { user, isAuthenticated };
 }
 
-// React with hooks (dquery-react package)
-import { useQuery, useQueryData } from "dquery-react";
+// React with hooks (qortex-react package)
+import { useQuery, useQueryData } from "qortex-react";
 
 function AuthComponent() {
   const { data: user, isLoading } = useQuery(["auth", "user"]);
@@ -147,10 +147,10 @@ const user = queryManager.getQueryData(["auth", "user"]);
 const isAuthenticated = queryManager.getQueryData(["auth", "isAuthenticated"]);
 ```
 
-### React Hooks (dquery-react package)
+### React Hooks (qortex-react package)
 
 ```tsx
-import { useQuery, useQueryData } from "dquery-react";
+import { useQuery, useQueryData } from "qortex-react";
 
 // Full query state with loading, error, refetch
 const { data, isLoading, error, refetch } = useQuery(["todos"]);
@@ -266,8 +266,8 @@ MIT License - feel free to use this in your projects! 🎉
 Need help? Have questions?
 
 - 📧 **Email**: [darshannaik.com](https://darshannaik.com)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/d-query/issues)
-- 🌟 **Repository**: [https://github.com/Darshan-Naik/d-query](https://github.com/Darshan-Naik/d-query)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/qortex/issues)
+- 🌟 **Repository**: [https://github.com/Darshan-Naik/qortex](https://github.com/Darshan-Naik/qortex)
 
 ---
 

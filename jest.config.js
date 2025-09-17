@@ -27,9 +27,9 @@ module.exports = {
   // Projects configuration for different packages
   projects: [
     {
-      displayName: 'd-query-core',
+      displayName: 'qortex-core',
       testEnvironment: 'node',
-      roots: ['<rootDir>/packages/d-query'],
+      roots: ['<rootDir>/packages/qortex-core'],
       testMatch: [
         '**/__tests__/**/*.test.js',
         '**/__tests__/**/*.test.ts',
@@ -37,12 +37,12 @@ module.exports = {
         '**/?(*.)+(spec|test).ts'
       ],
       collectCoverageFrom: [
-        'packages/d-query/src/**/*.ts',
-        '!packages/d-query/src/**/*.d.ts',
-        '!packages/d-query/src/**/*.test.ts',
-        '!packages/d-query/src/**/*.spec.ts'
+        'packages/qortex-core/src/**/*.ts',
+        '!packages/qortex-core/src/**/*.d.ts',
+        '!packages/qortex-core/src/**/*.test.ts',
+        '!packages/qortex-core/src/**/*.spec.ts'
       ],
-      coverageDirectory: 'coverage/d-query',
+      coverageDirectory: 'coverage/qortex-core',
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       transform: {
         '^.+\\.(js|ts)$': 'babel-jest',
@@ -50,9 +50,9 @@ module.exports = {
       moduleFileExtensions: ['js', 'ts', 'json'],
     },
     {
-      displayName: 'd-query-react',
+      displayName: 'qortex-react',
       testEnvironment: 'jsdom',
-      roots: ['<rootDir>/packages/d-query-react'],
+      roots: ['<rootDir>/packages/qortex-react'],
       testMatch: [
         '**/__tests__/**/*.test.js',
         '**/__tests__/**/*.test.jsx',
@@ -60,19 +60,19 @@ module.exports = {
         '**/?(*.)+(spec|test).jsx'
       ],
       collectCoverageFrom: [
-        'packages/d-query-react/src/**/*.{js,jsx,ts,tsx}',
-        '!packages/d-query-react/src/**/*.d.ts',
-        '!packages/d-query-react/src/**/*.test.{js,jsx,ts,tsx}',
-        '!packages/d-query-react/src/**/*.spec.{js,jsx,ts,tsx}'
+        'packages/qortex-react/src/**/*.{js,jsx,ts,tsx}',
+        '!packages/qortex-react/src/**/*.d.ts',
+        '!packages/qortex-react/src/**/*.test.{js,jsx,ts,tsx}',
+        '!packages/qortex-react/src/**/*.spec.{js,jsx,ts,tsx}'
       ],
-      coverageDirectory: 'coverage/d-query-react',
+      coverageDirectory: 'coverage/qortex-react',
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       transform: {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
       },
       moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
       moduleNameMapper: {
-        '^dquery-core$': '<rootDir>/packages/d-query/dist/index.js',
+        '^qortex-core$': '<rootDir>/packages/qortex-core/dist/index.js',
       },
     }
   ]

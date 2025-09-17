@@ -1,5 +1,5 @@
 {
-  "name": "dquery-core",
+  "name": "qortex-core",
   "version": "0.2.0",
   "description": "Framework-agnostic query cache & fetch registry (MFE friendly).",
   "main": "dist/index.js",
@@ -32,7 +32,7 @@
     "url": "https://github.com/Darshan-Naik/d-query/issues"
   },
   "keywords": [
-    "d-query",
+    "qortex",
     "query",
     "cache",
     "runtime",

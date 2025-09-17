@@ -1,5 +1,5 @@
 {
-  "name": "d-query-react-example",
+  "name": "qortex-react-example",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "dquery-react": "workspace:*"
+    "qortex-react": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",

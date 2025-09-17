@@ -1,8 +1,8 @@
 import { useSyncExternalStore, useCallback, useRef } from "react";
-import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager, serializeKey, InferFetcherReturnType } from "dquery-core";
+import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager, serializeKey, InferFetcherReturnType } from "qortex-core";
 
 /**
- * useQueryData hook for React integration with d-query
+ * useQueryData hook for React integration with qortex
  * Provides reactive data fetching with automatic re-renders on state changes
  * Enhanced with automatic type inference from fetchers
  */

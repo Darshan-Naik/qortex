@@ -1,15 +1,15 @@
-# 🚀 d-query
+# 🚀 qortex
 
 > **A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness! 🎉**
 
-[![npm version](https://badge.fury.io/js/dquery-core.svg)](https://badge.fury.io/js/dquery-core)
-[![npm version](https://badge.fury.io/js/dquery-react.svg)](https://badge.fury.io/js/dquery-react)
+[![npm version](https://badge.fury.io/js/qortex-core.svg)](https://badge.fury.io/js/qortex-core)
+[![npm version](https://badge.fury.io/js/qortex-react.svg)](https://badge.fury.io/js/qortex-react)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/dquery-core)](https://bundlephobia.com/package/dquery-core)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/qortex-core)](https://bundlephobia.com/package/qortex-core)
 
-## ✨ Why d-query?
+## ✨ Why qortex?
 
-Tired of complex data fetching libraries that make simple tasks complicated? **d-query** is here to save the day! 🦸‍♂️
+Tired of complex data fetching libraries that make simple tasks complicated? **qortex** is here to save the day! 🦸‍♂️
 
 - 🎯 **Dead simple** - Get started in 30 seconds
 - ⚡ **Lightning fast** - Minimal bundle size, maximum performance
@@ -22,18 +22,18 @@ Tired of complex data fetching libraries that make simple tasks complicated? **d
 
 | Package | Description | Size |
 |---------|-------------|------|
-| **`dquery-core`** | Core runtime with query management | ~3KB gzipped |
-| **`dquery-react`** | React hooks and components | ~2KB gzipped |
+| **`qortex-core`** | Core runtime with query management | ~3KB gzipped |
+| **`qortex-react`** | React hooks and components | ~2KB gzipped |
 
 
 ## 📥 Installation
 
 ```bash
 # Core runtime (works everywhere!)
-npm install dquery-core
+npm install qortex-core
 
 # React integration (if you're using React)
-npm install dquery-react
+npm install qortex-react
 ```
 
 ## 🎯 Core Features
@@ -53,7 +53,7 @@ npm install dquery-react
 ### 1. 🎯 Basic Setup (The Happy Path)
 
 ```ts
-import { queryManager } from "dquery-core";
+import { queryManager } from "qortex-core";
 
 // Register a fetcher (triggers immediate prefetch by default)
 queryManager.registerFetcher(["todos"], {
@@ -71,7 +71,7 @@ queryManager.registerFetcher(["todos"], {
 ### 2. 🎭 React Integration (The Magic)
 
 ```tsx
-import { useQuery } from "dquery-react";
+import { useQuery } from "qortex-react";
 
 function TodosList() {
   const { data, isLoading, isFetching, error, refetch } = useQuery(["todos"], {
@@ -99,7 +99,7 @@ function TodosList() {
 ### 3. 🎪 Manual Query Management (The Power User)
 
 ```ts
-import { queryManager } from "dquery-core";
+import { queryManager } from "qortex-core";
 
 // Fetch data manually
 const todos = await queryManager.fetchQuery(["todos"]);
@@ -253,7 +253,7 @@ function TodosList() {
 
 ```tsx
 // app.tsx - Set up global defaults for your entire app
-import { queryManager } from "dquery-core";
+import { queryManager } from "qortex-core";
 
 // Configure global defaults for your app
 queryManager.setDefaultConfig({
@@ -288,7 +288,7 @@ function LiveDataComponent() {
 
 ## 🎨 API Reference
 
-### Core Runtime (`dquery-core`)
+### Core Runtime (`qortex-core`)
 
 #### `queryManager.registerFetcher(key, options)`
 
@@ -396,7 +396,7 @@ queryManager.setDefaultConfig({
 - `equalityFn?: EqualityFn<any>` - Default equality function
 - `throttleTime?: number` - Default throttle time for duplicate request prevention
 
-### React Integration (`dquery-react`)
+### React Integration (`qortex-react`)
 
 #### `useQuery(key, options?)`
 
@@ -443,7 +443,7 @@ const {
 Set default options for all queries using `setDefaultConfig`:
 
 ```ts
-import { queryManager } from "dquery-core";
+import { queryManager } from "qortex-core";
 
 // Set global defaults
 queryManager.setDefaultConfig({
@@ -630,8 +630,8 @@ const { data, error, refetch } = useQuery(["todos"], {
 
 ```ts
 // Only import what you need
-import { queryManager } from "dquery-core";
-import { useQuery } from "dquery-react";
+import { queryManager } from "qortex-core";
+import { useQuery } from "qortex-react";
 ```
 
 ### 2. 🎯 Use Appropriate Stale Times
@@ -669,7 +669,7 @@ function Dashboard() {
 }
 ```
 
-## 🎪 Why Choose d-query?
+## 🎪 Why Choose qortex?
 
 - **🎯 Simple & Intuitive**: Get started in seconds, not minutes
 - **⚡ Lightning Fast**: Minimal bundle size with maximum performance
@@ -688,9 +688,9 @@ MIT License - feel free to use this in your projects! 🎉
 Need help? Have questions? Want to chat about data fetching strategies?
 
 - 📧 **Email**: [darshannaik.com](https://darshannaik.com)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/d-query/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/Darshan-Naik/d-query/discussions)
-- 🌟 **Repository**: [https://github.com/Darshan-Naik/d-query](https://github.com/Darshan-Naik/d-query)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/qortex/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Darshan-Naik/qortex/discussions)
+- 🌟 **Repository**: [https://github.com/Darshan-Naik/qortex](https://github.com/Darshan-Naik/qortex)
 
 ---
 
