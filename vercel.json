@@ -1,0 +1,13 @@
+{
+  "buildCommand": "cd packages/docs && pnpm build",
+  "outputDirectory": "packages/docs/out",
+  "framework": "nextjs",
+  "installCommand": "pnpm install",
+  "devCommand": "cd packages/docs && pnpm dev",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/packages/docs/out/$1"
+    }
+  ]
+}
