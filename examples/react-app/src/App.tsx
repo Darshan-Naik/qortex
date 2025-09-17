@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "dquery-react";
+import { useQuery } from "qortex-react";
 import "./App.css";
 
 

@@ -25,11 +25,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Darshan-Naik/d-query.git"
+    "url": "https://github.com/Darshan-Naik/qortex.git"
   },
-  "homepage": "https://github.com/Darshan-Naik/d-query#readme",
+  "homepage": "https://github.com/Darshan-Naik/qortex#readme",
   "bugs": {
-    "url": "https://github.com/Darshan-Naik/d-query/issues"
+    "url": "https://github.com/Darshan-Naik/qortex/issues"
   },
   "keywords": [
     "qortex",

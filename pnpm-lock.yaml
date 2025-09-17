@@ -47,9 +47,9 @@ importers:
 
   examples/react-app:
     dependencies:
-      dquery-react:
+      qortex-react:
         specifier: workspace:*
-        version: link:../../packages/d-query-react
+        version: link:../../packages/qortex-react
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -73,7 +73,7 @@ importers:
         specifier: ^4.0.0
         version: 4.5.14(@types/node@24.3.3)
 
-  packages/d-query:
+  packages/qortex-core:
     devDependencies:
       rimraf:
         specifier: ^3.0.2
@@ -85,11 +85,11 @@ importers:
         specifier: ^5.0.0
         version: 5.9.2
 
-  packages/d-query-react:
+  packages/qortex-react:
     dependencies:
-      dquery-core:
+      qortex-core:
         specifier: workspace:*
-        version: link:../d-query
+        version: link:../qortex-core
       react:
         specifier: '>=18'
         version: 18.3.1

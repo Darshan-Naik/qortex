@@ -588,7 +588,7 @@ const { data, isLoading, error } = useQuery({
   placeholderData: []
 });
 
-// After (dquery)
+// After (qortex)
 queryManager.registerFetcher(["todos"], {
   fetcher: fetchTodos,
   placeholderData: []
@@ -610,7 +610,7 @@ const { data, error, mutate } = useSWR("/api/todos", fetcher, {
   keepPreviousData: true
 });
 
-// After (dquery)
+// After (qortex)
 queryManager.registerFetcher(["todos"], {
   fetcher: () => fetch("/api/todos").then(r => r.json())
 });
