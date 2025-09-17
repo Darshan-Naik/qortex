@@ -1,6 +1,6 @@
 {
   "name": "qortex-core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Framework-agnostic query cache & fetch registry (MFE friendly).",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -25,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Darshan-Naik/qortex.git"
+    "url": "git+https://github.com/Darshan-Naik/qortex.git"
   },
   "homepage": "https://github.com/Darshan-Naik/qortex#readme",
   "bugs": {

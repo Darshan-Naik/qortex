@@ -1,11 +1,11 @@
 {
   "name": "qortex",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A minimal, performant data fetching library with React integration",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Darshan-Naik/qortex.git"
+    "url": "git+https://github.com/Darshan-Naik/qortex.git"
   },
   "homepage": "https://github.com/Darshan-Naik/qortex#readme",
   "bugs": {
