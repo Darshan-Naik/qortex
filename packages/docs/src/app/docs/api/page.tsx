@@ -27,7 +27,8 @@ registerFetcher(["users"], {
     return response.json();
   },
   staleTime: 5 * 60 * 1000,
-  placeholderData: []
+  placeholderData: [],
+  equalityStrategy: "deep" // or "shallow"
 });`
             },
             {
@@ -154,7 +155,8 @@ setDefaultConfig({
   staleTime: 5 * 60 * 1000,
   refetchOnSubscribe: "stale",
   throttleTime: 100,
-  usePreviousDataOnError: true
+  usePreviousDataOnError: true,
+  equalityStrategy: "deep"
 });`
             },
             {
@@ -289,6 +291,20 @@ const arrayEquality: EqualityFn<User[]> = (a, b) => {
 };`
             },
             {
+                name: 'EqualityStrategy',
+                description: 'Built-in equality comparison strategies',
+                example: `type EqualityStrategy = "shallow" | "deep";
+
+// Shallow equality (default): compares only top-level properties
+// Deep equality: recursively compares nested objects and arrays
+
+// Usage:
+registerFetcher(["users"], {
+  fetcher: fetchUsers,
+  equalityStrategy: "deep" // or "shallow"
+});`
+            },
+            {
                 name: 'DefaultConfig',
                 description: 'Global configuration options',
                 example: `type DefaultConfig = {
@@ -298,6 +314,7 @@ const arrayEquality: EqualityFn<User[]> = (a, b) => {
   usePreviousDataOnError?: boolean;
   usePlaceholderOnError?: boolean;
   equalityFn?: EqualityFn<any>;
+  equalityStrategy?: "shallow" | "deep";
   throttleTime?: number;
 };`
             }
@@ -334,7 +351,8 @@ const key3 = serializeKey(["posts", "published"]); // "posts,published"`
                     { name: 'fetcher', type: 'Fetcher<T>', description: 'Function that fetches data' },
                     { name: 'staleTime?', type: 'number', description: 'Time before data is considered stale (ms)' },
                     { name: 'placeholderData?', type: 'T', description: 'Data to show while loading' },
-                    { name: 'equalityFn?', type: '(a: T, b: T) => boolean', description: 'Function to compare data equality' }
+                    { name: 'equalityFn?', type: '(a: T, b: T) => boolean', description: 'Function to compare data equality' },
+                    { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Strategy for data equality comparison (default: "shallow")' }
                 ]
             },
             {
@@ -344,6 +362,7 @@ const key3 = serializeKey(["posts", "published"]); // "posts,published"`
                     { name: 'refetchOnSubscribe?', type: '"stale" | "always" | false', description: 'When to refetch on subscription' },
                     { name: 'enabled?', type: 'boolean', description: 'Whether the query is enabled' },
                     { name: 'staleTime?', type: 'number', description: 'Time before data is considered stale' },
+                    { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Strategy for data equality comparison (default: "shallow")' },
                     { name: 'placeholderData?', type: 'T', description: 'Data to show while loading' }
                 ]
             },
@@ -354,7 +373,8 @@ const key3 = serializeKey(["posts", "published"]); // "posts,published"`
                     { name: 'staleTime?', type: 'number', description: 'Default stale time for all queries' },
                     { name: 'refetchOnSubscribe?', type: '"stale" | "always" | false', description: 'Default refetch behavior' },
                     { name: 'throttleTime?', type: 'number', description: 'Default throttle time for duplicate requests' },
-                    { name: 'usePreviousDataOnError?', type: 'boolean', description: 'Keep previous data on error' }
+                    { name: 'usePreviousDataOnError?', type: 'boolean', description: 'Keep previous data on error' },
+                    { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Default equality strategy for all queries' }
                 ]
             }
         ]

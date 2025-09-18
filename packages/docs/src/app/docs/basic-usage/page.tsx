@@ -18,7 +18,8 @@ registerFetcher(["users"], {
   fetcher: async () => {
     const response = await fetch("/api/users");
     return response.json();
-  }
+  },
+  equalityStrategy: "deep" // Use deep equality for nested objects
 });
 
 // Use in component
@@ -51,7 +52,8 @@ registerFetcher(["user", "id"], {
     const [, , userId] = key;
     const response = await fetch(\`/api/users/\${userId}\`);
     return response.json();
-  }
+  },
+  equalityStrategy: "shallow" // Use shallow equality for simple objects
 });
 
 // Use with parameters
@@ -133,13 +135,35 @@ function LiveData() {
 
 const patterns = [
   {
+    title: 'Equality Strategies',
+    description: 'Control how data changes are detected',
+    code: `// Shallow equality (default) - compares only top-level properties
+registerFetcher(["users"], {
+  fetcher: fetchUsers,
+  equalityStrategy: "shallow"
+});
+
+// Deep equality - recursively compares nested objects
+registerFetcher(["user-profile"], {
+  fetcher: fetchUserProfile,
+  equalityStrategy: "deep"
+});
+
+// Custom equality function
+registerFetcher(["todos"], {
+  fetcher: fetchTodos,
+  equalityFn: (a, b) => a?.length === b?.length
+});`,
+  },
+  {
     title: 'Global Configuration',
     description: 'Set default options for all queries',
     code: `setDefaultConfig({
   staleTime: 5 * 60 * 1000, // 5 minutes
   refetchOnSubscribe: "stale",
   throttleTime: 100,
-  usePreviousDataOnError: true
+  usePreviousDataOnError: true,
+  equalityStrategy: "deep" // Default strategy for all queries
 });`,
   },
   {
@@ -233,6 +257,7 @@ export default function BasicUsagePage() {
               <ul className="space-y-2 text-gray-600">
                 <li>• Use array keys for parameters</li>
                 <li>• Set appropriate stale times</li>
+                <li>• Choose the right equality strategy</li>
                 <li>• Provide placeholder data</li>
                 <li>• Handle loading and error states</li>
                 <li>• Use TypeScript for type safety</li>

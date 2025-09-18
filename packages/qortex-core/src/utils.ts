@@ -1,5 +1,5 @@
 import type {
-  QueryKey, QueryOptions, QueryState,
+  QueryKey, QueryOptions, QueryState, EqualityStrategy, EqualityFn,
 } from "./types";
 import type { QueryStateInternal } from "./internal-types";
 import { DEFAULT_STALE_TIME } from "./constants";
@@ -13,10 +13,14 @@ export function serializeKey(key: QueryKey): string {
 }
 
 /**
- * Performs shallow structural equality comparison between two values
+ * Performs equality comparison between two values based on strategy
  * Handles null/undefined, primitives, and objects with same key structure
+ * @param a - First value to compare
+ * @param b - Second value to compare
+ * @param strategy - Comparison strategy ('shallow' or 'deep')
+ * @returns true if values are equal according to the strategy
  */
-export function shallowEqual<T = unknown>(a: T | undefined, b: T | undefined): boolean {
+export function equal<T = unknown>(a: T | undefined, b: T | undefined, strategy: EqualityStrategy = 'shallow'): boolean {
   if (a === b) return true;
   if (a == null || b == null) return a === b;
   if (typeof a !== "object" || typeof b !== "object") return false;
@@ -24,6 +28,23 @@ export function shallowEqual<T = unknown>(a: T | undefined, b: T | undefined): b
   try {
     const aAny = a as any;
     const bAny = b as any;
+
+    // Handle arrays
+    if (Array.isArray(aAny) && Array.isArray(bAny)) {
+      if (aAny.length !== bAny.length) return false;
+      for (let i = 0; i < aAny.length; i++) {
+        if (strategy === 'deep') {
+          if (!equal(aAny[i], bAny[i], strategy)) return false;
+        } else {
+          if (aAny[i] !== bAny[i]) return false;
+        }
+      }
+      return true;
+    }
+
+    // Handle objects
+    if (Array.isArray(aAny) || Array.isArray(bAny)) return false;
+
     const aKeys = Object.keys(aAny);
     const bKeys = Object.keys(bAny);
 
@@ -31,13 +52,34 @@ export function shallowEqual<T = unknown>(a: T | undefined, b: T | undefined): b
 
     for (let i = 0; i < aKeys.length; i++) {
       const k = aKeys[i];
-      if (aAny[k] !== bAny[k]) return false;
+      if (strategy === 'deep') {
+        if (!equal(aAny[k], bAny[k], strategy)) return false;
+      } else {
+        if (aAny[k] !== bAny[k]) return false;
+      }
     }
 
     return true;
   } catch {
     return false;
   }
+}
+
+
+/**
+ * Returns the appropriate equality function based on strategy
+ * @param strategy - The equality strategy ('shallow' or 'deep')
+ * @param customFn - Optional custom equality function
+ * @returns The equality function to use
+ */
+export function getEqualityFunction<T = any>(
+  strategy?: EqualityStrategy,
+  customFn?: EqualityFn<T>
+): EqualityFn<T> {
+  if (customFn) return customFn;
+
+  // Return a function that uses the unified equal function with the specified strategy
+  return ((a: T | undefined, b: T | undefined) => equal(a, b, strategy || 'shallow')) as EqualityFn<T>;
 }
 
 /**
@@ -51,7 +93,7 @@ export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<
     staleTime: opts?.staleTime ?? DEFAULT_STALE_TIME,
     isInvalidated: false,
     fetcher: opts?.fetcher,
-    equalityFn: opts?.equalityFn ?? shallowEqual,
+    equalityFn: getEqualityFunction(opts?.equalityStrategy, opts?.equalityFn),
     placeholderData: opts?.placeholderData,
     usePreviousDataOnError: opts?.usePreviousDataOnError ?? false,
     usePlaceholderOnError: opts?.usePlaceholderOnError ?? false,

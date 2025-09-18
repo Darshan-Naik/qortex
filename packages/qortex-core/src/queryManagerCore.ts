@@ -8,7 +8,7 @@ import {
   DefaultConfig,
 } from "./types";
 import type { QueryStateInternal } from "./internal-types";
-import { serializeKey, createDefaultState, shallowEqual, createPublicState, warnNoFetcherOrData } from "./utils";
+import { serializeKey, createDefaultState, equal, createPublicState, warnNoFetcherOrData } from "./utils";
 
 
 /**
@@ -209,7 +209,7 @@ export class QueryManagerCore {
     const lastState = this.lastReturnedState?.get(stateKey);
 
     // Only return a new object if the state has actually changed
-    if (!lastState || !shallowEqual(lastState, currentState)) {
+    if (!lastState || !equal(lastState, currentState, 'shallow')) {
       // Store the new state
       if (!this.lastReturnedState) this.lastReturnedState = new Map();
       this.lastReturnedState.set(stateKey, currentState);

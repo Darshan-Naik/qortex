@@ -11,6 +11,9 @@ export type Fetcher<T = any> = () => Promise<T> | T;
 /** Function that compares two values for equality */
 export type EqualityFn<T = any> = (a: T | undefined, b: T | undefined) => boolean;
 
+/** Strategy for equality comparison */
+export type EqualityStrategy = 'shallow' | 'deep';
+
 /** 
  * Infers the return type of a fetcher function
  * 
@@ -46,6 +49,7 @@ export type QueryOptions<T = any> = {
   refetchOnSubscribe?: "always" | "stale" | false;
   fetcher?: Fetcher<T>;
   equalityFn?: EqualityFn<T>;
+  equalityStrategy?: EqualityStrategy;
   staleTime?: number;
   signal?: AbortSignal;
   placeholderData?: T;
@@ -64,6 +68,7 @@ export type DefaultConfig = {
   usePreviousDataOnError?: boolean;
   usePlaceholderOnError?: boolean;
   equalityFn?: EqualityFn<any>;
+  equalityStrategy?: EqualityStrategy;
   throttleTime?: number;
 };
 
