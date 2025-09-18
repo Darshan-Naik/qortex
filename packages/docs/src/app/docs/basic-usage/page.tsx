@@ -11,10 +11,10 @@ const usageExamples = [
     title: 'Simple Data Fetching',
     description: 'Basic usage of useQuery hook for fetching data',
     icon: Code,
-    code: `import { queryManager, useQuery } from "qortex-react";
+    code: `import { registerFetcher, useQuery } from "qortex-react";
 
 // Register a fetcher
-queryManager.registerFetcher(["users"], {
+registerFetcher(["users"], {
   fetcher: async () => {
     const response = await fetch("/api/users");
     return response.json();
@@ -43,8 +43,10 @@ function UsersList() {
     title: 'With Parameters',
     description: 'Fetching data with dynamic parameters',
     icon: Zap,
-    code: `// Register fetcher with parameters
-queryManager.registerFetcher(["user", "id"], {
+    code: `import { registerFetcher, useQuery } from "qortex-react";
+
+// Register fetcher with parameters
+registerFetcher(["user", "id"], {
   fetcher: async (key) => {
     const [, , userId] = key;
     const response = await fetch(\`/api/users/\${userId}\`);

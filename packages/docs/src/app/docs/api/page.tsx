@@ -13,13 +13,15 @@ const apiSections = [
         icon: Database,
         items: [
             {
-                name: 'queryManager.registerFetcher(key, options)',
+                name: 'registerFetcher(key, options)',
                 description: 'Register a data fetcher function for a specific query key',
                 parameters: [
                     { name: 'key', type: 'string | string[]', description: 'Query key (string or array)' },
                     { name: 'options', type: 'FetcherOptions<T>', description: 'Fetcher configuration options' }
                 ],
-                example: `queryManager.registerFetcher(["users"], {
+                example: `import { registerFetcher } from "qortex-core";
+
+registerFetcher(["users"], {
   fetcher: async () => {
     const response = await fetch("/api/users");
     return response.json();
@@ -29,54 +31,62 @@ const apiSections = [
 });`
             },
             {
-                name: 'queryManager.setQueryData(key, data)',
+                name: 'setQueryData(key, data)',
                 description: 'Manually update query data',
                 parameters: [
                     { name: 'key', type: 'string | string[]', description: 'Query key' },
                     { name: 'data', type: 'T | (oldData: T) => T', description: 'New data or updater function' }
                 ],
-                example: `// Direct update
-queryManager.setQueryData(["todos"], newTodos);
+                example: `import { setQueryData } from "qortex-core";
+
+// Direct update
+setQueryData(["todos"], newTodos);
 
 // Functional update
-queryManager.setQueryData(["todos"], (oldData) => [
+setQueryData(["todos"], (oldData) => [
   ...(oldData || []),
   newTodo
 ]);`
             },
             {
-                name: 'queryManager.fetchQuery(key, options?)',
+                name: 'fetchQuery(key, options?)',
                 description: 'Execute a fetch operation with proper error handling and state management',
                 parameters: [
                     { name: 'key', type: 'string | string[]', description: 'Query key' },
                     { name: 'options', type: 'QueryOptions<T>', description: 'Optional query configuration' }
                 ],
-                example: `// Fetch data manually
-const userData = await queryManager.fetchQuery(["user", userId]);
+                example: `import { fetchQuery } from "qortex-core";
+
+// Fetch data manually
+const userData = await fetchQuery(["user", userId]);
 
 // With options
-const userData = await queryManager.fetchQuery(["user", userId], {
+const userData = await fetchQuery(["user", userId], {
   staleTime: 10 * 60 * 1000
 });`
             },
             {
-                name: 'queryManager.getQueryData(key, options?)',
+                name: 'getQueryData(key, options?)',
                 description: 'Get current query data without subscribing to updates',
                 parameters: [
                     { name: 'key', type: 'string | string[]', description: 'Query key' },
                     { name: 'options', type: 'QueryOptions<T>', description: 'Optional query configuration' }
                 ],
-                example: `const user = queryManager.getQueryData(["user", userId]);
-const isAuthenticated = queryManager.getQueryData(["auth", "isAuthenticated"]);`
+                example: `import { getQueryData } from "qortex-core";
+
+const user = getQueryData(["user", userId]);
+const isAuthenticated = getQueryData(["auth", "isAuthenticated"]);`
             },
             {
-                name: 'queryManager.getQueryState(key, options?)',
+                name: 'getQueryState(key, options?)',
                 description: 'Get comprehensive query state including computed flags',
                 parameters: [
                     { name: 'key', type: 'string | string[]', description: 'Query key' },
                     { name: 'options', type: 'QueryOptions<T>', description: 'Optional query configuration' }
                 ],
-                example: `const state = queryManager.getQueryState(["users"]);
+                example: `import { getQueryState } from "qortex-core";
+
+const state = getQueryState(["users"]);
 console.log({
   data: state.data,
   isLoading: state.isLoading,
@@ -86,27 +96,31 @@ console.log({
 });`
             },
             {
-                name: 'queryManager.invalidateQuery(key)',
+                name: 'invalidateQuery(key)',
                 description: 'Mark a query as invalidated, triggering refetch',
                 parameters: [
                     { name: 'key', type: 'string | string[]', description: 'Query key to invalidate' }
                 ],
-                example: `// Invalidate and refetch
-queryManager.invalidateQuery(["users"]);
+                example: `import { invalidateQuery } from "qortex-core";
+
+// Invalidate and refetch
+invalidateQuery(["users"]);
 
 // Invalidate specific user
-queryManager.invalidateQuery(["user", userId]);`
+invalidateQuery(["user", userId]);`
             },
             {
-                name: 'queryManager.subscribeQuery(key, callback, options?)',
+                name: 'subscribeQuery(key, callback, options?)',
                 description: 'Subscribe to query state changes with flexible callback signatures',
                 parameters: [
                     { name: 'key', type: 'string | string[]', description: 'Query key' },
                     { name: 'callback', type: '(state: QueryState<T>) => void', description: 'Callback function that receives current state' },
                     { name: 'options', type: 'QueryOptions<T>', description: 'Optional query configuration' }
                 ],
-                example: `// Callback receives the current state
-const unsubscribe = queryManager.subscribeQuery(
+                example: `import { subscribeQuery } from "qortex-core";
+
+// Callback receives the current state
+const unsubscribe = subscribeQuery(
   ["users"],
   (state) => {
     console.log("Query state changed:", state);
@@ -117,7 +131,7 @@ const unsubscribe = queryManager.subscribeQuery(
 );
 
 // With fetcher for automatic type inference
-const unsubscribe = queryManager.subscribeQuery(
+const unsubscribe = subscribeQuery(
   ["users"],
   (state) => {
     console.log("Users:", state.data); // Automatically typed
@@ -129,12 +143,14 @@ const unsubscribe = queryManager.subscribeQuery(
 unsubscribe();`
             },
             {
-                name: 'queryManager.setDefaultConfig(config)',
+                name: 'setDefaultConfig(config)',
                 description: 'Set global default configuration for all queries',
                 parameters: [
                     { name: 'config', type: 'DefaultConfig', description: 'Default configuration options' }
                 ],
-                example: `queryManager.setDefaultConfig({
+                example: `import { setDefaultConfig } from "qortex-core";
+
+setDefaultConfig({
   staleTime: 5 * 60 * 1000,
   refetchOnSubscribe: "stale",
   throttleTime: 100,
@@ -142,17 +158,19 @@ unsubscribe();`
 });`
             },
             {
-                name: 'queryManager.dangerClearCache()',
+                name: 'dangerClearCache()',
                 description: '⚠️ DANGER: Clear all cached data and subscriptions (testing only)',
                 parameters: [],
                 warning: 'This method should ONLY be used in testing environments. Using this in production will cause all active queries to lose their data and subscriptions to break.',
-                example: `// ✅ Safe usage in tests
+                example: `import { dangerClearCache } from "qortex-core";
+
+// ✅ Safe usage in tests
 beforeEach(() => {
-  queryManager.dangerClearCache();
+  dangerClearCache();
 });
 
 // ❌ Dangerous usage in production
-// queryManager.dangerClearCache(); // Don't do this!`
+// dangerClearCache(); // Don't do this!`
             }
         ]
     },

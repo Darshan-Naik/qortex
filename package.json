@@ -1,7 +1,7 @@
 {
   "name": "qortex",
   "private": true,
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A minimal, performant data fetching library with React integration",
   "repository": {
     "type": "git",
