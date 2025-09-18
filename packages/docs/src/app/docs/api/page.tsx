@@ -292,7 +292,7 @@ const arrayEquality: EqualityFn<User[]> = (a, b) => {
             },
             {
                 name: 'EqualityStrategy',
-                description: 'Built-in equality comparison strategies',
+                description: 'Built-in equality comparison strategies - persists across all API calls',
                 example: `type EqualityStrategy = "shallow" | "deep";
 
 // Shallow equality (default): compares only top-level properties
@@ -302,7 +302,12 @@ const arrayEquality: EqualityFn<User[]> = (a, b) => {
 registerFetcher(["users"], {
   fetcher: fetchUsers,
   equalityStrategy: "deep" // or "shallow"
-});`
+});
+
+// The strategy is automatically reused in all other API calls:
+setQueryData(["users"], newData); // Uses "deep" strategy
+getQueryData(["users"]);          // Uses "deep" strategy
+getQueryState(["users"]);         // Uses "deep" strategy`
             },
             {
                 name: 'DefaultConfig',
@@ -352,7 +357,7 @@ const key3 = serializeKey(["posts", "published"]); // "posts,published"`
                     { name: 'staleTime?', type: 'number', description: 'Time before data is considered stale (ms)' },
                     { name: 'placeholderData?', type: 'T', description: 'Data to show while loading' },
                     { name: 'equalityFn?', type: '(a: T, b: T) => boolean', description: 'Function to compare data equality' },
-                    { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Strategy for data equality comparison (default: "shallow")' }
+                    { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Strategy for data equality comparison - persists across all API calls (default: "shallow")' }
                 ]
             },
             {
@@ -362,7 +367,7 @@ const key3 = serializeKey(["posts", "published"]); // "posts,published"`
                     { name: 'refetchOnSubscribe?', type: '"stale" | "always" | false', description: 'When to refetch on subscription' },
                     { name: 'enabled?', type: 'boolean', description: 'Whether the query is enabled' },
                     { name: 'staleTime?', type: 'number', description: 'Time before data is considered stale' },
-                    { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Strategy for data equality comparison (default: "shallow")' },
+                    { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Strategy for data equality comparison - persists across all API calls (default: "shallow")' },
                     { name: 'placeholderData?', type: 'T', description: 'Data to show while loading' }
                 ]
             },

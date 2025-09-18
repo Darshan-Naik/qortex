@@ -134,10 +134,10 @@ function LiveData() {
 ]
 
 const patterns = [
-  {
-    title: 'Equality Strategies',
-    description: 'Control how data changes are detected',
-    code: `// Shallow equality (default) - compares only top-level properties
+        {
+          title: 'Equality Strategies',
+          description: 'Control how data changes are detected - strategy persists across all API calls',
+          code: `// Shallow equality (default) - compares only top-level properties
 registerFetcher(["users"], {
   fetcher: fetchUsers,
   equalityStrategy: "shallow"
@@ -153,8 +153,13 @@ registerFetcher(["user-profile"], {
 registerFetcher(["todos"], {
   fetcher: fetchTodos,
   equalityFn: (a, b) => a?.length === b?.length
-});`,
-  },
+});
+
+// The equalityStrategy is automatically reused in all other API calls:
+setQueryData(["users"], newData); // Uses "shallow" strategy
+getQueryData(["user-profile"]);   // Uses "deep" strategy
+getQueryState(["todos"]);         // Uses custom equalityFn`,
+        },
   {
     title: 'Global Configuration',
     description: 'Set default options for all queries',
