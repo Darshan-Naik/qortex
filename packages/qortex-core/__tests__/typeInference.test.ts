@@ -1,11 +1,16 @@
 import { QueryManagerCore } from '../src/queryManagerCore';
 import { Fetcher, QueryKey } from '../src/types';
+import {
+    registerFetcher,
+    getQueryData,
+    getQueryState,
+    dangerClearCache
+} from '../src/queryManager';
 
 describe('Enhanced Type Inference Tests', () => {
-    let queryManager: QueryManagerCore;
-
     beforeEach(() => {
-        queryManager = new QueryManagerCore();
+        // Clear the global query manager state for each test
+        dangerClearCache();
     });
 
     describe('Automatic Type Inference', () => {
@@ -15,14 +20,14 @@ describe('Enhanced Type Inference Tests', () => {
             const objectFetcher: Fetcher<{ id: number; name: string }> = async () => ({ id: 1, name: 'test' });
 
             // These should automatically infer types from the fetcher - no explicit types needed!
-            queryManager.registerFetcher(['string-key'], { fetcher: stringFetcher });
-            queryManager.registerFetcher(['number-key'], { fetcher: numberFetcher });
-            queryManager.registerFetcher(['object-key'], { fetcher: objectFetcher });
+            registerFetcher(['string-key'], { fetcher: stringFetcher });
+            registerFetcher(['number-key'], { fetcher: numberFetcher });
+            registerFetcher(['object-key'], { fetcher: objectFetcher });
 
             // Type should be automatically inferred from the fetcher
-            const stringData = queryManager.getQueryData(['string-key']);
-            const numberData = queryManager.getQueryData(['number-key']);
-            const objectData = queryManager.getQueryData(['object-key']);
+            const stringData = getQueryData(['string-key']);
+            const numberData = getQueryData(['number-key']);
+            const objectData = getQueryData(['object-key']);
 
             // These assertions verify the types are working
             expect(stringData).toBeUndefined(); // Initially undefined
@@ -36,14 +41,14 @@ describe('Enhanced Type Inference Tests', () => {
             const objectFetcher: Fetcher<{ id: number; name: string }> = async () => ({ id: 1, name: 'test' });
 
             // These should compile without errors and work with explicit types
-            queryManager.registerFetcher<string>(['string-key'], { fetcher: stringFetcher });
-            queryManager.registerFetcher<number>(['number-key'], { fetcher: numberFetcher });
-            queryManager.registerFetcher<{ id: number; name: string }>(['object-key'], { fetcher: objectFetcher });
+            registerFetcher<string>(['string-key'], { fetcher: stringFetcher });
+            registerFetcher<number>(['number-key'], { fetcher: numberFetcher });
+            registerFetcher<{ id: number; name: string }>(['object-key'], { fetcher: objectFetcher });
 
             // Type should work correctly when explicitly provided
-            const stringData = queryManager.getQueryData<string>(['string-key']);
-            const numberData = queryManager.getQueryData<number>(['number-key']);
-            const objectData = queryManager.getQueryData<{ id: number; name: string }>(['object-key']);
+            const stringData = getQueryData<string>(['string-key']);
+            const numberData = getQueryData<number>(['number-key']);
+            const objectData = getQueryData<{ id: number; name: string }>(['object-key']);
 
             // These assertions verify the types are working
             expect(stringData).toBeUndefined(); // Initially undefined
@@ -53,18 +58,18 @@ describe('Enhanced Type Inference Tests', () => {
 
         test('should fallback to any when no types are provided', () => {
             // These should work without any type annotations - user-friendly!
-            queryManager.registerFetcher(['simple-key'], {
+            registerFetcher(['simple-key'], {
                 fetcher: async () => 'any data'
             });
-            queryManager.registerFetcher(['another-key'], {
+            registerFetcher(['another-key'], {
                 fetcher: () => 123
             });
 
             // Should work without explicit type parameters
-            const data1 = queryManager.getQueryData(['simple-key']);
-            const data2 = queryManager.getQueryData(['another-key']);
-            const state1 = queryManager.getQueryState(['simple-key']);
-            const state2 = queryManager.getQueryState(['another-key']);
+            const data1 = getQueryData(['simple-key']);
+            const data2 = getQueryData(['another-key']);
+            const state1 = getQueryState(['simple-key']);
+            const state2 = getQueryState(['another-key']);
 
             expect(data1).toBeUndefined(); // Initially undefined
             expect(data2).toBeUndefined(); // Initially undefined
@@ -75,9 +80,9 @@ describe('Enhanced Type Inference Tests', () => {
         test('should infer types correctly for getQueryState', () => {
             const fetcher: Fetcher<{ id: number; name: string }> = async () => ({ id: 1, name: 'test' });
 
-            queryManager.registerFetcher(['user-key'], { fetcher });
+            registerFetcher(['user-key'], { fetcher });
 
-            const state = queryManager.getQueryState<{ id: number; name: string }>(['user-key']);
+            const state = getQueryState<{ id: number; name: string }>(['user-key']);
 
             // Verify the state has the correct structure
             expect(state.status).toBeDefined();
@@ -111,10 +116,10 @@ describe('Enhanced Type Inference Tests', () => {
                 }
             });
 
-            queryManager.registerFetcher(['user-profile'], { fetcher: userFetcher });
+            registerFetcher(['user-profile'], { fetcher: userFetcher });
 
-            const userData = queryManager.getQueryData<User>(['user-profile']);
-            const userState = queryManager.getQueryState<User>(['user-profile']);
+            const userData = getQueryData<User>(['user-profile']);
+            const userState = getQueryState<User>(['user-profile']);
 
             expect(userData).toBeUndefined(); // Initially undefined
             expect(userState.status).toBeDefined();
@@ -133,7 +138,7 @@ describe('Enhanced Type Inference Tests', () => {
 
             validKeys.forEach((key, index) => {
                 expect(() => {
-                    queryManager.registerFetcher(key, {
+                    registerFetcher(key, {
                         fetcher: async () => `data-${index}`
                     });
                 }).not.toThrow();
@@ -155,10 +160,10 @@ describe('Enhanced Type Inference Tests', () => {
                 message: 'Success'
             });
 
-            queryManager.registerFetcher(['api-data'], { fetcher: apiFetcher });
+            registerFetcher(['api-data'], { fetcher: apiFetcher });
 
-            const response = queryManager.getQueryData<ApiResponse<string[]>>(['api-data']);
-            const state = queryManager.getQueryState<ApiResponse<string[]>>(['api-data']);
+            const response = getQueryData<ApiResponse<string[]>>(['api-data']);
+            const state = getQueryState<ApiResponse<string[]>>(['api-data']);
 
             expect(response).toBeUndefined(); // Initially undefined
             expect(state.status).toBeDefined();

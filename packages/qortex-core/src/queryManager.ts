@@ -1,6 +1,6 @@
 import QueryManagerCore from "./queryManagerCore";
 
-const _queryManager = new QueryManagerCore();
+export const _queryManager = new QueryManagerCore();
 
 // Export individual methods for direct usage
 export const registerFetcher = _queryManager.registerFetcher.bind(_queryManager);
@@ -13,16 +13,3 @@ export const subscribeQuery = _queryManager.subscribeQuery.bind(_queryManager);
 export const setDefaultConfig = _queryManager.setDefaultConfig.bind(_queryManager);
 export const dangerClearCache = _queryManager.dangerClearCache.bind(_queryManager);
 
-// Also export as queryManager object for backward compatibility
-export const queryManager = {
-    registerFetcher,
-    fetchQuery,
-    setQueryData,
-    getQueryData,
-    getQueryState,
-    invalidateQuery,
-    subscribeQuery,
-    setDefaultConfig,
-    dangerClearCache,
-    _queryManager
-};

@@ -1,5 +1,5 @@
 import { useSyncExternalStore, useCallback } from "react";
-import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, queryManager, serializeKey } from "qortex-core";
+import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, subscribeQuery, getQueryState, serializeKey } from "../src/index";
 
 /**
  * useQuery hook for React integration with qortex
@@ -29,12 +29,12 @@ export function useQuery<T = any>(
 
   // Memoize the getSnapshot function
   const getSnapshot = useCallback((): QueryState<T> => {
-    return queryManager.getQueryState<T>(key, opts);
+    return getQueryState<T>(key, opts);
   }, [serializedKey]);
 
   // Memoize the subscribe function
   const subscribe = useCallback((callback: () => void) => {
-    return queryManager.subscribeQuery(key, callback, opts);
+    return subscribeQuery(key, callback, opts);
   }, [serializedKey]);
 
   const state = useSyncExternalStore(

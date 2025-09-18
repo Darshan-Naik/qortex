@@ -1,4 +1,14 @@
-import { queryManager } from '../src/queryManager';
+import {
+  registerFetcher,
+  fetchQuery,
+  setQueryData,
+  getQueryData,
+  getQueryState,
+  invalidateQuery,
+  subscribeQuery,
+  setDefaultConfig,
+  dangerClearCache
+} from '../src/queryManager';
 
 describe('QueryManager Core Tests', () => {
   let mockFetcher: jest.Mock;
@@ -6,7 +16,7 @@ describe('QueryManager Core Tests', () => {
   beforeEach(() => {
     // Clear all state before each test
     // ⚠️ Using dangerClearCache() is safe here in test environment only
-    queryManager.dangerClearCache();
+    dangerClearCache();
 
     // Default mock fetcher
     mockFetcher = jest.fn().mockResolvedValue({ id: 1, data: 'test-data' });
@@ -17,7 +27,7 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: true
       });
@@ -29,7 +39,7 @@ describe('QueryManager Core Tests', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Get query datacanc
-      const data = queryManager.getQueryData(key);
+      const data = getQueryData(key);
       expect(data).toEqual({ id: 1, data: 'test-data' });
     });
 
@@ -37,7 +47,7 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher with enabled: false
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
@@ -46,7 +56,7 @@ describe('QueryManager Core Tests', () => {
       expect(mockFetcher).not.toHaveBeenCalled();
 
       // Get query data should be undefined
-      const data = queryManager.getQueryData(key);
+      const data = getQueryData(key);
       expect(data).toBeUndefined();
     });
 
@@ -54,13 +64,13 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Get initial state (without triggering fetch)
-      const state = queryManager.getQueryState(key, { enabled: false });
+      const state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('idle');
       expect(state.data).toBeUndefined();
       expect(state.error).toBeUndefined();
@@ -72,14 +82,14 @@ describe('QueryManager Core Tests', () => {
       const testData = { id: 1, name: 'test' };
 
       // Set query data
-      queryManager.setQueryData(key, testData);
+      setQueryData(key, testData);
 
       // Get query data (without triggering fetch)
-      const data = queryManager.getQueryData(key, { enabled: false });
+      const data = getQueryData(key, { enabled: false });
       expect(data).toEqual(testData);
 
       // Get query state (without triggering fetch)
-      const state = queryManager.getQueryState(key, { enabled: false });
+      const state = getQueryState(key, { enabled: false });
       expect(state.data).toEqual(testData);
       expect(state.status).toBe('success');
     });
@@ -88,7 +98,7 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: true
       });
@@ -97,7 +107,7 @@ describe('QueryManager Core Tests', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Get query state and verify initial fetch
-      const state = queryManager.getQueryState(key, { enabled: false });
+      const state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('success');
       expect(mockFetcher).toHaveBeenCalledTimes(1);
 
@@ -111,7 +121,7 @@ describe('QueryManager Core Tests', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // State should still be success
-      const newState = queryManager.getQueryState(key, { enabled: false });
+      const newState = getQueryState(key, { enabled: false });
       expect(newState.status).toBe('success');
     });
 
@@ -120,7 +130,7 @@ describe('QueryManager Core Tests', () => {
       const callback = jest.fn();
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: true
       });
@@ -129,10 +139,10 @@ describe('QueryManager Core Tests', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Subscribe using subscribeQuery (like React does)
-      const unsubscribe = queryManager.subscribeQuery(key, callback, { enabled: false });
+      const unsubscribe = subscribeQuery(key, callback, { enabled: false });
 
       // Get initial state
-      const state = queryManager.getQueryState(key, { enabled: false });
+      const state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('success');
       expect(mockFetcher).toHaveBeenCalledTimes(1);
 
@@ -160,7 +170,7 @@ describe('QueryManager Core Tests', () => {
       mockFetcher.mockResolvedValue(testData);
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: true
       });
@@ -168,13 +178,13 @@ describe('QueryManager Core Tests', () => {
       // Wait for fetch to complete
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      const data = queryManager.getQueryData(key);
+      const data = getQueryData(key);
       expect(data).toEqual(testData);
 
       // Wait for fetch to complete
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      const state = queryManager.getQueryState(key, { enabled: false });
+      const state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('success');
       expect(state.error).toBeUndefined();
     });
@@ -185,14 +195,14 @@ describe('QueryManager Core Tests', () => {
       mockFetcher.mockRejectedValue(testError);
 
       // Register fetcher with disabled to avoid immediate fetch
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Start a fetch manually and wait for it to fail
       try {
-        await queryManager.fetchQuery(key);
+        await fetchQuery(key);
       } catch (err) {
         // Expected to throw
       }
@@ -200,7 +210,7 @@ describe('QueryManager Core Tests', () => {
       // Wait a bit for error state to be set
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      const state = queryManager.getQueryState(key, { enabled: false });
+      const state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('error');
       expect(state.error).toBe(testError);
       expect(state.data).toBeUndefined();
@@ -210,21 +220,21 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Set some initial data first
-      queryManager.setQueryData(key, { id: 1, name: 'initial' });
+      setQueryData(key, { id: 1, name: 'initial' });
 
       // Start a fetch manually
-      const fetchPromise = queryManager.fetchQuery(key);
+      const fetchPromise = fetchQuery(key);
 
       // Wait for fetch to complete
       await fetchPromise;
 
-      const state = queryManager.getQueryState(key, { enabled: false });
+      const state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('success');
       expect(state.data).toEqual({ id: 1, data: 'test-data' }); // Should have new data from fetch
     });
@@ -235,15 +245,15 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Make multiple rapid calls
-      queryManager.getQueryData(key, { enabled: true });
-      queryManager.getQueryData(key, { enabled: true });
-      queryManager.getQueryData(key, { enabled: true });
+      getQueryData(key, { enabled: true });
+      getQueryData(key, { enabled: true });
+      getQueryData(key, { enabled: true });
 
       // Wait a bit
       await new Promise(resolve => setTimeout(resolve, 10));
@@ -261,13 +271,13 @@ describe('QueryManager Core Tests', () => {
       mockFetcher.mockReturnValue(slowPromise);
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: true
       });
 
       // Make another call while first is inflight
-      queryManager.getQueryData(key, { enabled: true });
+      getQueryData(key, { enabled: true });
 
       // Resolve the first promise
       resolvePromise!({ id: 1, data: 'slow' });
@@ -284,13 +294,13 @@ describe('QueryManager Core Tests', () => {
       const callback = jest.fn();
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe
-      const unsubscribe = queryManager.subscribeQuery(key, callback, { enabled: true });
+      const unsubscribe = subscribeQuery(key, callback, { enabled: true });
 
       expect(typeof unsubscribe).toBe('function');
 
@@ -306,13 +316,13 @@ describe('QueryManager Core Tests', () => {
       const callback = jest.fn();
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe with callback that doesn't use state parameter
-      const unsubscribe = queryManager.subscribeQuery(key, () => {
+      const unsubscribe = subscribeQuery(key, () => {
         callback();
       }, { enabled: true });
 
@@ -331,13 +341,13 @@ describe('QueryManager Core Tests', () => {
       const callback = jest.fn();
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe with callback that uses state parameter
-      const unsubscribe = queryManager.subscribeQuery(key, (state) => {
+      const unsubscribe = subscribeQuery(key, (state) => {
         callback(state);
       }, { enabled: true });
 
@@ -363,13 +373,13 @@ describe('QueryManager Core Tests', () => {
       const callback = jest.fn();
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe with callback that has state parameter but doesn't use it
-      const unsubscribe = queryManager.subscribeQuery(key, (state) => {
+      const unsubscribe = subscribeQuery(key, (state) => {
         // User chooses not to use the state parameter
         callback('callback-called');
       }, { enabled: true });
@@ -389,13 +399,13 @@ describe('QueryManager Core Tests', () => {
       const callback = jest.fn();
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe with callback that conditionally uses state parameter
-      const unsubscribe = queryManager.subscribeQuery(key, (state) => {
+      const unsubscribe = subscribeQuery(key, (state) => {
         if (state && state.status === 'success') {
           callback('success-state', state.data);
         } else {
@@ -424,21 +434,21 @@ describe('QueryManager Core Tests', () => {
       const callback3 = jest.fn();
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe with different callback patterns
-      const unsubscribe1 = queryManager.subscribeQuery(key, () => {
+      const unsubscribe1 = subscribeQuery(key, () => {
         callback1('no-state');
       }, { enabled: true });
 
-      const unsubscribe2 = queryManager.subscribeQuery(key, (state) => {
+      const unsubscribe2 = subscribeQuery(key, (state) => {
         callback2('with-state', state?.status);
       }, { enabled: true });
 
-      const unsubscribe3 = queryManager.subscribeQuery(key, (state) => {
+      const unsubscribe3 = subscribeQuery(key, (state) => {
         // Conditional usage
         if (state) {
           callback3('conditional', state.data);
@@ -464,13 +474,13 @@ describe('QueryManager Core Tests', () => {
       const callback = jest.fn();
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe
-      queryManager.subscribeQuery(key, callback, { enabled: true });
+      subscribeQuery(key, callback, { enabled: true });
 
       // Wait for fetch to complete
       await new Promise(resolve => setTimeout(resolve, 10));
@@ -485,14 +495,14 @@ describe('QueryManager Core Tests', () => {
       const callback2 = jest.fn();
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe both
-      queryManager.subscribeQuery(key, callback1, { enabled: true });
-      queryManager.subscribeQuery(key, callback2, { enabled: true });
+      subscribeQuery(key, callback1, { enabled: true });
+      subscribeQuery(key, callback2, { enabled: true });
 
       // Wait for fetch to complete
       await new Promise(resolve => setTimeout(resolve, 10));
@@ -508,17 +518,17 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // First subscription - should fetch once
-      queryManager.subscribeQuery(key, jest.fn(), { enabled: true });
+      subscribeQuery(key, jest.fn(), { enabled: true });
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Second subscription with refetchOnSubscribe: always - should fetch again
-      queryManager.subscribeQuery(key, jest.fn(), {
+      subscribeQuery(key, jest.fn(), {
         enabled: true,
         refetchOnSubscribe: 'always'
       });
@@ -532,21 +542,21 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher with short staleTime
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false,
         staleTime: 50
       });
 
       // First subscription
-      queryManager.subscribeQuery(key, jest.fn(), { enabled: true });
+      subscribeQuery(key, jest.fn(), { enabled: true });
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Wait for data to become stale
       await new Promise(resolve => setTimeout(resolve, 60));
 
       // Second subscription with refetchOnSubscribe: stale
-      queryManager.subscribeQuery(key, jest.fn(), {
+      subscribeQuery(key, jest.fn(), {
         enabled: true,
         refetchOnSubscribe: 'stale'
       });
@@ -560,17 +570,17 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // First subscription
-      queryManager.subscribeQuery(key, jest.fn(), { enabled: true });
+      subscribeQuery(key, jest.fn(), { enabled: true });
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Second subscription with refetchOnSubscribe: false
-      queryManager.subscribeQuery(key, jest.fn(), {
+      subscribeQuery(key, jest.fn(), {
         enabled: true,
         refetchOnSubscribe: false
       });
@@ -584,25 +594,25 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher with staleTime
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false,
         staleTime: 100
       });
 
       // Subscribe and fetch
-      queryManager.subscribeQuery(key, jest.fn(), { enabled: true });
+      subscribeQuery(key, jest.fn(), { enabled: true });
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Initially should not be stale
-      let state = queryManager.getQueryState(key, { staleTime: 100 });
+      let state = getQueryState(key, { staleTime: 100 });
       expect(state.isStale).toBe(false);
 
       // Wait for data to become stale
       await new Promise(resolve => setTimeout(resolve, 110));
 
       // Should be stale now
-      state = queryManager.getQueryState(key, { staleTime: 100 });
+      state = getQueryState(key, { staleTime: 100 });
       expect(state.isStale).toBe(true);
     });
   });
@@ -610,29 +620,29 @@ describe('QueryManager Core Tests', () => {
   describe('Edge Cases', () => {
     test('should handle undefined query key', () => {
       expect(() => {
-        queryManager.getQueryData(undefined as any);
+        getQueryData(undefined as any);
       }).not.toThrow();
 
       expect(() => {
-        queryManager.getQueryState(undefined as any);
+        getQueryState(undefined as any);
       }).not.toThrow();
     });
 
     test('should handle empty query key', () => {
       expect(() => {
-        queryManager.getQueryData([]);
+        getQueryData([]);
       }).not.toThrow();
 
       expect(() => {
-        queryManager.getQueryState([]);
+        getQueryState([]);
       }).not.toThrow();
     });
 
     test('should handle non-existent query', () => {
-      const data = queryManager.getQueryData(['non-existent'], { enabled: false });
+      const data = getQueryData(['non-existent'], { enabled: false });
       expect(data).toBeUndefined();
 
-      const state = queryManager.getQueryState(['non-existent'], { enabled: false });
+      const state = getQueryState(['non-existent'], { enabled: false });
       expect(state.status).toBe('idle');
       expect(state.data).toBeUndefined();
     });
@@ -643,13 +653,13 @@ describe('QueryManager Core Tests', () => {
       const fetcher2 = jest.fn().mockResolvedValue({ id: 2 });
 
       // Register first fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: fetcher1,
         enabled: false
       });
 
       // Register second fetcher (should override first)
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: fetcher2,
         enabled: true
       });
@@ -670,17 +680,17 @@ describe('QueryManager Core Tests', () => {
       mockFetcher.mockResolvedValue(successData);
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Initial fetch
-      await queryManager.fetchQuery(key);
+      await fetchQuery(key);
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Check initial state - should be success
-      let state = queryManager.getQueryState(key, { enabled: false });
+      let state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('success');
       expect(state.isSuccess).toBe(true);
       expect(state.isError).toBe(false);
@@ -693,7 +703,7 @@ describe('QueryManager Core Tests', () => {
       const refetchPromise = state.refetch();
 
       // Check state during refetch
-      state = queryManager.getQueryState(key, { enabled: false });
+      state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('fetching');
       expect(state.isFetching).toBe(true);
       expect(state.isSuccess).toBe(true); // Should remain true during refetch
@@ -705,7 +715,7 @@ describe('QueryManager Core Tests', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Check state after successful refetch
-      state = queryManager.getQueryState(key, { enabled: false });
+      state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('success');
       expect(state.isSuccess).toBe(true); // Should still be true after successful refetch
       expect(state.isError).toBe(false);
@@ -719,7 +729,7 @@ describe('QueryManager Core Tests', () => {
       const errorRefetchPromise = state.refetch();
 
       // Check state during error fetch
-      state = queryManager.getQueryState(key, { enabled: false });
+      state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('fetching');
       expect(state.isFetching).toBe(true);
       expect(state.isSuccess).toBe(true); // Should still be true during fetch
@@ -734,7 +744,7 @@ describe('QueryManager Core Tests', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Check state after error
-      state = queryManager.getQueryState(key, { enabled: false });
+      state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('error');
       expect(state.isSuccess).toBe(false); // Should be false after error
       expect(state.isError).toBe(true); // Should be true after error
@@ -753,7 +763,7 @@ describe('QueryManager Core Tests', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Check state after recovery
-      state = queryManager.getQueryState(key, { enabled: false });
+      state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('success');
       expect(state.isSuccess).toBe(true); // Should be true again after successful recovery
       expect(state.isError).toBe(false); // Should be false after successful recovery
@@ -768,21 +778,21 @@ describe('QueryManager Core Tests', () => {
       mockFetcher.mockRejectedValue(errorData);
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // First fetch that will fail
       try {
-        await queryManager.fetchQuery(key);
+        await fetchQuery(key);
       } catch (err) {
         // Expected to throw
       }
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Check state after first fetch error
-      const state = queryManager.getQueryState(key, { enabled: false });
+      const state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('error');
       expect(state.isSuccess).toBe(false); // Should be false on first fetch error
       expect(state.isError).toBe(true); // Should be true on first fetch error
@@ -795,10 +805,10 @@ describe('QueryManager Core Tests', () => {
       const testData = { id: 1, data: 'manual-data' };
 
       // Set data manually
-      queryManager.setQueryData(key, testData);
+      setQueryData(key, testData);
 
       // Check state after manual data set
-      const state = queryManager.getQueryState(key, { enabled: false });
+      const state = getQueryState(key, { enabled: false });
       expect(state.status).toBe('success');
       expect(state.isSuccess).toBe(true); // Should be true when data is set manually
       expect(state.isError).toBe(false); // Should be false when data is set manually
@@ -811,20 +821,20 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe and fetch
-      const unsubscribe = queryManager.subscribeQuery(key, jest.fn(), { enabled: true });
+      const unsubscribe = subscribeQuery(key, jest.fn(), { enabled: true });
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Unsubscribe
       unsubscribe();
 
       // Data should still be available (no automatic eviction in current implementation)
-      const data = queryManager.getQueryData(key, { enabled: false });
+      const data = getQueryData(key, { enabled: false });
       expect(data).toEqual({ id: 1, data: 'test-data' });
     });
 
@@ -832,24 +842,24 @@ describe('QueryManager Core Tests', () => {
       const key = ['test-key'];
 
       // Register fetcher
-      queryManager.registerFetcher(key, {
+      registerFetcher(key, {
         fetcher: mockFetcher,
         enabled: false
       });
 
       // Subscribe and fetch
-      const unsubscribe = queryManager.subscribeQuery(key, jest.fn(), { enabled: true });
+      const unsubscribe = subscribeQuery(key, jest.fn(), { enabled: true });
       await new Promise(resolve => setTimeout(resolve, 10));
 
       // Data should be available
-      const data = queryManager.getQueryData(key, { enabled: false });
+      const data = getQueryData(key, { enabled: false });
       expect(data).toEqual({ id: 1, data: 'test-data' });
 
       // Unsubscribe
       unsubscribe();
 
       // Data should still be available (no automatic eviction in current implementation)
-      const evictedData = queryManager.getQueryData(key, { enabled: false });
+      const evictedData = getQueryData(key, { enabled: false });
       expect(evictedData).toEqual({ id: 1, data: 'test-data' });
     });
   });
@@ -860,7 +870,7 @@ describe('QueryManager Core Tests', () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
 
       // Try to fetch without registering a fetcher and without setting data
-      const result = await queryManager.fetchQuery(key);
+      const result = await fetchQuery(key);
 
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining('[qortex] No fetcher or data for key "no-fetcher-key"')
@@ -879,10 +889,10 @@ describe('QueryManager Core Tests', () => {
       const testData = { id: 1, name: 'test' };
 
       // Set data first (this sets updatedAt)
-      queryManager.setQueryData(key, testData);
+      setQueryData(key, testData);
 
       // Try to fetch without registering a fetcher but with existing updatedAt
-      const result = await queryManager.fetchQuery(key);
+      const result = await fetchQuery(key);
 
       expect(consoleSpy).not.toHaveBeenCalled();
       expect(result).toEqual(testData);

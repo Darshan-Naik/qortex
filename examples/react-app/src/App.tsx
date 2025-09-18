@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery,queryManager } from "qortex-react";
+import { useQuery } from "qortex-react";
 import "./App.css";
 
 
@@ -15,7 +15,6 @@ export default function App() {
       return [{ id: 1, title: "Todo 1" }, { id: 2, title: "Todo 2" }, { id: 3, title: "Todo 3" }];
     }
   });
-  queryManager.clearCache();
 
   return (
     <div className="app">

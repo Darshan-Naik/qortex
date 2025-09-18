@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { queryManager ,useQuery} from '../src/index';
+import { dangerClearCache ,useQuery ,registerFetcher} from '../src/index';
 
 // Test component that uses useQuery
 function TestComponent({ queryKey, options = {} }) {
@@ -32,7 +32,7 @@ describe('useQuery React Integration Tests', () => {
   beforeEach(() => {
     // Clear queryManager state for each test
     // ⚠️ Using dangerClearCache() is safe here in test environment only
-    queryManager.dangerClearCache();
+    dangerClearCache();
     
     // Default mock fetcher
     mockFetcher = jest.fn().mockResolvedValue({ id: 1, data: 'test-data' });
@@ -41,7 +41,7 @@ describe('useQuery React Integration Tests', () => {
   describe('Basic React Integration', () => {
     test('should render with initial state and fetch data', async () => {
       // Register fetcher
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: mockFetcher,
         enabled: false
       });
@@ -69,7 +69,7 @@ describe('useQuery React Integration Tests', () => {
 
     test('should handle disabled queries', () => {
       // Register fetcher
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: mockFetcher,
         enabled: false
       });
@@ -86,7 +86,7 @@ describe('useQuery React Integration Tests', () => {
 
     test('should handle refetch function', async () => {
       // Register fetcher
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: mockFetcher,
         enabled: false
       });
@@ -119,7 +119,7 @@ describe('useQuery React Integration Tests', () => {
         return { id: 1, data: 'test-data' };
       });
 
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: slowFetcher,
         enabled: false
       });
@@ -144,7 +144,7 @@ describe('useQuery React Integration Tests', () => {
       // Register error fetcher
       const errorFetcher = jest.fn().mockRejectedValue(new Error('Test error'));
 
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: errorFetcher,
         enabled: false
       });
@@ -165,7 +165,7 @@ describe('useQuery React Integration Tests', () => {
   describe('Re-render Scenarios', () => {
     test('should not cause unnecessary re-renders', async () => {
       // Register fetcher
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: mockFetcher,
         enabled: false
       });
@@ -194,8 +194,8 @@ describe('useQuery React Integration Tests', () => {
       const fetcher1 = jest.fn().mockResolvedValue({ id: 1, data: 'query1' });
       const fetcher2 = jest.fn().mockResolvedValue({ id: 2, data: 'query2' });
 
-      queryManager.registerFetcher(['query1'], { fetcher: fetcher1, enabled: false });
-      queryManager.registerFetcher(['query2'], { fetcher: fetcher2, enabled: false });
+registerFetcher(['query1'], { fetcher: fetcher1, enabled: false });
+registerFetcher(['query2'], { fetcher: fetcher2, enabled: false });
 
       const { rerender } = render(<TestComponent queryKey={['query1']} options={{ enabled: true }} />);
 
@@ -220,7 +220,7 @@ describe('useQuery React Integration Tests', () => {
   describe('Multiple Components', () => {
     test('should handle multiple components with same query', async () => {
       // Register fetcher
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: mockFetcher,
         enabled: false
       });
@@ -247,8 +247,8 @@ describe('useQuery React Integration Tests', () => {
       const fetcher1 = jest.fn().mockResolvedValue({ id: 1, data: 'query1' });
       const fetcher2 = jest.fn().mockResolvedValue({ id: 2, data: 'query2' });
 
-      queryManager.registerFetcher(['query1'], { fetcher: fetcher1, enabled: false });
-      queryManager.registerFetcher(['query2'], { fetcher: fetcher2, enabled: false });
+registerFetcher(['query1'], { fetcher: fetcher1, enabled: false });
+registerFetcher(['query2'], { fetcher: fetcher2, enabled: false });
 
       render(
         <div>
@@ -271,7 +271,7 @@ describe('useQuery React Integration Tests', () => {
   describe('Options Integration', () => {
     test('should handle refetchOnSubscribe: always', async () => {
       // Register fetcher
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: mockFetcher,
         enabled: false
       });
@@ -313,7 +313,7 @@ describe('useQuery React Integration Tests', () => {
 
     test('should handle staleTime option', async () => {
       // Register fetcher with staleTime
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: mockFetcher,
         enabled: false,
         staleTime: 200
@@ -356,7 +356,7 @@ describe('useQuery React Integration Tests', () => {
   describe('Subscription Management', () => {
     test('should clean up subscriptions on unmount', async () => {
       // Register fetcher
-      queryManager.registerFetcher(['test-key'], {
+registerFetcher(['test-key'], {
         fetcher: mockFetcher,
         enabled: false
       });
