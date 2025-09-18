@@ -1,5 +1,5 @@
 import { useSyncExternalStore, useCallback } from "react";
-import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, getQueryData, subscribeQuery, serializeKey } from "../src/index";
+import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, getQueryData, subscribeQuery, serializeKey } from "qortex-core";
 
 /**
  * useQueryData hook for React integration with qortex
