@@ -6,6 +6,10 @@ export default defineConfig({
   format: ["cjs", "esm"],
   sourcemap: false,
   clean: true,
-  external: ["react", "qortex"],
+  minify: true,
+  treeshake: true,
+  splitting: false,
+  target: "es2020",
+  external: ["react", "qortex-core"],
   onSuccess: "cd ../../ && node scripts/prepare-publish.js && cp packages/qortex-react/README.md packages/qortex-react/dist/ 2>/dev/null || true"
 });
