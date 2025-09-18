@@ -100,7 +100,7 @@ const api = {
 ### Fetcher Registration
 ```typescript
 // Register with different caching strategies
-queryManager.registerFetcher(["users"], {
+registerFetcher(["users"], {
   fetcher: api.getUsers,
   staleTime: 5 * 60 * 1000, // 5 minutes
   cacheTime: 10 * 60 * 1000, // 10 minutes

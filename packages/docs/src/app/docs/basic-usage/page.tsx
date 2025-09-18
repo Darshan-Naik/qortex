@@ -107,7 +107,7 @@ function UserProfile({ userId }: { userId: string }) {
     description: 'Automatic background refetching and cache management',
     icon: RefreshCw,
     code: `// Configure for background updates
-queryManager.registerFetcher(["live-data"], {
+registerFetcher(["live-data"], {
   fetcher: async () => {
     const response = await fetch("/api/live-data");
     return response.json();
@@ -135,7 +135,7 @@ const patterns = [
   {
     title: 'Global Configuration',
     description: 'Set default options for all queries',
-    code: `queryManager.setDefaultConfig({
+    code: `setDefaultConfig({
   staleTime: 5 * 60 * 1000, // 5 minutes
   refetchOnSubscribe: "stale",
   throttleTime: 100,
@@ -155,13 +155,13 @@ function UserCount() {
   {
     title: 'Manual Data Updates',
     description: 'Update data manually from anywhere in your app',
-    code: `import { queryManager } from "qortex-core";
+    code: `import { setQueryData } from "qortex-core";
 
 // Update data directly
-queryManager.setQueryData(["todos"], newTodos);
+setQueryData(["todos"], newTodos);
 
 // Functional update
-queryManager.setQueryData(["todos"], (oldData) => [
+setQueryData(["todos"], (oldData) => [
   ...(oldData || []),
   newTodo
 ]);`,

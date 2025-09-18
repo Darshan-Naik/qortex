@@ -252,14 +252,14 @@ export default function ErrorHandlingPage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Global Configuration</h3>
             <pre className="code-block">
               <code>{`// Set global error handling defaults
-queryManager.setDefaultConfig({
+setDefaultConfig({
   usePreviousDataOnError: true, // Keep previous data on error
   usePlaceholderOnError: false, // Don't use placeholder on error
   staleTime: 5 * 60 * 1000, // 5 minutes stale time
 });
 
 // Per-query error handling
-queryManager.registerFetcher(["critical-data"], {
+registerFetcher(["critical-data"], {
   fetcher: async () => {
     const response = await fetch("/api/critical-data");
     if (!response.ok) throw new Error('Failed to fetch critical data');

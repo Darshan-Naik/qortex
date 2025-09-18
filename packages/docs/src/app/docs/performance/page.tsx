@@ -12,7 +12,8 @@ const performanceTips = [
         description: 'Keep your bundle size minimal by importing only what you need',
         icon: Zap,
         code: `// ✅ Good - Import only what you need
-import { queryManager, useQuery } from "qortex-react";
+import { useQuery } from "qortex-react";
+import { registerFetcher } from "qortex-core";
 
 // ❌ Avoid - Don't import everything
 import * as qortex from "qortex-react";`,
@@ -22,19 +23,19 @@ import * as qortex from "qortex-react";`,
         description: 'Set stale times based on your data characteristics',
         icon: Cpu,
         code: `// Short-lived data (real-time)
-queryManager.registerFetcher(["live-data"], {
+registerFetcher(["live-data"], {
   fetcher: fetchLiveData,
   staleTime: 0 // Always stale
 });
 
 // Long-lived data (user profiles)
-queryManager.registerFetcher(["user-profile"], {
+registerFetcher(["user-profile"], {
   fetcher: fetchUserProfile,
   staleTime: 5 * 60 * 1000 // 5 minutes
 });
 
 // Static data (configuration)
-queryManager.registerFetcher(["config"], {
+registerFetcher(["config"], {
   fetcher: fetchConfig,
   staleTime: 30 * 60 * 1000 // 30 minutes
 });`,
@@ -63,12 +64,12 @@ queryManager.registerFetcher(["config"], {
         description: 'Provide meaningful placeholder data to prevent layout shifts',
         icon: TrendingUp,
         code: `// Provide placeholder data for better UX
-queryManager.registerFetcher(["todos"], {
+registerFetcher(["todos"], {
   fetcher: fetchTodos,
   placeholderData: [] // Empty array while loading
 });
 
-queryManager.registerFetcher(["user"], {
+registerFetcher(["user"], {
   fetcher: fetchUser,
   placeholderData: {
     name: "Loading...",

@@ -43,19 +43,21 @@ const installationSteps = [
         description: 'Select the package that fits your framework',
         icon: Package,
         code: `// For React applications
-import { queryManager, useQuery } from "qortex-react";
+import { useQuery } from "qortex-react";
+import { registerFetcher, setDefaultConfig } from "qortex-core";
 
 // For other frameworks
-import { queryManager } from "qortex-core";`,
+import { registerFetcher, setDefaultConfig } from "qortex-core";`,
     },
     {
         title: 'Import and Setup',
         description: 'Import qortex in your application',
         icon: Code,
-        code: `import { queryManager, useQuery } from "qortex-react";
+        code: `import { useQuery } from "qortex-react";
+import { registerFetcher, setDefaultConfig } from "qortex-core";
 
 // Set global defaults (optional)
-queryManager.setDefaultConfig({
+setDefaultConfig({
   staleTime: 5 * 60 * 1000, // 5 minutes
   refetchOnSubscribe: "stale",
   throttleTime: 100,
@@ -67,7 +69,7 @@ queryManager.setDefaultConfig({
         description: 'Register your data fetching functions',
         icon: Terminal,
         code: `// Register a fetcher
-queryManager.registerFetcher(["todos"], {
+registerFetcher(["todos"], {
   fetcher: async () => {
     const response = await fetch("/api/todos");
     return response.json();

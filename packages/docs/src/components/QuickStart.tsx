@@ -24,10 +24,11 @@ yarn add qortex-core`,
     },
     {
         name: 'Basic Usage',
-        code: `import { queryManager, useQuery } from "qortex-react";
+        code: `import { useQuery } from "qortex-react";
+import { registerFetcher } from "qortex-core";
 
 // Register a fetcher
-queryManager.registerFetcher(["todos"], {
+registerFetcher(["todos"], {
   fetcher: async () => {
     const response = await fetch("/api/todos");
     return response.json();
@@ -57,10 +58,10 @@ function TodosList() {
     },
     {
         name: 'Advanced Configuration',
-        code: `import { queryManager } from "qortex-core";
+        code: `import { registerFetcher, setDefaultConfig } from "qortex-core";
 
 // Set global defaults
-queryManager.setDefaultConfig({
+setDefaultConfig({
   staleTime: 5 * 60 * 1000, // 5 minutes
   refetchOnSubscribe: "stale",
   throttleTime: 100,
@@ -68,7 +69,7 @@ queryManager.setDefaultConfig({
 });
 
 // Register fetcher with options
-queryManager.registerFetcher(["users"], {
+registerFetcher(["users"], {
   fetcher: async () => {
     const response = await fetch("/api/users");
     return response.json();

@@ -11,10 +11,10 @@ const configOptions = [
         title: 'Global Defaults',
         description: 'Set default configuration for all queries',
         icon: Settings,
-        code: `import { queryManager } from "qortex-core";
+        code: `import { setDefaultConfig, registerFetcher, setQueryData, getQueryData, invalidateQuery, dangerClearCache } from "qortex-core";
 
 // Set global defaults
-queryManager.setDefaultConfig({
+setDefaultConfig({
   staleTime: 5 * 60 * 1000, // 5 minutes
   refetchOnSubscribe: "stale",
   throttleTime: 100,
@@ -36,7 +36,7 @@ queryManager.setDefaultConfig({
         description: 'Override defaults for specific queries',
         icon: Clock,
         code: `// Register fetcher with custom options
-queryManager.registerFetcher(["live-data"], {
+registerFetcher(["live-data"], {
   fetcher: async () => {
     const response = await fetch("/api/live-data");
     return response.json();
@@ -61,22 +61,22 @@ const { data } = useQuery(["live-data"], {
         description: 'Control caching behavior and data updates',
         icon: RefreshCw,
         code: `// Manual data updates
-queryManager.setQueryData(["todos"], newTodos);
+setQueryData(["todos"], newTodos);
 
 // Functional updates
-queryManager.setQueryData(["todos"], (oldData) => [
+setQueryData(["todos"], (oldData) => [
   ...(oldData || []),
   newTodo
 ]);
 
 // Get current data
-const currentTodos = queryManager.getQueryData(["todos"]);
+const currentTodos = getQueryData(["todos"]);
 
 // Clear specific query
-queryManager.clearQuery(["todos"]);
+clearQuery(["todos"]);
 
 // Clear all queries
-queryManager.clearAllQueries();`,
+clearAllQueries();`,
         options: [
             { name: 'setQueryData', type: 'function', description: 'Manually update query data' },
             { name: 'getQueryData', type: 'function', description: 'Get current query data' },
@@ -89,13 +89,13 @@ queryManager.clearAllQueries();`,
         description: 'Configure error handling and retry behavior',
         icon: Shield,
         code: `// Global error handling
-queryManager.setDefaultConfig({
+setDefaultConfig({
   usePreviousDataOnError: true, // Keep previous data
   usePlaceholderOnError: false  // Don't use placeholder on error
 });
 
 // Per-query error handling
-queryManager.registerFetcher(["critical-data"], {
+registerFetcher(["critical-data"], {
   fetcher: async () => {
     const response = await fetch("/api/critical-data");
     if (!response.ok) throw new Error('Failed to fetch critical data');
