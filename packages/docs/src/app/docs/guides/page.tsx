@@ -97,27 +97,6 @@ const learningPaths = [
     }
 ]
 
-const quickLinks = [
-    {
-        title: 'Common Patterns',
-        description: 'Frequently used patterns and solutions',
-        links: [
-            { name: 'Data Fetching', href: '/docs/basic-usage#data-fetching' },
-            { name: 'Loading States', href: '/docs/basic-usage#loading-states' },
-            { name: 'Error Handling', href: '/docs/error-handling#common-patterns' },
-            { name: 'Caching', href: '/docs/configuration#caching' }
-        ]
-    },
-    {
-        title: 'Troubleshooting',
-        description: 'Solutions to common issues',
-        links: [
-            { name: 'Build Errors', href: '/docs/installation#troubleshooting' },
-            { name: 'TypeScript Issues', href: '/docs/typescript#troubleshooting' },
-            { name: 'Performance Issues', href: '/docs/performance#troubleshooting' }
-        ]
-    }
-]
 
 export default function GuidesPage() {
     return (
@@ -210,30 +189,6 @@ export default function GuidesPage() {
                     </div>
                 </div>
 
-                {/* Quick Links */}
-                <div className="mb-16">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-8">Quick Links</h2>
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        {quickLinks.map((section) => (
-                            <div key={section.title} className="card">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">{section.title}</h3>
-                                <p className="text-gray-600 mb-4">{section.description}</p>
-                                <ul className="space-y-2">
-                                    {section.links.map((link) => (
-                                        <li key={link.name}>
-                                            <a
-                                                href={link.href}
-                                                className="text-primary-600 hover:text-primary-700 text-sm font-medium"
-                                            >
-                                                {link.name} →
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                </div>
 
                 {/* Getting Help */}
                 <div className="bg-primary-50 rounded-lg p-6">

@@ -25,7 +25,7 @@ yarn add qortex-react  # or qortex-core`,
     title: 'Set up your first fetcher',
     description: 'Register a fetcher function to define how data is fetched',
     icon: Code,
-    code: `import { registerFetcher, setDefaultConfig } from "qortex-core";
+    code: `import { registerFetcher, setDefaultConfig } from "qortex-react";
 
 // Register a fetcher for todos
 registerFetcher(["todos"], {

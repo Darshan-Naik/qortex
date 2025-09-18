@@ -24,8 +24,7 @@ yarn add qortex-core`,
     },
     {
         name: 'Basic Usage',
-        code: `import { useQuery } from "qortex-react";
-import { registerFetcher } from "qortex-core";
+        code: `import { useQuery, registerFetcher } from "qortex-react";
 
 // Register a fetcher
 registerFetcher(["todos"], {
@@ -58,7 +57,7 @@ function TodosList() {
     },
     {
         name: 'Advanced Configuration',
-        code: `import { registerFetcher, setDefaultConfig } from "qortex-core";
+        code: `import { registerFetcher, setDefaultConfig } from "qortex-react";
 
 // Set global defaults
 setDefaultConfig({

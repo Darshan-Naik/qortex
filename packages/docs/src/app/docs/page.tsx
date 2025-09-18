@@ -42,14 +42,6 @@ const docSections = [
     },
 ]
 
-const quickLinks = [
-    { name: 'Installation', href: '/docs/installation' },
-    { name: 'Basic Usage', href: '/docs/basic-usage' },
-    { name: 'Configuration', href: '/docs/configuration' },
-    { name: 'Error Handling', href: '/docs/error-handling' },
-    { name: 'Performance Tips', href: '/docs/performance' },
-    { name: 'TypeScript', href: '/docs/typescript' },
-]
 
 export default function DocsPage() {
     return (
@@ -89,21 +81,6 @@ export default function DocsPage() {
                     ))}
                 </div>
 
-                <div className="mt-16">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-8">Quick Links</h2>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {quickLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <span className="text-gray-900 font-medium">{link.name}</span>
-                                <ArrowRight className="ml-auto h-4 w-4 text-gray-400" />
-                            </Link>
-                        ))}
-                    </div>
-                </div>
             </div>
         </div>
     )

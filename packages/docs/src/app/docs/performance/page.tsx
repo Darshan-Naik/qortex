@@ -12,8 +12,7 @@ const performanceTips = [
         description: 'Keep your bundle size minimal by importing only what you need',
         icon: Zap,
         code: `// ✅ Good - Import only what you need
-import { useQuery } from "qortex-react";
-import { registerFetcher } from "qortex-core";
+import { useQuery, registerFetcher } from "qortex-react";
 
 // ❌ Avoid - Don't import everything
 import * as qortex from "qortex-react";`,

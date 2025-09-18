@@ -108,32 +108,6 @@ const errorPatterns = [
   },
 ]
 
-const errorTypes = [
-  {
-    type: 'Network Errors',
-    description: 'Connection issues, timeouts, and network failures',
-    handling: 'Retry with exponential backoff, show offline indicator',
-    example: 'Failed to fetch data from server'
-  },
-  {
-    type: 'HTTP Errors',
-    description: '4xx and 5xx status codes from API responses',
-    handling: 'Handle specific status codes, show appropriate messages',
-    example: '404 Not Found, 500 Internal Server Error'
-  },
-  {
-    type: 'Validation Errors',
-    description: 'Data validation failures and malformed responses',
-    handling: 'Show validation messages, highlight problematic fields',
-    example: 'Invalid email format, required field missing'
-  },
-  {
-    type: 'Authentication Errors',
-    description: 'Unauthorized access and token expiration',
-    handling: 'Redirect to login, refresh tokens, clear sensitive data',
-    example: '401 Unauthorized, 403 Forbidden'
-  }
-]
 
 export default function ErrorHandlingPage() {
   return (
@@ -173,48 +147,6 @@ export default function ErrorHandlingPage() {
           </div>
         </div>
 
-        {/* Error Types */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">Common Error Types</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Error Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Handling Strategy
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Example
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {errorTypes.map((error, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {error.type}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {error.description}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {error.handling}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 font-mono">
-                      {error.example}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
 
         {/* Best Practices */}
         <div className="mb-16">

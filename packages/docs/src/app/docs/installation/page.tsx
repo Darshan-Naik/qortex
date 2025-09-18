@@ -43,8 +43,7 @@ const installationSteps = [
         description: 'Select the package that fits your framework',
         icon: Package,
         code: `// For React applications
-import { useQuery } from "qortex-react";
-import { registerFetcher, setDefaultConfig } from "qortex-core";
+import { useQuery, registerFetcher, setDefaultConfig } from "qortex-react";
 
 // For other frameworks
 import { registerFetcher, setDefaultConfig } from "qortex-core";`,
@@ -53,8 +52,7 @@ import { registerFetcher, setDefaultConfig } from "qortex-core";`,
         title: 'Import and Setup',
         description: 'Import qortex in your application',
         icon: Code,
-        code: `import { useQuery } from "qortex-react";
-import { registerFetcher, setDefaultConfig } from "qortex-core";
+        code: `import { useQuery, registerFetcher, setDefaultConfig } from "qortex-react";
 
 // Set global defaults (optional)
 setDefaultConfig({

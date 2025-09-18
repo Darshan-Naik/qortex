@@ -86,38 +86,6 @@ const features = [
   }
 ]
 
-const comparisons = [
-  {
-    feature: 'Bundle Size',
-    qortex: '< 2KB',
-    reactQuery: '~45KB',
-    swr: '~12KB'
-  },
-  {
-    feature: 'TypeScript Support',
-    qortex: 'Built-in',
-    reactQuery: 'Built-in',
-    swr: 'Built-in'
-  },
-  {
-    feature: 'Learning Curve',
-    qortex: 'Minimal',
-    reactQuery: 'Moderate',
-    swr: 'Minimal'
-  },
-  {
-    feature: 'Configuration',
-    qortex: 'Zero config',
-    reactQuery: 'Required',
-    swr: 'Optional'
-  },
-  {
-    feature: 'Caching Strategy',
-    qortex: 'Intelligent',
-    reactQuery: 'Advanced',
-    swr: 'Basic'
-  }
-]
 
 export default function FeaturesPage() {
   return (
@@ -162,48 +130,6 @@ export default function FeaturesPage() {
           </div>
         </div>
 
-        {/* Comparison Table */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">How qortex Compares</h2>
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Feature
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    qortex
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    React Query
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    SWR
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {comparisons.map((comparison) => (
-                  <tr key={comparison.feature}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {comparison.feature}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-600 font-semibold">
-                      {comparison.qortex}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {comparison.reactQuery}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {comparison.swr}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
 
         {/* Why Choose qortex */}
         <div className="mb-16">
