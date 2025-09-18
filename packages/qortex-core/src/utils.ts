@@ -94,6 +94,7 @@ export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<
     isInvalidated: false,
     fetcher: opts?.fetcher,
     equalityFn: getEqualityFunction(opts?.equalityStrategy, opts?.equalityFn),
+    equalityStrategy: opts?.equalityStrategy ?? 'shallow',
     placeholderData: opts?.placeholderData,
     usePreviousDataOnError: opts?.usePreviousDataOnError ?? false,
     usePlaceholderOnError: opts?.usePlaceholderOnError ?? false,

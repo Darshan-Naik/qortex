@@ -288,4 +288,53 @@ describe('EqualityStrategy', () => {
             expect(errorState.error).toBe(error);
         });
     });
+
+    describe('equalityStrategy persistence across API calls', () => {
+        it('should preserve equalityStrategy when calling other APIs without options', () => {
+            const data1 = { users: [{ id: 1, name: 'John' }] };
+            const data2 = { users: [{ id: 1, name: 'John' }] }; // Same structure, different reference
+
+            // Register with deep equality strategy
+            registerFetcher(['test-persistence'], {
+                fetcher: () => Promise.resolve(data1),
+                equalityStrategy: 'deep'
+            });
+
+            // Set initial data
+            setQueryData(['test-persistence'], data1);
+            const stored1 = getQueryData(['test-persistence']);
+
+            // Call setQueryData again without options - should use stored strategy
+            setQueryData(['test-persistence'], data2);
+            const stored2 = getQueryData(['test-persistence']);
+
+            // Should preserve the same reference due to deep equality
+            expect(stored1).toBe(stored2);
+            expect(stored1).toBe(data1);
+        });
+
+
+        it('should preserve equalityStrategy in getQueryState calls', () => {
+            const data1 = { users: [{ id: 1, name: 'John' }] };
+            const data2 = { users: [{ id: 1, name: 'John' }] }; // Same structure, different reference
+
+            // Register with deep equality strategy
+            registerFetcher(['test-getstate'], {
+                fetcher: () => Promise.resolve(data1),
+                equalityStrategy: 'deep'
+            });
+
+            // Set initial data
+            setQueryData(['test-getstate'], data1);
+            const state1 = getQueryState(['test-getstate']);
+
+            // Set new data and get state again without options
+            setQueryData(['test-getstate'], data2);
+            const state2 = getQueryState(['test-getstate']);
+
+            // Should preserve the same reference due to deep equality
+            expect(state1.data).toBe(state2.data);
+            expect(state1.data).toBe(data1);
+        });
+    });
 });

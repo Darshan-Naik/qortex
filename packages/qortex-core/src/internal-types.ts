@@ -1,4 +1,4 @@
-import type { QueryStatus, Fetcher, EqualityFn } from "./types";
+import type { QueryStatus, Fetcher, EqualityFn, EqualityStrategy } from "./types";
 
 /**
  * Internal query state that tracks all aspects of a query's lifecycle
@@ -14,6 +14,7 @@ export type QueryStateInternal<T = any> = {
   isInvalidated: boolean;
   fetcher?: Fetcher<T> | null;
   equalityFn: EqualityFn<T>;
+  equalityStrategy: EqualityStrategy;
   placeholderData?: T;
   usePreviousDataOnError?: boolean;
   usePlaceholderOnError?: boolean;
