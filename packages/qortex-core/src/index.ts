@@ -2,3 +2,4 @@
 export * from "./types";        // types for consumers
 export * from "./queryManager"; // runtime API
 export { serializeKey } from "./utils"; // utility functions
+export { QueryManagerCore } from "./queryManagerCore"; // core class

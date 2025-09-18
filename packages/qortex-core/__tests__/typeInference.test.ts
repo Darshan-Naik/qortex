@@ -1,11 +1,11 @@
-import { QueryManager } from '../src/queryManager';
+import { QueryManagerCore } from '../src/queryManagerCore';
 import { Fetcher, QueryKey } from '../src/types';
 
 describe('Enhanced Type Inference Tests', () => {
-    let queryManager: QueryManager;
+    let queryManager: QueryManagerCore;
 
     beforeEach(() => {
-        queryManager = new QueryManager();
+        queryManager = new QueryManagerCore();
     });
 
     describe('Automatic Type Inference', () => {
