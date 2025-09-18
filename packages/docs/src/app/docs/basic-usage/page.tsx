@@ -134,10 +134,10 @@ function LiveData() {
 ]
 
 const patterns = [
-        {
-          title: 'Equality Strategies',
-          description: 'Control how data changes are detected - strategy persists across all API calls',
-          code: `// Shallow equality (default) - compares only top-level properties
+  {
+    title: 'Equality Strategies',
+    description: 'Control how data changes are detected - strategy persists across all API calls',
+    code: `// Shallow equality (default) - compares only top-level properties
 registerFetcher(["users"], {
   fetcher: fetchUsers,
   equalityStrategy: "shallow"
@@ -159,7 +159,7 @@ registerFetcher(["todos"], {
 setQueryData(["users"], newData); // Uses "shallow" strategy
 getQueryData(["user-profile"]);   // Uses "deep" strategy
 getQueryState(["todos"]);         // Uses custom equalityFn`,
-        },
+  },
   {
     title: 'Global Configuration',
     description: 'Set default options for all queries',
@@ -187,13 +187,7 @@ function UserCount() {
     code: `import { setQueryData } from "qortex-core";
 
 // Update data directly
-setQueryData(["todos"], newTodos);
-
-// Functional update
-setQueryData(["todos"], (oldData) => [
-  ...(oldData || []),
-  newTodo
-]);`,
+setQueryData(["todos"], newTodos);`,
   },
 ]
 

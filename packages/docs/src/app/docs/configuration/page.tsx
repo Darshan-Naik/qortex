@@ -63,25 +63,15 @@ const { data } = useQuery(["live-data"], {
         code: `// Manual data updates
 setQueryData(["todos"], newTodos);
 
-// Functional updates
-setQueryData(["todos"], (oldData) => [
-  ...(oldData || []),
-  newTodo
-]);
-
 // Get current data
 const currentTodos = getQueryData(["todos"]);
 
-// Clear specific query
-clearQuery(["todos"]);
-
-// Clear all queries
-clearAllQueries();`,
+// Clear all cached data (testing only)
+dangerClearCache();`,
         options: [
             { name: 'setQueryData', type: 'function', description: 'Manually update query data' },
             { name: 'getQueryData', type: 'function', description: 'Get current query data' },
-            { name: 'clearQuery', type: 'function', description: 'Clear specific query cache' },
-            { name: 'clearAllQueries', type: 'function', description: 'Clear all query caches' }
+            { name: 'dangerClearCache', type: 'function', description: '⚠️ Clear all cached data (testing only)' }
         ]
     },
     {

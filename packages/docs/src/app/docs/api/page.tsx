@@ -36,18 +36,12 @@ registerFetcher(["users"], {
                 description: 'Manually update query data',
                 parameters: [
                     { name: 'key', type: 'string | string[]', description: 'Query key' },
-                    { name: 'data', type: 'T | (oldData: T) => T', description: 'New data or updater function' }
+                    { name: 'data', type: 'T', description: 'New data to set' }
                 ],
                 example: `import { setQueryData } from "qortex-core";
 
 // Direct update
-setQueryData(["todos"], newTodos);
-
-// Functional update
-setQueryData(["todos"], (oldData) => [
-  ...(oldData || []),
-  newTodo
-]);`
+setQueryData(["todos"], newTodos);`
             },
             {
                 name: 'fetchQuery(key, options?)',
