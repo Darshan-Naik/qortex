@@ -142,7 +142,7 @@ export class QueryManagerCore {
 
     // Attach callbacks to the promise
     promise.then((result: T) => {
-      state.data = result;
+      state.data = state.equalityFn(state.data, result) ? state.data : result;
       state.status = "success";
       state.updatedAt = Date.now();
       state.isError = false;
