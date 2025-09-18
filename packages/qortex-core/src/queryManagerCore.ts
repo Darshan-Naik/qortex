@@ -70,13 +70,14 @@ export class QueryManagerCore {
     const state = this.cache.get(sk);
 
     // Merge with default config 
-    const mergedOpts = { ...this.defaultConfig, ...opts };
 
     if (state) {
+      const mergedOpts = { ...this.defaultConfig, ...state, ...opts };
       Object.assign(state, mergedOpts);
       state.enabled = mergedOpts.enabled === false ? false : true;
       this.cache.set(sk, state);
     } else {
+      const mergedOpts = { ...this.defaultConfig, ...opts };
       const newState = createDefaultState(mergedOpts, () => this.fetchQuery(key));
       this.cache.set(sk, newState);
     }
