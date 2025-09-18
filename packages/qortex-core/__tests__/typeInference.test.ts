@@ -1,4 +1,3 @@
-import { QueryManagerCore } from '../src/queryManagerCore';
 import { Fetcher, QueryKey } from '../src/types';
 import {
     registerFetcher,
