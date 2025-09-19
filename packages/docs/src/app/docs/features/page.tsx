@@ -3,7 +3,7 @@ import { Zap, Shield, Code, Cpu, RefreshCw, Globe, Layers, CheckCircle } from 'l
 
 export const metadata: Metadata = {
   title: 'Features',
-  description: 'Explore all the powerful features of qortex. Lightning fast, minimal bundle, TypeScript first, and production ready.',
+  description: 'Explore all the powerful features of Qortex. Lightning fast, minimal bundle, TypeScript first, and production ready.',
 }
 
 const features = [
@@ -96,7 +96,7 @@ export default function FeaturesPage() {
             <span className="gradient-text">Features</span>
           </h1>
           <p className="mt-4 text-xl text-gray-600">
-            Explore all the powerful features that make qortex the perfect choice for your data fetching needs.
+            Explore all the powerful features that make Qortex the perfect choice for your data fetching needs.
           </p>
         </div>
 
@@ -131,9 +131,9 @@ export default function FeaturesPage() {
         </div>
 
 
-        {/* Why Choose qortex */}
+        {/* Why Choose Qortex */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">Why Choose qortex?</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">Why Choose Qortex?</h2>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="card text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100 text-primary-600 mx-auto mb-4">
@@ -163,7 +163,7 @@ export default function FeaturesPage() {
         <div className="bg-primary-50 rounded-lg p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Ready to Get Started?</h2>
           <p className="text-gray-600 mb-4">
-            Experience the power of qortex for yourself. Get started in minutes with our simple installation guide.
+            Experience the power of Qortex for yourself. Get started in minutes with our simple installation guide.
           </p>
           <div className="flex flex-wrap gap-4">
             <a

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     template: '%s | Qortex'
   },
   description: 'A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness!',
-  keywords: ['Qortex', 'qortex', 'data fetching', 'react', 'typescript', 'cache', 'query', 'performance'],
+  keywords: ['Qortex', 'qortex', 'qortex-core', 'qortex-react', 'data fetching', 'react', 'typescript', 'cache', 'query', 'performance'],
   authors: [{ name: 'Darshan Naik' }],
   creator: 'Darshan Naik',
   publisher: 'Darshan Naik',
