@@ -64,8 +64,8 @@ export class QueryManagerCore {
    * User-friendly with any fallback for better developer experience
    */
   private ensureState<T = any>(key: QueryKey, opts: QueryOptions<T> = {}): QueryStateInternal<T> {
-    const sk = serializeKey(key);
-    const state = this.cache.get(sk);
+    const serializedKey = serializeKey(key);
+    const state = this.cache.get(serializedKey);
 
     // Merge with default config 
 
@@ -73,13 +73,13 @@ export class QueryManagerCore {
       const mergedOpts = { ...this.defaultConfig, ...state, ...opts };
       Object.assign(state, mergedOpts);
       state.enabled = mergedOpts.enabled === false ? false : true;
-      this.cache.set(sk, state);
+      this.cache.set(serializedKey, state);
     } else {
       const mergedOpts = { ...this.defaultConfig, ...opts };
       const newState = createDefaultState(mergedOpts, () => this.fetchQuery(key));
-      this.cache.set(sk, newState);
+      this.cache.set(serializedKey, newState);
     }
-    return this.cache.get(sk)!;
+    return this.cache.get(serializedKey)!;
   }
 
   /**
@@ -243,17 +243,17 @@ export class QueryManagerCore {
   subscribeQuery<F extends Fetcher>(key: QueryKey, cb: (state: QueryState<InferFetcherResult<F>>) => void, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): () => void;
   subscribeQuery<T = any>(key: QueryKey, cb: (state: QueryState<T>) => void, opts?: QueryOptions<T>): () => void;
   subscribeQuery<T = any>(key: QueryKey, cb: (state: QueryState<T>) => void, opts?: QueryOptions<T>): () => void {
-    const sk = serializeKey(key);
+    const serializedKey = serializeKey(key);
     const state = this.ensureState(key, opts);
 
     // Set up subscription
-    if (!this.subs.has(sk)) this.subs.set(sk, new Set());
-    this.subs.get(sk)!.add(cb);
+    if (!this.subs.has(serializedKey)) this.subs.set(serializedKey, new Set());
+    this.subs.get(serializedKey)!.add(cb);
     this.handleMountLogic(key, state);
 
     // Return unsubscribe function that handles cleanup
     return () => {
-      this.subs.get(sk)!.delete(cb);
+      this.subs.get(serializedKey)!.delete(cb);
     };
   }
 
@@ -268,14 +268,14 @@ export class QueryManagerCore {
   ): void {
     const isThrottled = state.lastFetchTime && (Date.now() - state.lastFetchTime) < this.throttleTime;
 
-    if (state?.status === "fetching" || !state?.enabled || isThrottled || !state?.fetcher) return;
+    if (state.status === "fetching" || !state.enabled || isThrottled || !state.fetcher) return;
 
     const now = Date.now();
     // For mount logic, we need to fetch if:
     // 1. Never fetched (updatedAt is null), OR
     // 2. Time has crossed staleTime, OR  
     // 3. It's invalidated
-    const isStale = state?.updatedAt == null || (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
+    const isStale = state.updatedAt == null || (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
 
     let shouldRefetch = false;
 
