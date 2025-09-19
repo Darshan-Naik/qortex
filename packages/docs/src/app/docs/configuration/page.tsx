@@ -18,7 +18,7 @@ setDefaultConfig({
   staleTime: 5 * 60 * 1000, // 5 minutes
   refetchOnSubscribe: "stale",
   throttleTime: 100,
-  usePreviousDataOnError: true,
+  usePreviousDataOnError: false,
   usePlaceholderOnError: false,
   equalityFn: shallowEqual
 });`,
@@ -26,7 +26,7 @@ setDefaultConfig({
             { name: 'staleTime', type: 'number', default: '0', description: 'Time before data is considered stale (ms)' },
             { name: 'refetchOnSubscribe', type: '"stale" | "always" | false', default: '"stale"', description: 'When to refetch on subscription' },
             { name: 'throttleTime', type: 'number', default: '50', description: 'Throttle time for duplicate requests (ms)' },
-            { name: 'usePreviousDataOnError', type: 'boolean', default: 'true', description: 'Keep previous data when errors occur' },
+            { name: 'usePreviousDataOnError', type: 'boolean', default: 'false', description: 'Keep previous data when errors occur' },
             { name: 'usePlaceholderOnError', type: 'boolean', default: 'false', description: 'Use placeholder data on errors' },
             { name: 'equalityFn', type: 'EqualityFn<any>', default: 'Object.is', description: 'Function to compare data equality' }
         ]

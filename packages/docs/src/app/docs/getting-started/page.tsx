@@ -157,7 +157,7 @@ setDefaultConfig({
   staleTime: 5 * 60 * 1000, // 5 minutes
   refetchOnSubscribe: "stale",
   throttleTime: 100,
-  usePreviousDataOnError: true
+  usePreviousDataOnError: false
 });
 
 // Register fetchers

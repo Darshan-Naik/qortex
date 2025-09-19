@@ -149,7 +149,7 @@ setDefaultConfig({
   staleTime: 5 * 60 * 1000,
   refetchOnSubscribe: "stale",
   throttleTime: 100,
-  usePreviousDataOnError: true,
+  usePreviousDataOnError: false,
   equalityStrategy: "deep"
 });`
             },
