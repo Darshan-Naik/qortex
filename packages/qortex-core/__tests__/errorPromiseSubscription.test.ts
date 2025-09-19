@@ -323,5 +323,70 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             expect(finalState.status).toBe('error');
             expect(finalState.error).toBe(testError);
         });
+
+        it('should handle getQueryState with enabled=false and subscribeQuery with enabled=true', async () => {
+            const key = ['mixed-enabled-test'];
+            const testData = { id: 1, message: 'mixed-enabled-data' };
+            
+            const fetcher = jest.fn().mockImplementation(async () => {
+                await new Promise(resolve => setTimeout(resolve, 10));
+                return testData;
+            });
+
+            // 1. First getQueryState call with enabled=false - should show idle state
+            const state1 = getQueryState(key, {
+                fetcher: fetcher,
+                enabled: false,
+                staleTime: 10000 // 10 seconds to prevent immediate staleness
+            });
+            expect(state1.status).toBe('idle');
+            expect(state1.isLoading).toBe(false);
+            expect(state1.isFetching).toBe(false);
+            expect(state1.data).toBeUndefined();
+
+            // 2. Set up subscription with enabled=true - should trigger fetch
+            const subscriptionCallback = jest.fn();
+            const unsubscribe = subscribeQuery(key, subscriptionCallback, {
+                fetcher: fetcher,
+                enabled: true,
+                staleTime: 10000 // 10 seconds to prevent immediate staleness
+            });
+
+            // 3. Second getQueryState call with enabled=false - should show fetching since subscription triggered fetch
+            const state2 = getQueryState(key, { enabled: false });
+            expect(state2.status).toBe('fetching');
+            expect(state2.isLoading).toBe(true);
+            expect(state2.isFetching).toBe(true);
+
+            // 4. Wait for subscription to trigger fetch and complete
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            // 5. Third getQueryState call with enabled=false - should show success after subscription triggered fetch
+            const state3 = getQueryState(key, { enabled: false });
+            expect(state3.status).toBe('success');
+            expect(state3.isSuccess).toBe(true);
+            expect(state3.data).toEqual(testData);
+            expect(state3.isLoading).toBe(false);
+            expect(state3.isFetching).toBe(false);
+            expect(state3.isStale).toBe(false);
+
+            // 6. Verify subscription callback was called exactly 2 times:
+            // - Once when subscription was set up (fetching state since enabled=true triggers immediate fetch)
+            // - Once when fetch completed (success state)
+            expect(subscriptionCallback).toHaveBeenCalledTimes(2);
+
+            const firstCallback = subscriptionCallback.mock.calls[0][0];
+            expect(firstCallback.status).toBe('fetching');
+            expect(firstCallback.isLoading).toBe(true);
+            expect(firstCallback.isFetching).toBe(true);
+
+            const secondCallback = subscriptionCallback.mock.calls[1][0];
+            expect(secondCallback.status).toBe('success');
+            expect(secondCallback.isSuccess).toBe(true);
+            expect(secondCallback.data).toEqual(testData);
+
+            // Cleanup
+            unsubscribe();
+        });
     });
 });
