@@ -74,7 +74,7 @@ describe('QueryManager Core Tests', () => {
       expect(state.status).toBe('idle');
       expect(state.data).toBeUndefined();
       expect(state.error).toBeUndefined();
-      expect(state.isStale).toBe(true);
+      expect(state.isStale).toBe(false); // Never fetched queries are not stale
     });
 
     test('should handle setQueryData', () => {

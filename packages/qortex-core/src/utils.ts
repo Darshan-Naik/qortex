@@ -112,7 +112,13 @@ export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<
  */
 export function createPublicState<T = any, E = unknown>(state: QueryStateInternal<T, E>): QueryState<T, E> {
   const now = Date.now();
-  const isStale = (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
+  // isStale is true only when:
+  // 1. updatedAt exists and time has crossed staleTime, OR
+  // 2. it's invalidated
+  // In all other cases (including never fetched), it's false
+  const isStale = state.updatedAt !== undefined
+    ? (now - state.updatedAt > state.staleTime) || state.isInvalidated
+    : state.isInvalidated;
 
   let returnedData = state.data;
   let isPlaceholderData = false;
