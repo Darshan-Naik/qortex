@@ -9,9 +9,9 @@ const navigation = {
         { name: 'Installation', href: '/docs/installation' },
     ],
     community: [
-        { name: 'GitHub', href: 'https://github.com/Darshan-Naik/qortex', external: true },
-        { name: 'Discussions', href: 'https://github.com/Darshan-Naik/qortex/discussions', external: true },
-        { name: 'Issues', href: 'https://github.com/Darshan-Naik/qortex/issues', external: true },
+        // { name: 'GitHub', href: 'https://github.com/Darshan-Naik/qortex', external: true },
+        // { name: 'Discussions', href: 'https://github.com/Darshan-Naik/qortex/discussions', external: true },
+        // { name: 'Issues', href: 'https://github.com/Darshan-Naik/qortex/issues', external: true },
         { name: 'Twitter', href: 'https://x.com/Darshan_Naik_', external: true },
     ],
     resources: [
@@ -39,14 +39,14 @@ export function Footer() {
                             A minimal, performant data fetching library with React integration.
                         </p>
                         <div className="mt-6 flex space-x-4">
-                            <a
+                            {/* <a
                                 href="https://github.com/Darshan-Naik/qortex"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-400 hover:text-white transition-colors"
                             >
                                 <Github className="h-5 w-5" />
-                            </a>
+                            </a> */}
                             <a
                                 href="https://x.com/Darshan_Naik_"
                                 target="_blank"

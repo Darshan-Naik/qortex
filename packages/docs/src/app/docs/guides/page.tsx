@@ -202,7 +202,7 @@ export default function GuidesPage() {
                                 Can't find what you're looking for? Check out our community resources or get in touch.
                             </p>
                             <div className="flex flex-wrap gap-4">
-                                <a
+                                {/* <a
                                     href="https://github.com/Darshan-Naik/qortex/discussions"
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -217,7 +217,8 @@ export default function GuidesPage() {
                                     className="btn-secondary"
                                 >
                                     Report Issue
-                                </a>
+                                </a> */}
+                                <span className="text-gray-500 text-sm">Repository is currently private</span>
                                 <a
                                     href="/docs/api"
                                     className="btn-secondary"

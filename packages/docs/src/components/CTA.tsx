@@ -18,7 +18,7 @@ export function CTA() {
                             Get Started
                             <ArrowRight className="ml-2 h-5 w-5" />
                         </Link>
-                        <Link
+                        {/* <Link
                             href="https://github.com/Darshan-Naik/qortex"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -26,7 +26,7 @@ export function CTA() {
                         >
                             <Github className="mr-2 h-5 w-5" />
                             View on GitHub
-                        </Link>
+                        </Link> */}
                     </div>
 
                 </div>

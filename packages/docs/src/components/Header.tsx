@@ -66,14 +66,14 @@ export function Header() {
                     </div>
 
                     <div className="ml-6 flex items-center space-x-4">
-                        <Link
+                        {/* <Link
                             href="https://github.com/Darshan-Naik/qortex"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-gray-700 hover:text-primary-600 transition-colors duration-200"
                         >
                             <Github className="h-5 w-5" />
-                        </Link>
+                        </Link> */}
 
                         {/* Package dropdown */}
                         <div className="relative" ref={packageMenuRef}>
