@@ -1,10 +1,7 @@
-import { Metadata } from 'next'
 import { ArrowRight, CheckCircle, Code, Zap } from 'lucide-react'
+import { generateMetadata as generateSEOMetadata, seoConfigs } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Getting Started',
-  description: 'Get started with qortex in minutes. Learn the basics and build your first data fetching application.',
-}
+export const metadata = generateSEOMetadata(seoConfigs.gettingStarted)
 
 const steps = [
   {

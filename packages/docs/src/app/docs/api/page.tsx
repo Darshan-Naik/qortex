@@ -1,10 +1,7 @@
-import { Metadata } from 'next'
 import { Code, Zap, Settings, Database } from 'lucide-react'
+import { generateMetadata as generateSEOMetadata, seoConfigs } from '@/lib/seo'
 
-export const metadata: Metadata = {
-    title: 'API Reference',
-    description: 'Complete API reference for qortex-core and qortex-react. All functions, hooks, and configuration options.',
-}
+export const metadata = generateSEOMetadata(seoConfigs.api)
 
 const apiSections = [
     {

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Github, Twitter, ExternalLink } from 'lucide-react'
+import { Github, Twitter, ExternalLink, BrainCircuit } from 'lucide-react'
 
 const navigation = {
     product: [
@@ -31,7 +31,9 @@ export function Footer() {
                     <div className="lg:col-span-1">
                         <Link href="/" className="flex items-center space-x-2">
                             <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">Q</span>
+                                <span className="text-white font-bold text-lg">
+                                    <BrainCircuit />
+                                </span>
                             </div>
                             <span className="text-xl font-bold text-white">Qortex</span>
                         </Link>

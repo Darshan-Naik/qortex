@@ -31,23 +31,31 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://qortex.dev'),
+  metadataBase: new URL('https://qortex.darshannaik.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://qortex.dev',
+    url: 'https://qortex.darshannaik.com',
     title: 'Qortex - Minimal, Performant Data Fetching Library',
     description: 'A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness!',
     siteName: 'Qortex',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
-        alt: 'Qortex - Data Fetching Library',
+        alt: 'Qortex - Minimal, Performant Data Fetching Library',
+        type: 'image/svg+xml',
+      },
+      {
+        url: '/og-image-square.svg',
+        width: 1200,
+        height: 1200,
+        alt: 'Qortex - Minimal, Performant Data Fetching Library',
+        type: 'image/svg+xml',
       },
     ],
   },
@@ -55,7 +63,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Qortex - Minimal, Performant Data Fetching Library',
     description: 'A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness!',
-    images: ['/og-image.png'],
+    images: ['/og-image.svg'],
     creator: '@darshannaik',
   },
   robots: {
@@ -79,8 +87,38 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Qortex",
+    "description": "A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness!",
+    "url": "https://qortex.darshannaik.com",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Darshan Naik"
+    },
+    "keywords": "data fetching, react, typescript, cache, query, performance, qortex",
+    "programmingLanguage": ["TypeScript", "JavaScript"],
+    "runtimePlatform": "Node.js",
+    "softwareVersion": "0.2.7",
+    "license": "https://opensource.org/licenses/LGPL-3.0"
+  }
+
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <body className={inter.className}>
         <StarProvider>
           <div className="min-h-screen flex flex-col">

@@ -1,10 +1,7 @@
-import { Metadata } from 'next'
 import { Zap, Shield, Code, Cpu, RefreshCw, Globe, Layers, CheckCircle } from 'lucide-react'
+import { generateMetadata as generateSEOMetadata, seoConfigs } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Features',
-  description: 'Explore all the powerful features of Qortex. Lightning fast, minimal bundle, TypeScript first, and production ready.',
-}
+export const metadata = generateSEOMetadata(seoConfigs.features)
 
 const features = [
   {

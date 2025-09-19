@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Github, ExternalLink, Package } from 'lucide-react'
+import { Menu, X, Github, ExternalLink, Package, BrainCircuit } from 'lucide-react'
 import { StarButton } from './StarButton'
 
 const navigation = [
@@ -40,7 +40,9 @@ export function Header() {
                     <div className="flex items-center">
                         <Link href="/" className="flex items-center space-x-2">
                             <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">Q</span>
+                                <span className="text-white font-bold text-lg">
+                                    <BrainCircuit />
+                                </span>
                             </div>
                             <span className="text-xl font-bold gradient-text">Qortex</span>
                         </Link>

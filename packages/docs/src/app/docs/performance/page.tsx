@@ -1,10 +1,7 @@
-import { Metadata } from 'next'
 import { Zap, Cpu, Database, TrendingUp } from 'lucide-react'
+import { generateMetadata as generateSEOMetadata, seoConfigs } from '@/lib/seo'
 
-export const metadata: Metadata = {
-    title: 'Performance Tips',
-    description: 'Optimize your qortex usage for maximum performance. Best practices for caching, bundle size, and efficient data fetching.',
-}
+export const metadata = generateSEOMetadata(seoConfigs.performance)
 
 const performanceTips = [
     {
