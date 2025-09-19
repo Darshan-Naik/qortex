@@ -117,23 +117,23 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             });
 
             // 1. First getQueryState call with enabled=false - should show default idle state
-            const state1 = getQueryState(key, { 
+            const state1 = getQueryState(key, {
                 fetcher: fetcher,
                 enabled: false,
                 staleTime: 10000 // 10 seconds to prevent immediate staleness
             });
+            // 2. Set up subscription
+            const subscriptionCallback = jest.fn();
+            const unsubscribe = subscribeQuery(key, subscriptionCallback, {
+                fetcher: fetcher,
+                enabled: true,
+                staleTime: 10000 // 10 seconds to prevent immediate staleness
+            }); // Enable in subscription
             expect(state1.status).toBe('idle');
             expect(state1.isLoading).toBe(false);
             expect(state1.isFetching).toBe(false);
             expect(state1.data).toBeUndefined();
 
-            // 2. Set up subscription
-            const subscriptionCallback = jest.fn();
-            const unsubscribe = subscribeQuery(key, subscriptionCallback, { 
-                fetcher: fetcher,
-                enabled: true,
-                staleTime: 10000 // 10 seconds to prevent immediate staleness
-            }); // Enable in subscription
 
             // 3. Second getQueryState call - should show fetching since subscription triggered fetch
             const state2 = getQueryState(key, { enabled: false });
@@ -183,7 +183,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             });
 
             // 1. First getQueryState call with enabled=false - should show default idle state
-            const state1 = getQueryState(key, { 
+            const state1 = getQueryState(key, {
                 fetcher: errorFetcher,
                 enabled: false,
                 staleTime: 10000 // 10 seconds to prevent immediate staleness
@@ -195,7 +195,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
 
             // 2. Set up subscription
             const subscriptionCallback = jest.fn();
-            const unsubscribe = subscribeQuery(key, subscriptionCallback, { 
+            const unsubscribe = subscribeQuery(key, subscriptionCallback, {
                 fetcher: errorFetcher,
                 enabled: true,
                 staleTime: 10000 // 10 seconds to prevent immediate staleness
