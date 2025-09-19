@@ -12,7 +12,7 @@ export function Hero() {
                     </div>
 
                     <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl lg:text-8xl mb-6">
-                        <span className="gradient-text">qortex</span>
+                        <span className="gradient-text">Qortex</span>
                     </h1>
 
                     <p className="mx-auto mt-6 max-w-3xl text-xl text-gray-600 leading-relaxed">

@@ -41,7 +41,7 @@ export function Header() {
                             <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
                                 <span className="text-white font-bold text-lg">Q</span>
                             </div>
-                            <span className="text-xl font-bold gradient-text">qortex</span>
+                            <span className="text-xl font-bold gradient-text">Qortex</span>
                         </Link>
                     </div>
 

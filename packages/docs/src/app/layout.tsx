@@ -8,11 +8,11 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'qortex - Minimal, Performant Data Fetching Library',
-    template: '%s | qortex'
+    default: 'Qortex - Minimal, Performant Data Fetching Library',
+    template: '%s | Qortex'
   },
   description: 'A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness!',
-  keywords: ['qortex', 'data fetching', 'react', 'typescript', 'cache', 'query', 'performance'],
+  keywords: ['Qortex', 'qortex', 'data fetching', 'react', 'typescript', 'cache', 'query', 'performance'],
   authors: [{ name: 'Darshan Naik' }],
   creator: 'Darshan Naik',
   publisher: 'Darshan Naik',
@@ -38,21 +38,21 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://qortex.dev',
-    title: 'qortex - Minimal, Performant Data Fetching Library',
+    title: 'Qortex - Minimal, Performant Data Fetching Library',
     description: 'A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness!',
-    siteName: 'qortex',
+    siteName: 'Qortex',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'qortex - Data Fetching Library',
+        alt: 'Qortex - Data Fetching Library',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'qortex - Minimal, Performant Data Fetching Library',
+    title: 'Qortex - Minimal, Performant Data Fetching Library',
     description: 'A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness!',
     images: ['/og-image.png'],
     creator: '@darshannaik',
