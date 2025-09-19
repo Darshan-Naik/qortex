@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X, Github, ExternalLink, Package } from 'lucide-react'
+import { StarButton } from './StarButton'
 
 const navigation = [
     { name: 'Docs', href: '/docs' },
@@ -66,14 +67,7 @@ export function Header() {
                     </div>
 
                     <div className="ml-6 flex items-center space-x-4">
-                        {/* <Link
-                            href="https://github.com/Darshan-Naik/qortex"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-700 hover:text-primary-600 transition-colors duration-200"
-                        >
-                            <Github className="h-5 w-5" />
-                        </Link> */}
+                        <StarButton size="sm" showCount={true} showMessage={false} />
 
                         {/* Package dropdown */}
                         <div className="relative" ref={packageMenuRef}>

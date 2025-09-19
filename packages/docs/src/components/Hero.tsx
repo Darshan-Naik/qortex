@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { ArrowRight, Zap, Shield, Code } from 'lucide-react'
+import { Zap, Shield, Code } from 'lucide-react'
+import { HeroButtons } from './HeroButtons'
 
 export function Hero() {
     return (
@@ -21,12 +21,7 @@ export function Hero() {
                         <strong> developer happiness</strong>! 🎉
                     </p>
 
-                    <div className="mt-10 flex items-center justify-center">
-                        <Link href="/docs" className="btn-primary text-lg px-8 py-4 flex items-center justify-center w-fit">
-                            Get Started
-                            <ArrowRight className="ml-2 h-5 w-5" />
-                        </Link>
-                    </div>
+                    <HeroButtons />
 
                     <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-3">
                         <div className="flex flex-col items-center text-center card animate-fade-in">
