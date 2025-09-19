@@ -1,4 +1,4 @@
-import type { QueryStatus, Fetcher, EqualityFn, EqualityStrategy } from "./types";
+import type { QueryStatus, Fetcher, EqualityFn, EqualityStrategy, QueryState } from "./types";
 
 /**
  * Internal query state that tracks all aspects of a query's lifecycle
@@ -25,4 +25,5 @@ export type QueryStateInternal<T = any, E = unknown> = {
   refetch?: () => Promise<T>;
   isSuccess: boolean;
   isError: boolean;
+  lastReturnedState?: QueryState<T>;
 };

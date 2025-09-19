@@ -18,7 +18,6 @@ import { serializeKey, createDefaultState, equal, createPublicState, warnNoFetch
 export class QueryManagerCore {
   private cache = new Map<string, QueryStateInternal>();
   private subs = new Map<string, Set<(state: QueryState) => void>>();
-  private lastReturnedState = new Map<string, any>();
   private defaultConfig: DefaultConfig = {};
   private throttleTime: number = THROTTLE_TIME;
 
@@ -46,7 +45,6 @@ export class QueryManagerCore {
   dangerClearCache(): void {
     this.cache.clear();
     this.subs.clear();
-    this.lastReturnedState.clear();
   }
 
   /**
@@ -213,15 +211,12 @@ export class QueryManagerCore {
     const currentState = createPublicState(state);
 
     // Store the last returned state to detect changes
-    const stateKey = serializeKey(key);
-    const lastState = this.lastReturnedState?.get(stateKey);
+    const lastState = state.lastReturnedState;
 
     // Only return a new object if the state has actually changed
     if (!lastState || !equal(lastState, currentState, 'shallow')) {
-      // Store the new state
-      if (!this.lastReturnedState) this.lastReturnedState = new Map();
-      this.lastReturnedState.set(stateKey, currentState);
-
+      // Store the new state in the internal state
+      state.lastReturnedState = currentState;
       return currentState;
     }
 

@@ -103,6 +103,7 @@ export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<
     refetch: refetch || (() => Promise.resolve(undefined)),
     isSuccess: false,
     isError: false,
+    lastReturnedState: undefined,
   };
 }
 
