@@ -20,7 +20,7 @@
     "typescript"
   ],
   "author": "Darshan Naik",
-  "license": "MIT",
+  "license": "LGPL-3.0",
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",

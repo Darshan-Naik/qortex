@@ -42,7 +42,7 @@
     "typescript"
   ],
   "author": "Darshan Naik",
-  "license": "MIT",
+  "license": "LGPL-3.0",
   "dependencies": {
     "qortex-core": "workspace:*"
   },
