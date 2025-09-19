@@ -122,7 +122,6 @@ export class QueryManagerCore {
     const state = this.ensureState(key, opts);
     if (state.fetchPromise) return state.fetchPromise as Promise<T>;
 
-
     const fetcher = state.fetcher;
     if (!fetcher) {
       // If no fetcher is registered, return existing data (if any)
@@ -133,10 +132,11 @@ export class QueryManagerCore {
       return Promise.resolve(state.data as T);
     };
 
+    // Create promise and set it immediately to prevent race conditions
     const promise = fetcher();
+    state.fetchPromise = promise;
     state.status = "fetching";
     state.lastFetchTime = Date.now();
-    state.fetchPromise = promise;
     this.emit(key, state);
 
     // Attach callbacks to the promise with atomic state updates
