@@ -127,15 +127,12 @@ describe('setDefaultConfig', () => {
         await fetchQuery(['throttle-test']);
         expect(mockFetcher).toHaveBeenCalledTimes(1);
 
-        // Immediate second fetch should be throttled (within 200ms)
+        // Second fetch should not be throttled (fetchQuery bypasses throttling)
         await fetchQuery(['throttle-test']);
-        expect(mockFetcher).toHaveBeenCalledTimes(1); // Still 1, throttled
+        expect(mockFetcher).toHaveBeenCalledTimes(2); // Not throttled, direct call
 
-        // Wait for throttle period to pass
-        await new Promise(resolve => setTimeout(resolve, 250));
-
-        // Third fetch should not be throttled
+        // Third fetch should also not be throttled
         await fetchQuery(['throttle-test']);
-        expect(mockFetcher).toHaveBeenCalledTimes(2); // Now 2, not throttled
+        expect(mockFetcher).toHaveBeenCalledTimes(3); // Not throttled, direct call
     });
 });

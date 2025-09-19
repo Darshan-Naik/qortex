@@ -124,6 +124,7 @@ export class QueryManagerCore {
     const state = this.ensureState(key, opts);
     if (state.fetchPromise) return state.fetchPromise as Promise<T>;
 
+
     const fetcher = state.fetcher;
     if (!fetcher) {
       // If no fetcher is registered, return existing data (if any)
@@ -140,18 +141,22 @@ export class QueryManagerCore {
     state.fetchPromise = promise;
     this.emit(key, state);
 
-    // Attach callbacks to the promise
+    // Attach callbacks to the promise with atomic state updates
     promise.then((result: T) => {
+      // Atomic update: set all success state properties together
       state.data = state.equalityFn(state.data, result) ? state.data : result;
       state.status = "success";
       state.isError = false;
       state.isSuccess = true;
+      state.updatedAt = Date.now();
+      state.fetchPromise = undefined;
+      this.emit(key, state);
     }).catch((error: unknown) => {
+      // Atomic update: set all error state properties together
       state.error = error;
       state.status = "error";
       state.isError = true;
       state.isSuccess = false;
-    }).finally(() => {
       state.updatedAt = Date.now();
       state.fetchPromise = undefined;
       this.emit(key, state);
