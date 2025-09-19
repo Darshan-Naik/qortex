@@ -120,18 +120,25 @@ export function createPublicState<T = any, E = unknown>(state: QueryStateInterna
     ? (now - state.updatedAt > state.staleTime) || state.isInvalidated
     : state.isInvalidated;
 
-  let returnedData = state.data;
+  let returnedData = undefined;
   let isPlaceholderData = false;
 
   switch (state.status) {
     case "error":
-      if (state.usePlaceholderOnError && state.placeholderData !== undefined) {
+      if (state.usePreviousDataOnError && state.data !== undefined) {
+        returnedData = state.data;
+      } else if (state.usePlaceholderOnError && state.placeholderData !== undefined) {
         returnedData = state.placeholderData;
         isPlaceholderData = true;
       }
       break;
     case "fetching":
-      if (!state.data && state.placeholderData) {
+      if (state.data !== undefined) {
+        // During refetch, return existing data
+        returnedData = state.data;
+        isPlaceholderData = false;
+      } else if (state.placeholderData) {
+        // During initial fetch, return placeholder data if available
         returnedData = state.placeholderData;
         isPlaceholderData = true;
       }

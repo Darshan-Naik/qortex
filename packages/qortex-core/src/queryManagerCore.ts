@@ -150,9 +150,12 @@ export class QueryManagerCore {
       state.isSuccess = true;
       state.updatedAt = Date.now();
       state.fetchPromise = undefined;
+      state.error = undefined;
       this.emit(key, state);
     }).catch((error: unknown) => {
       // Atomic update: set all error state properties together
+      // not resetting data to undefined because we want to keep the previous data on error based on usePreviousDataOnError 
+      // this is handled in createPublicState
       state.error = error;
       state.status = "error";
       state.isError = true;
@@ -192,7 +195,7 @@ export class QueryManagerCore {
   getQueryData<T = any>(key: QueryKey, opts?: QueryOptions<T>): T | undefined {
     const state = this.ensureState(key, opts);
     this.handleMountLogic(key, state);
-    return state.data ?? state.placeholderData;
+    return createPublicState(state).data;
   }
 
   /**
@@ -281,13 +284,18 @@ export class QueryManagerCore {
 
     let shouldRefetch = false;
 
-    // Determine if we should fetch based on mount history and options    
-    // Check refetchOnSubscribe setting
-    if (state.refetchOnSubscribe === "always") {
+    // Always fetch on first mount (never fetched)
+    if (state.updatedAt == null) {
       shouldRefetch = true;
-    }
-    if (state.refetchOnSubscribe === "stale") {
-      shouldRefetch = isStale;
+    } else {
+      // Determine if we should fetch based on mount history and options    
+      // Check refetchOnSubscribe setting
+      if (state.refetchOnSubscribe === "always") {
+        shouldRefetch = true;
+      }
+      if (state.refetchOnSubscribe === "stale") {
+        shouldRefetch = isStale;
+      }
     }
 
     // Execute fetch if conditions are met

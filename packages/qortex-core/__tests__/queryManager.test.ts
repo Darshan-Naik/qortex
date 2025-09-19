@@ -38,8 +38,8 @@ describe('QueryManager Core Tests', () => {
       // Wait for fetch to complete
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Get query datacanc
-      const data = getQueryData(key);
+      // Get query data (without triggering another fetch)
+      const data = getQueryData(key, { enabled: false });
       expect(data).toEqual({ id: 1, data: 'test-data' });
     });
 
@@ -682,7 +682,8 @@ describe('QueryManager Core Tests', () => {
       // Register fetcher
       registerFetcher(key, {
         fetcher: mockFetcher,
-        enabled: false
+        enabled: false,
+        usePreviousDataOnError: true
       });
 
       // Initial fetch
