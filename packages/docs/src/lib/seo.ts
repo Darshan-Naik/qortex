@@ -94,4 +94,4 @@ export const seoConfigs = {
         url: '/docs/performance',
         keywords: ['performance', 'optimization', 'caching', 'best practices'],
     },
-} as const
+}
