@@ -44,14 +44,14 @@ export const metadata: Metadata = {
     siteName: 'Qortex',
     images: [
       {
-        url: '/og-image.svg',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Qortex - Minimal, Performant Data Fetching Library',
         type: 'image/svg+xml',
       },
       {
-        url: '/og-image-square.svg',
+        url: '/og-image-square.png',
         width: 1200,
         height: 1200,
         alt: 'Qortex - Minimal, Performant Data Fetching Library',
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Qortex - Minimal, Performant Data Fetching Library',
     description: 'A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness!',
-    images: ['/og-image.svg'],
+    images: ['/og-image.png'],
     creator: '@darshannaik',
   },
   robots: {

@@ -14,7 +14,7 @@ export function generateMetadata({
     description,
     keywords = [],
     url,
-    image = '/og-image.svg',
+    image = '/og-image.png',
     type = 'website'
 }: SEOConfig): Metadata {
     const fullTitle = title.includes('Qortex') ? title : `${title} | Qortex`
