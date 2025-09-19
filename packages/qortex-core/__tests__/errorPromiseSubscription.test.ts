@@ -24,8 +24,10 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             // 1. Get initial state with enabled=true - should show loading since enabled=true triggers immediate fetch
             const initialState = getQueryState(key, {
                 fetcher: errorFetcher,
-                enabled: true
+                enabled: true,
+                staleTime: 10000 // 10 seconds to prevent immediate staleness
             });
+
             expect(initialState.isLoading).toBe(true);
             expect(initialState.isFetching).toBe(true);
             expect(initialState.isStale).toBe(false);
@@ -46,6 +48,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             expect(finalState.error).toBe(testError);
             expect(finalState.isLoading).toBe(false);
             expect(finalState.isFetching).toBe(false);
+            expect(finalState.isStale).toBe(false);
 
             // 4. Verify subscription callback was called exactly once for the error
             expect(subscriptionCallback).toHaveBeenCalledTimes(1);
@@ -69,7 +72,8 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             // 1. Get initial state with enabled=true - should show loading since enabled=true triggers immediate fetch
             const initialState = getQueryState(key, {
                 fetcher: successFetcher,
-                enabled: true
+                enabled: true,
+                staleTime: 10000 // 10 seconds to prevent immediate staleness
             });
             expect(initialState.isLoading).toBe(true);
             expect(initialState.isFetching).toBe(true);
@@ -90,6 +94,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             expect(finalState.data).toEqual(testData);
             expect(finalState.isLoading).toBe(false);
             expect(finalState.isFetching).toBe(false);
+            expect(finalState.isStale).toBe(false);
 
             // 4. Verify subscription callback was called exactly once for the success
             expect(subscriptionCallback).toHaveBeenCalledTimes(1);
@@ -112,9 +117,10 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             });
 
             // 1. First getQueryState call with enabled=false - should show default idle state
-            const state1 = getQueryState(key, {
+            const state1 = getQueryState(key, { 
                 fetcher: fetcher,
-                enabled: false
+                enabled: false,
+                staleTime: 10000 // 10 seconds to prevent immediate staleness
             });
             expect(state1.status).toBe('idle');
             expect(state1.isLoading).toBe(false);
@@ -123,9 +129,10 @@ describe('Error Promise and Subscription Behavior Tests', () => {
 
             // 2. Set up subscription
             const subscriptionCallback = jest.fn();
-            const unsubscribe = subscribeQuery(key, subscriptionCallback, {
+            const unsubscribe = subscribeQuery(key, subscriptionCallback, { 
                 fetcher: fetcher,
-                enabled: true
+                enabled: true,
+                staleTime: 10000 // 10 seconds to prevent immediate staleness
             }); // Enable in subscription
 
             // 3. Second getQueryState call - should show fetching since subscription triggered fetch
@@ -144,6 +151,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             expect(state3.data).toEqual(testData);
             expect(state3.isLoading).toBe(false);
             expect(state3.isFetching).toBe(false);
+            expect(state3.isStale).toBe(false);
 
             // 6. Verify subscription callback was called exactly 2 times:
             // - Once when subscription was set up (initial state)
@@ -175,9 +183,10 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             });
 
             // 1. First getQueryState call with enabled=false - should show default idle state
-            const state1 = getQueryState(key, {
+            const state1 = getQueryState(key, { 
                 fetcher: errorFetcher,
-                enabled: false
+                enabled: false,
+                staleTime: 10000 // 10 seconds to prevent immediate staleness
             });
             expect(state1.status).toBe('idle');
             expect(state1.isLoading).toBe(false);
@@ -186,9 +195,10 @@ describe('Error Promise and Subscription Behavior Tests', () => {
 
             // 2. Set up subscription
             const subscriptionCallback = jest.fn();
-            const unsubscribe = subscribeQuery(key, subscriptionCallback, {
+            const unsubscribe = subscribeQuery(key, subscriptionCallback, { 
                 fetcher: errorFetcher,
-                enabled: true
+                enabled: true,
+                staleTime: 10000 // 10 seconds to prevent immediate staleness
             }); // Enable in subscription
 
             // 3. Second getQueryState call - should show fetching since subscription triggered fetch
@@ -206,6 +216,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             expect(state3.error).toBe(testError);
             expect(state3.isLoading).toBe(false);
             expect(state3.isFetching).toBe(false);
+            expect(state3.isStale).toBe(false);
 
             // 6. Verify subscription callback was called exactly 2 times:
             // - Once when subscription was set up (initial state)

@@ -133,7 +133,7 @@ export class QueryManagerCore {
       }
       return Promise.resolve(state.data as T);
     };
-    
+
     const promise = fetcher();
     state.status = "fetching";
     state.lastFetchTime = Date.now();
