@@ -18,8 +18,8 @@ describe('QueryManager Core Tests', () => {
     // ⚠️ Using dangerClearCache() is safe here in test environment only
     dangerClearCache();
 
-    // Default mock fetcher
-    mockFetcher = jest.fn().mockResolvedValue({ id: 1, data: 'test-data' });
+    // Default mock fetcher - must be async
+    mockFetcher = jest.fn().mockImplementation(async () => ({ id: 1, data: 'test-data' }));
   });
 
   describe('Basic Functionality', () => {
@@ -167,7 +167,7 @@ describe('QueryManager Core Tests', () => {
     test('should handle successful fetch', async () => {
       const key = ['test-key'];
       const testData = { id: 1, name: 'success' };
-      mockFetcher.mockResolvedValue(testData);
+      mockFetcher.mockImplementation(async () => testData);
 
       // Register fetcher
       registerFetcher(key, {
@@ -192,7 +192,7 @@ describe('QueryManager Core Tests', () => {
     test('should handle fetch error', async () => {
       const key = ['test-key'];
       const testError = new Error('Fetch failed');
-      mockFetcher.mockRejectedValue(testError);
+      mockFetcher.mockImplementation(async () => { throw testError; });
 
       // Register fetcher with disabled to avoid immediate fetch
       registerFetcher(key, {
@@ -649,8 +649,8 @@ describe('QueryManager Core Tests', () => {
 
     test('should handle multiple fetchers for same key', () => {
       const key = ['test-key'];
-      const fetcher1 = jest.fn().mockResolvedValue({ id: 1 });
-      const fetcher2 = jest.fn().mockResolvedValue({ id: 2 });
+      const fetcher1 = jest.fn().mockImplementation(async () => ({ id: 1 }));
+      const fetcher2 = jest.fn().mockImplementation(async () => ({ id: 2 }));
 
       // Register first fetcher
       registerFetcher(key, {
@@ -677,7 +677,7 @@ describe('QueryManager Core Tests', () => {
       const refetchData = { id: 2, data: 'refetch-success' };
 
       // Start with successful fetcher
-      mockFetcher.mockResolvedValue(successData);
+      mockFetcher.mockImplementation(async () => successData);
 
       // Register fetcher
       registerFetcher(key, {
@@ -697,7 +697,7 @@ describe('QueryManager Core Tests', () => {
       expect(state.data).toEqual(successData);
 
       // Update fetcher to return different data for refetch
-      mockFetcher.mockResolvedValue(refetchData);
+      mockFetcher.mockImplementation(async () => refetchData);
 
       // Refetch - isSuccess should remain true during refetch
       const refetchPromise = state.refetch();
@@ -723,7 +723,7 @@ describe('QueryManager Core Tests', () => {
 
       // Now test error scenario - update fetcher to fail
       const errorData = new Error('Fetch failed');
-      mockFetcher.mockRejectedValue(errorData);
+      mockFetcher.mockImplementation(async () => { throw errorData; });
 
       // Refetch that will fail - isSuccess should become false
       const errorRefetchPromise = state.refetch();
@@ -753,7 +753,7 @@ describe('QueryManager Core Tests', () => {
 
       // Test recovery - successful fetch after error
       const recoveryData = { id: 3, data: 'recovery-success' };
-      mockFetcher.mockResolvedValue(recoveryData);
+      mockFetcher.mockImplementation(async () => recoveryData);
 
       // Refetch that will succeed - isSuccess should become true again
       const recoveryPromise = state.refetch();
@@ -775,7 +775,7 @@ describe('QueryManager Core Tests', () => {
       const errorData = new Error('First fetch failed');
 
       // Start with failing fetcher
-      mockFetcher.mockRejectedValue(errorData);
+      mockFetcher.mockImplementation(async () => { throw errorData; });
 
       // Register fetcher
       registerFetcher(key, {

@@ -5,8 +5,8 @@
 export type QueryKey = string | readonly (string | number)[];
 
 
-/** Function that fetches data, can be async or sync */
-export type Fetcher<T = any> = () => Promise<T> | T;
+/** Function that fetches data, must be async */
+export type Fetcher<T = any> = () => Promise<T>;
 
 /** Function that compares two values for equality */
 export type EqualityFn<T = any> = (a: T | undefined, b: T | undefined) => boolean;
@@ -76,7 +76,7 @@ export type DefaultConfig = {
  * Public query state returned by getQueryState
  * Improved with stricter error typing and better generic constraints
  */
-export type QueryState<T = any, E = Error> = {
+export type QueryState<T = any, E = unknown> = {
   data?: T;
   error?: E;
   status: QueryStatus;

@@ -5,9 +5,9 @@ import type { QueryStatus, Fetcher, EqualityFn, EqualityStrategy } from "./types
  * Used internally by QueryManager for state management
  * NOT EXPORTED - internal implementation detail
  */
-export type QueryStateInternal<T = any> = {
+export type QueryStateInternal<T = any, E = unknown> = {
   data?: T;
-  error?: unknown;
+  error?: E;
   status: QueryStatus;
   updatedAt?: number;
   staleTime: number;
@@ -21,7 +21,7 @@ export type QueryStateInternal<T = any> = {
   refetchOnSubscribe: "always" | "stale" | false;
   enabled: boolean;
   lastFetchTime?: number;
-  fetchPromise?: Promise<T>;
+  fetchPromise?: Promise<T> | T;
   refetch?: () => Promise<T>;
   isSuccess: boolean;
   isError: boolean;

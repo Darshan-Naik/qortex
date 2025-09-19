@@ -19,13 +19,16 @@ describe('setDefaultConfig', () => {
         });
 
         // Register a fetcher without specifying these options
-        const mockFetcher = jest.fn().mockResolvedValue('test-data');
+        const mockFetcher = jest.fn().mockImplementation(async () => 'test-data');
         registerFetcher(['test'], {
             fetcher: mockFetcher
         });
 
         // Fetch the query to get data
         await fetchQuery(['test']);
+
+        // Wait a bit for state to be updated
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         // Get the query state
         const state = getQueryState(['test']);
@@ -42,7 +45,7 @@ describe('setDefaultConfig', () => {
         });
 
         // Register a fetcher with overriding options
-        const mockFetcher = jest.fn().mockResolvedValue('test-data');
+        const mockFetcher = jest.fn().mockImplementation(async () => 'test-data');
         registerFetcher(['test'], {
             fetcher: mockFetcher,
             staleTime: 10000, // Override default
@@ -71,7 +74,7 @@ describe('setDefaultConfig', () => {
         });
 
         // Register a fetcher
-        const mockFetcher = jest.fn().mockResolvedValue('test-data');
+        const mockFetcher = jest.fn().mockImplementation(async () => 'test-data');
         registerFetcher(['test'], {
             fetcher: mockFetcher
         });
@@ -90,13 +93,16 @@ describe('setDefaultConfig', () => {
         });
 
         // Register a fetcher
-        const mockFetcher = jest.fn().mockResolvedValue('test-data');
+        const mockFetcher = jest.fn().mockImplementation(async () => 'test-data');
         registerFetcher(['hook-test'], {
             fetcher: mockFetcher
         });
 
         // Fetch the query
         await fetchQuery(['hook-test']);
+
+        // Wait a bit for state to be updated
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         // Get the query state
         const state = getQueryState(['hook-test']);
@@ -112,7 +118,7 @@ describe('setDefaultConfig', () => {
         });
 
         // Register a fetcher
-        const mockFetcher = jest.fn().mockResolvedValue('test-data');
+        const mockFetcher = jest.fn().mockImplementation(async () => 'test-data');
         registerFetcher(['throttle-test'], {
             fetcher: mockFetcher
         });

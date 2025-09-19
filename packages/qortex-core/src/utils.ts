@@ -110,9 +110,9 @@ export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<
  * Creates a public QueryState object from internal state
  * Handles placeholder data, stale state logic, and computed properties
  */
-export function createPublicState<T = any>(state: QueryStateInternal<T>): QueryState<T> {
+export function createPublicState<T = any, E = unknown>(state: QueryStateInternal<T, E>): QueryState<T, E> {
   const now = Date.now();
-  const isStale = state.updatedAt == null || (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
+  const isStale = (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
 
   let returnedData = state.data;
   let isPlaceholderData = false;
@@ -139,7 +139,7 @@ export function createPublicState<T = any>(state: QueryStateInternal<T>): QueryS
 
   return {
     data: returnedData,
-    error: state.error as Error | undefined,
+    error: state.error,
     status: state.status,
     updatedAt: state.updatedAt,
     isStale,

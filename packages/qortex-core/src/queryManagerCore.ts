@@ -133,19 +133,17 @@ export class QueryManagerCore {
       }
       return Promise.resolve(state.data as T);
     };
+    
+    const promise = fetcher();
     state.status = "fetching";
     state.lastFetchTime = Date.now();
-    this.emit(key, state);
-
-    const result = fetcher();
-    const promise = Promise.resolve(result);
     state.fetchPromise = promise;
+    this.emit(key, state);
 
     // Attach callbacks to the promise
     promise.then((result: T) => {
       state.data = state.equalityFn(state.data, result) ? state.data : result;
       state.status = "success";
-      state.updatedAt = Date.now();
       state.isError = false;
       state.isSuccess = true;
     }).catch((error: unknown) => {
@@ -154,6 +152,7 @@ export class QueryManagerCore {
       state.isError = true;
       state.isSuccess = false;
     }).finally(() => {
+      state.updatedAt = Date.now();
       state.fetchPromise = undefined;
       this.emit(key, state);
     });

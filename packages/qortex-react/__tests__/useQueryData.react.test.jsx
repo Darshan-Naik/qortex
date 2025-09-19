@@ -37,8 +37,8 @@ describe('useQueryData React Integration Tests', () => {
     // ⚠️ Using dangerClearCache() is safe here in test environment only
 dangerClearCache();
     
-    // Default mock fetcher
-    mockFetcher = jest.fn().mockResolvedValue({ id: 1, data: 'test-data' });
+    // Default mock fetcher - must be async
+    mockFetcher = jest.fn().mockImplementation(async () => ({ id: 1, data: 'test-data' }));
   });
 
   describe('Basic Data Retrieval', () => {
@@ -103,7 +103,7 @@ registerFetcher(['test-key'], {
 
   describe('Data Types and Edge Cases', () => {
     test('should handle null data', async () => {
-      const nullFetcher = jest.fn().mockResolvedValue(null);
+      const nullFetcher = jest.fn().mockImplementation(async () => null);
 
 registerFetcher(['null-key'], {
         fetcher: nullFetcher,
@@ -121,9 +121,9 @@ registerFetcher(['null-key'], {
     });
 
     test('should handle primitive data types', async () => {
-      const stringFetcher = jest.fn().mockResolvedValue('hello world');
-      const numberFetcher = jest.fn().mockResolvedValue(42);
-      const booleanFetcher = jest.fn().mockResolvedValue(true);
+      const stringFetcher = jest.fn().mockImplementation(async () => 'hello world');
+      const numberFetcher = jest.fn().mockImplementation(async () => 42);
+      const booleanFetcher = jest.fn().mockImplementation(async () => true);
 
 registerFetcher(['string-key'], { fetcher: stringFetcher, enabled: false });
 registerFetcher(['number-key'], { fetcher: numberFetcher, enabled: false });
@@ -170,7 +170,7 @@ registerFetcher(['boolean-key'], { fetcher: booleanFetcher, enabled: false });
         }
       };
 
-      const complexFetcher = jest.fn().mockResolvedValue(complexData);
+      const complexFetcher = jest.fn().mockImplementation(async () => complexData);
 
 registerFetcher(['complex-key'], {
         fetcher: complexFetcher,
@@ -212,7 +212,7 @@ registerFetcher(['comparison-key'], {
 
       const changingFetcher = jest.fn()
         .mockReturnValueOnce(firstFetchPromise)
-        .mockResolvedValueOnce({ id: 2, data: 'updated-data' });
+        .mockImplementationOnce(async () => ({ id: 2, data: 'updated-data' }));
 
 registerFetcher(['changing-key'], {
         fetcher: changingFetcher,
@@ -246,7 +246,7 @@ registerFetcher(['changing-key'], {
 
   describe('Error Scenarios', () => {
     test('should return undefined when query is in error state', async () => {
-      const errorFetcher = jest.fn().mockRejectedValue(new Error('Test error'));
+      const errorFetcher = jest.fn().mockImplementation(async () => { throw new Error('Test error'); });
 
 registerFetcher(['error-key'], {
         fetcher: errorFetcher,
@@ -313,8 +313,8 @@ registerFetcher(['performance-key'], {
     });
 
     test('should handle key changes efficiently', async () => {
-      const fetcher1 = jest.fn().mockResolvedValue({ id: 1, data: 'query1' });
-      const fetcher2 = jest.fn().mockResolvedValue({ id: 2, data: 'query2' });
+      const fetcher1 = jest.fn().mockImplementation(async () => ({ id: 1, data: 'query1' }));
+      const fetcher2 = jest.fn().mockImplementation(async () => ({ id: 2, data: 'query2' }));
 
 registerFetcher(['key1'], { fetcher: fetcher1, enabled: false });
 registerFetcher(['key2'], { fetcher: fetcher2, enabled: false });
@@ -365,8 +365,8 @@ registerFetcher(['shared-key'], {
     });
 
     test('should handle multiple components with different query keys', async () => {
-      const fetcher1 = jest.fn().mockResolvedValue({ id: 1, data: 'query1' });
-      const fetcher2 = jest.fn().mockResolvedValue({ id: 2, data: 'query2' });
+      const fetcher1 = jest.fn().mockImplementation(async () => ({ id: 1, data: 'query1' }));
+      const fetcher2 = jest.fn().mockImplementation(async () => ({ id: 2, data: 'query2' }));
 
 registerFetcher(['multi-key1'], { fetcher: fetcher1, enabled: false });
 registerFetcher(['multi-key2'], { fetcher: fetcher2, enabled: false });
@@ -477,11 +477,11 @@ registerFetcher(['stale-key'], {
 
   describe('TypeScript Integration', () => {
     test('should handle typed data correctly', async () => {
-      const userFetcher = jest.fn().mockResolvedValue({
+      const userFetcher = jest.fn().mockImplementation(async () => ({
         id: 1,
         name: 'John Doe',
         email: 'john@example.com'
-      });
+      }));
 
 registerFetcher(['user-key'], {
         fetcher: userFetcher,

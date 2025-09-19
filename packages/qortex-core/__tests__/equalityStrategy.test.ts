@@ -236,7 +236,7 @@ describe('EqualityStrategy', () => {
         it('should handle loading states correctly with equality strategies', async () => {
             const data1 = { count: 1 };
 
-            const fetcher = jest.fn().mockResolvedValue(data1);
+            const fetcher = jest.fn().mockImplementation(async () => data1);
 
             registerFetcher(['test-loading'], {
                 fetcher,
@@ -263,7 +263,7 @@ describe('EqualityStrategy', () => {
 
         it('should handle error states correctly with equality strategies', async () => {
             const error = new Error('Network error');
-            const fetcher = jest.fn().mockRejectedValue(error);
+            const fetcher = jest.fn().mockImplementation(async () => { throw error; });
 
             registerFetcher(['test-error'], {
                 fetcher,

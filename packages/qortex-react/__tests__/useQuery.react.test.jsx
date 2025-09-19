@@ -34,8 +34,8 @@ describe('useQuery React Integration Tests', () => {
     // ⚠️ Using dangerClearCache() is safe here in test environment only
     dangerClearCache();
     
-    // Default mock fetcher
-    mockFetcher = jest.fn().mockResolvedValue({ id: 1, data: 'test-data' });
+    // Default mock fetcher - must be async
+    mockFetcher = jest.fn().mockImplementation(async () => ({ id: 1, data: 'test-data' }));
   });
 
   describe('Basic React Integration', () => {
@@ -142,7 +142,7 @@ registerFetcher(['test-key'], {
   describe('Error States', () => {
     test('should handle error state', async () => {
       // Register error fetcher
-      const errorFetcher = jest.fn().mockRejectedValue(new Error('Test error'));
+      const errorFetcher = jest.fn().mockImplementation(async () => { throw new Error('Test error'); });
 
 registerFetcher(['test-key'], {
         fetcher: errorFetcher,
@@ -191,8 +191,8 @@ registerFetcher(['test-key'], {
 
     test('should handle key changes', async () => {
       // Register fetchers for different keys
-      const fetcher1 = jest.fn().mockResolvedValue({ id: 1, data: 'query1' });
-      const fetcher2 = jest.fn().mockResolvedValue({ id: 2, data: 'query2' });
+      const fetcher1 = jest.fn().mockImplementation(async () => ({ id: 1, data: 'query1' }));
+      const fetcher2 = jest.fn().mockImplementation(async () => ({ id: 2, data: 'query2' }));
 
 registerFetcher(['query1'], { fetcher: fetcher1, enabled: false });
 registerFetcher(['query2'], { fetcher: fetcher2, enabled: false });
@@ -244,8 +244,8 @@ registerFetcher(['test-key'], {
 
     test('should handle multiple components with different queries', async () => {
       // Register different fetchers
-      const fetcher1 = jest.fn().mockResolvedValue({ id: 1, data: 'query1' });
-      const fetcher2 = jest.fn().mockResolvedValue({ id: 2, data: 'query2' });
+      const fetcher1 = jest.fn().mockImplementation(async () => ({ id: 1, data: 'query1' }));
+      const fetcher2 = jest.fn().mockImplementation(async () => ({ id: 2, data: 'query2' }));
 
 registerFetcher(['query1'], { fetcher: fetcher1, enabled: false });
 registerFetcher(['query2'], { fetcher: fetcher2, enabled: false });

@@ -61,7 +61,7 @@ describe('Enhanced Type Inference Tests', () => {
                 fetcher: async () => 'any data'
             });
             registerFetcher(['another-key'], {
-                fetcher: () => 123
+                fetcher: async () => 123
             });
 
             // Should work without explicit type parameters
