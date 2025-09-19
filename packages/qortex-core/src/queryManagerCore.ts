@@ -268,6 +268,10 @@ export class QueryManagerCore {
     if (state?.status === "fetching" || !state?.enabled || isThrottled || !state?.fetcher) return;
 
     const now = Date.now();
+    // For mount logic, we need to fetch if:
+    // 1. Never fetched (updatedAt is null), OR
+    // 2. Time has crossed staleTime, OR  
+    // 3. It's invalidated
     const isStale = state?.updatedAt == null || (now - (state.updatedAt || 0) > state.staleTime) || state.isInvalidated;
 
     let shouldRefetch = false;

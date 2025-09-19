@@ -229,7 +229,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
         test('should handle multiple subscriptions with error promise', async () => {
             const key = ['multi-subscription-error'];
             const testError = new Error('Multi subscription error');
-            
+
             // Create a fetcher that will fail
             const errorFetcher = jest.fn().mockImplementation(async () => {
                 await new Promise(resolve => setTimeout(resolve, 10));
@@ -241,17 +241,17 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             const callback2 = jest.fn();
             const callback3 = jest.fn();
 
-            const unsubscribe1 = subscribeQuery(key, callback1, { 
+            const unsubscribe1 = subscribeQuery(key, callback1, {
                 fetcher: errorFetcher,
-                enabled: true 
+                enabled: true
             });
-            const unsubscribe2 = subscribeQuery(key, callback2, { 
+            const unsubscribe2 = subscribeQuery(key, callback2, {
                 fetcher: errorFetcher,
-                enabled: true 
+                enabled: true
             });
-            const unsubscribe3 = subscribeQuery(key, callback3, { 
+            const unsubscribe3 = subscribeQuery(key, callback3, {
                 fetcher: errorFetcher,
-                enabled: true 
+                enabled: true
             });
 
             // Wait for error to occur
@@ -266,7 +266,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             const lastCall1 = callback1.mock.calls[callback1.mock.calls.length - 1][0];
             const lastCall2 = callback2.mock.calls[callback2.mock.calls.length - 1][0];
             const lastCall3 = callback3.mock.calls[callback3.mock.calls.length - 1][0];
-            
+
             expect(lastCall1.status).toBe('error');
             expect(lastCall2.status).toBe('error');
             expect(lastCall3.status).toBe('error');
@@ -280,7 +280,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
         test('should handle subscription cleanup during error fetch', async () => {
             const key = ['cleanup-during-error'];
             const testError = new Error('Cleanup during error');
-            
+
             // Create a slow fetcher that will fail
             const slowErrorFetcher = jest.fn().mockImplementation(async () => {
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -289,9 +289,9 @@ describe('Error Promise and Subscription Behavior Tests', () => {
 
             // Set up subscription
             const subscriptionCallback = jest.fn();
-            const unsubscribe = subscribeQuery(key, subscriptionCallback, { 
+            const unsubscribe = subscribeQuery(key, subscriptionCallback, {
                 fetcher: slowErrorFetcher,
-                enabled: true 
+                enabled: true
             });
 
             // Wait a bit for fetch to start
@@ -306,7 +306,7 @@ describe('Error Promise and Subscription Behavior Tests', () => {
             // Callback should only be called once (for the initial state)
             // It should not be called again after unsubscribe
             expect(subscriptionCallback).toHaveBeenCalledTimes(1);
-            
+
             // But the query should still complete and be in error state
             const finalState = getQueryState(key, { enabled: false });
             expect(finalState.status).toBe('error');
