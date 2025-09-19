@@ -20,7 +20,7 @@ async function ensureRedisConnection() {
 
 // Rate limiting configuration
 const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 50 // Max 5 requests per minute per IP
+const MAX_REQUESTS_PER_WINDOW = 10 // Max 10 requests per minute per IP
 
 // Helper function to get client IP
 function getClientIP(request: NextRequest): string {
