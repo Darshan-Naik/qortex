@@ -182,6 +182,34 @@ function UserCount() {
 }`,
   },
   {
+    title: 'Smart Subscription with useQuerySelect',
+    description: 'Automatically optimize re-renders by only subscribing to accessed properties',
+    code: `import { useQuerySelect } from "qortex-react";
+
+// Component that only uses data - will NOT re-render when isError changes
+function UserName() {
+  const query = useQuerySelect(["user"], { fetcher: fetchUser });
+  return <div>{query.data?.name}</div>;
+}
+
+// Component that only uses status - will NOT re-render when data changes
+function LoadingStatus() {
+  const query = useQuerySelect(["user"], { fetcher: fetchUser });
+  return <div>{query.isLoading ? 'Loading...' : 'Done'}</div>;
+}
+
+// Component using both - will re-render when either data OR status changes
+function UserCard() {
+  const query = useQuerySelect(["user"], { fetcher: fetchUser });
+  return (
+    <div>
+      <div>{query.data?.name}</div>
+      <div>{query.isLoading ? 'Loading...' : 'Done'}</div>
+    </div>
+  );
+}`,
+  },
+  {
     title: 'Manual Data Updates',
     description: 'Update data manually from anywhere in your app',
     code: `import { setQueryData } from "qortex-core";

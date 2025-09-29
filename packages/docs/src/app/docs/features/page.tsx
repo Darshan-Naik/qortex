@@ -66,8 +66,20 @@ const features = [
     details: [
       'useQuery hook',
       'useQueryData hook',
+      'useQuerySelect with smart subscription',
       'Automatic cleanup',
       'SSR support'
+    ]
+  },
+  {
+    name: 'Smart Subscription',
+    description: 'Automatic optimization that only re-renders when accessed properties change.',
+    icon: Cpu,
+    details: [
+      'Automatic property detection',
+      'Minimal re-renders',
+      'Performance optimization',
+      'Zero configuration required'
     ]
   },
   {

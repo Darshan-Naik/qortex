@@ -73,6 +73,35 @@ registerFetcher(["user"], {
   }
 });`,
     },
+    {
+        title: 'Smart Subscription with useQuerySelect',
+        description: 'Automatically optimize re-renders by only subscribing to accessed properties',
+        icon: Cpu,
+        code: `// ✅ Use useQuerySelect for automatic optimization
+function UserName() {
+  const query = useQuerySelect(["user"], { fetcher: fetchUser });
+  // Only re-renders when data changes, not when isError changes
+  return <div>{query.data?.name}</div>;
+}
+
+function LoadingStatus() {
+  const query = useQuerySelect(["user"], { fetcher: fetchUser });
+  // Only re-renders when isLoading changes, not when data changes
+  return <div>{query.isLoading ? 'Loading...' : 'Done'}</div>;
+}
+
+// ❌ Regular useQuery re-renders on any state change
+function UserCard() {
+  const query = useQuery(["user"], { fetcher: fetchUser });
+  // Re-renders on ANY state change (data, loading, error, etc.)
+  return (
+    <div>
+      <div>{query.data?.name}</div>
+      <div>{query.isLoading ? 'Loading...' : 'Done'}</div>
+    </div>
+  );
+}`,
+    },
 ]
 
 const optimizationStrategies = [
@@ -110,6 +139,15 @@ const optimizationStrategies = [
             'Use appropriate cache sizes for your use case',
             'Monitor memory usage in development',
             'Implement proper cleanup in useEffect hooks'
+        ]
+    },
+    {
+        category: 'Re-renders',
+        strategies: [
+            'Use useQuerySelect for automatic re-render optimization',
+            'Only subscribe to properties you actually use',
+            'Avoid unnecessary re-renders with smart subscription',
+            'Monitor component render counts in development'
         ]
     }
 ]
@@ -218,6 +256,7 @@ export default function PerformancePage() {
                             <ul className="space-y-2 text-gray-600">
                                 <li>• Set appropriate stale times for your data</li>
                                 <li>• Use placeholder data to prevent layout shifts</li>
+                                <li>• Use useQuerySelect for automatic re-render optimization</li>
                                 <li>• Batch related queries when possible</li>
                                 <li>• Import only what you need</li>
                                 <li>• Monitor performance in development</li>
@@ -228,6 +267,7 @@ export default function PerformancePage() {
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">❌ Don't</h3>
                             <ul className="space-y-2 text-gray-600">
                                 <li>• Set stale time too low for static data</li>
+                                <li>• Use regular useQuery when you only need specific properties</li>
                                 <li>• Import the entire library unnecessarily</li>
                                 <li>• Ignore memory usage in large applications</li>
                                 <li>• Fetch data sequentially when parallel is possible</li>
