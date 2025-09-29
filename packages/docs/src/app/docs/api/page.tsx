@@ -226,7 +226,8 @@ function UserCard() {
       <div>{query.isLoading ? 'Loading...' : 'Done'}</div>
     </div>
   );
-}`
+}`,
+                note: 'Note: useQuerySelect uses a Proxy object to track accessed properties and keeps the data twice for comparison to optimize re-renders.'
             }
         ]
     },
@@ -504,6 +505,19 @@ export default function APIPage() {
                                                 <div className="ml-3">
                                                     <h4 className="text-sm font-medium text-red-800 mb-1">Warning</h4>
                                                     <p className="text-sm text-red-700">{item.warning}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {'note' in item && item.note && (
+                                        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <div className="flex items-start">
+                                                <div className="flex-shrink-0">
+                                                    <span className="text-blue-400 text-lg">ℹ️</span>
+                                                </div>
+                                                <div className="ml-3">
+                                                    <p className="text-sm text-blue-700">{item.note}</p>
                                                 </div>
                                             </div>
                                         </div>

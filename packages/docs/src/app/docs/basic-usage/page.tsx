@@ -207,7 +207,10 @@ function UserCard() {
       <div>{query.isLoading ? 'Loading...' : 'Done'}</div>
     </div>
   );
-}`,
+}
+
+// Note: useQuerySelect uses a Proxy object to track accessed properties 
+// and keeps the data twice for comparison to optimize re-renders.`,
   },
   {
     title: 'Manual Data Updates',

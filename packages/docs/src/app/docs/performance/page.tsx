@@ -100,7 +100,10 @@ function UserCard() {
       <div>{query.isLoading ? 'Loading...' : 'Done'}</div>
     </div>
   );
-}`,
+}
+
+// Note: useQuerySelect uses a Proxy object to track accessed properties 
+// and keeps the data twice for comparison to optimize re-renders.`,
     },
 ]
 
@@ -148,6 +151,14 @@ const optimizationStrategies = [
             'Only subscribe to properties you actually use',
             'Avoid unnecessary re-renders with smart subscription',
             'Monitor component render counts in development'
+        ]
+    },
+    {
+        category: 'Memory Management',
+        strategies: [
+            'useQuerySelect uses Proxy objects and data duplication for optimization',
+            'Monitor memory usage when using smart subscription extensively',
+            'Balance performance gains with memory consumption'
         ]
     }
 ]
