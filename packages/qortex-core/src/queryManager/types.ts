@@ -1,3 +1,5 @@
+import type { Persister } from "./persister";
+
 /** 
  * Query key can be a string or readonly array of strings/numbers
  * Using readonly to prevent accidental mutations
@@ -40,13 +42,15 @@ export type InferFetcherResult<F> = F extends Fetcher<infer R> ? R : any;
  */
 export type QueryStatus = "idle" | "fetching" | "success" | "error";
 
+export type RefetchOnSubscribeOptions = "always" | "stale" | false;
+
 /**
  * Comprehensive options for all query operations
  * Improved with better type constraints
  */
 export type QueryOptions<T = any> = {
   enabled?: boolean;
-  refetchOnSubscribe?: "always" | "stale" | false;
+  refetchOnSubscribe?: RefetchOnSubscribeOptions;
   fetcher?: Fetcher<T>;
   equalityFn?: EqualityFn<T>;
   equalityStrategy?: EqualityStrategy;
@@ -63,13 +67,14 @@ export type QueryOptions<T = any> = {
  */
 export type DefaultConfig = {
   enabled?: boolean;
-  refetchOnSubscribe?: "always" | "stale" | false;
+  refetchOnSubscribe?: RefetchOnSubscribeOptions;
   staleTime?: number;
   usePreviousDataOnError?: boolean;
   usePlaceholderOnError?: boolean;
   equalityFn?: EqualityFn<any>;
   equalityStrategy?: EqualityStrategy;
   throttleTime?: number;
+  persister?: Persister;
 };
 
 /**

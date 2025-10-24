@@ -9,6 +9,7 @@ import {
 } from "./types";
 import type { QueryStateInternal } from "./internal-types";
 import { serializeKey, createDefaultState, equal, createPublicState, warnNoFetcherOrData } from "./utils";
+import type { Persister } from "./persister";
 
 
 /**
@@ -20,6 +21,8 @@ export class QueryManagerCore {
   private subs = new Map<string, Set<(state: QueryState) => void>>();
   private defaultConfig: DefaultConfig = {};
   private throttleTime: number = THROTTLE_TIME;
+  private persister: Persister | null = null;
+  private hasQueriesBeenUsed = false;
 
   /**
    * ⚠️ DANGER: Clear all cached data and subscriptions
@@ -28,6 +31,7 @@ export class QueryManagerCore {
    * - All cached query data
    * - All active subscriptions
    * - All state references
+   * - All persisted data
    * 
    * @warning This should ONLY be used in testing environments or when you need to completely reset the query manager state. Using this in production will cause all active queries to lose their data and subscriptions to break.
    * 
@@ -45,17 +49,27 @@ export class QueryManagerCore {
   dangerClearCache(): void {
     this.cache.clear();
     this.subs.clear();
+    this.persister?.clear();
   }
 
   /**
    * Set default configuration for all queries
    */
-  setDefaultConfig({ throttleTime, ...config }: DefaultConfig): void {
+  setDefaultConfig({ throttleTime, persister, ...config }: DefaultConfig): void {
     this.defaultConfig = { ...this.defaultConfig, ...config };
 
     // Handle throttleTime separately since it's not part of QueryOptions
     if (throttleTime !== undefined) {
       this.throttleTime = throttleTime;
+    }
+
+    // Handle persister configuration
+    if (persister) {
+      this.persister = persister;
+
+      // Hydrate cache from persister
+      // Persister handles all hydration logic internally
+      this.persister?.load(this.cache, this.hasQueriesBeenUsed);
     }
   }
 
@@ -64,6 +78,7 @@ export class QueryManagerCore {
    * User-friendly with any fallback for better developer experience
    */
   private ensureState<T = any>(key: QueryKey, opts: QueryOptions<T> = {}): QueryStateInternal<T> {
+    this.hasQueriesBeenUsed = true;
     const serializedKey = serializeKey(key);
     const state = this.cache.get(serializedKey);
 
@@ -88,6 +103,10 @@ export class QueryManagerCore {
   private emit(key: QueryKey, state: QueryStateInternal) {
     const stateKey = serializeKey(key);
     this.cache.set(stateKey, state);
+
+    // Sync to persister - persister handles all serialization internally
+    this.persister?.sync(this.cache);
+
     const set = this.subs.get(stateKey);
     if (!set) return;
 

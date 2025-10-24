@@ -1,5 +1,5 @@
 import { registerFetcher, fetchQuery, getQueryData, setQueryData, getQueryState, dangerClearCache } from '../src/queryManager';
-import { equal, getEqualityFunction } from '../src/utils';
+import { equal, getEqualityFunction } from '../src/queryManager/utils';
 
 describe('EqualityStrategy', () => {
     beforeEach(() => {
