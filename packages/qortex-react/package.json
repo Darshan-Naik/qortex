@@ -1,6 +1,6 @@
 {
   "name": "qortex-react",
-  "version": "0.2.9",
+  "version": "0.3.0-beta.1",
   "description": "React hook bridge for qortex runtime",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -28,7 +28,7 @@
     "type": "git",
     "url": "git+https://github.com/Darshan-Naik/qortex.git"
   },
- "homepage": "https://qortex.darshannaik.com",
+  "homepage": "https://qortex.darshannaik.com",
   "bugs": {
     "url": "https://github.com/Darshan-Naik/qortex/issues"
   },

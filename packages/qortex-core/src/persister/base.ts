@@ -10,7 +10,7 @@ export class BasePersister {
     protected readonly storage: Storage;
     private syncTimeout: ReturnType<typeof setTimeout> | null = null;
     private debounceTime = 100
-    private burstKey = '0.2.9';
+    private burstKey = '0.3.0'
     private storageKey = 'qortex';
 
     constructor(
