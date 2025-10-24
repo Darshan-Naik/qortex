@@ -1,4 +1,4 @@
-import type { Persister } from "./persister";
+import type { Persister } from "../persister";
 
 /** 
  * Query key can be a string or readonly array of strings/numbers
