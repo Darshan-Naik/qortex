@@ -9,7 +9,7 @@ import {
 } from "./types";
 import type { QueryStateInternal } from "./internal-types";
 import { serializeKey, createDefaultState, equal, createPublicState, warnNoFetcherOrData } from "./utils";
-import type { Persister } from "./persister";
+import type { Persister } from "../persister";
 
 
 /**
