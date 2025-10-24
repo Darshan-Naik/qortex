@@ -49,6 +49,17 @@ const features = [
     ]
   },
   {
+    name: 'React Version Compatible',
+    description: 'Support for both modern and legacy React versions with dedicated packages.',
+    icon: Globe,
+    details: [
+      'React 18+ with useSyncExternalStore',
+      'React 16.8-17 with useEffect/useState',
+      'Same API across all versions',
+      'Easy migration path'
+    ]
+  },
+  {
     name: 'Smart Caching',
     description: 'Intelligent caching system that reduces API calls and improves performance.',
     icon: RefreshCw,

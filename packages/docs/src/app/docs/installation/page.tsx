@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 const installationOptions = [
     {
-        title: 'For React Applications',
+        title: 'For React Applications (React 18+)',
         description: 'Use qortex-react for complete React integration with hooks',
         icon: Package,
         code: `# Using npm
@@ -20,6 +20,20 @@ pnpm add qortex-react
 # Using yarn
 yarn add qortex-react`,
         note: 'Includes qortex-core automatically',
+    },
+    {
+        title: 'For React Applications (React 16.8-17)',
+        description: 'Use qortex-react-legacy for React versions below 18',
+        icon: Package,
+        code: `# Using npm
+npm install qortex-react-legacy
+
+# Using pnpm
+pnpm add qortex-react-legacy
+
+# Using yarn
+yarn add qortex-react-legacy`,
+        note: 'Uses useEffect/useState instead of useSyncExternalStore',
     },
     {
         title: 'For Other Frameworks',
@@ -42,8 +56,11 @@ const installationSteps = [
         title: 'Choose Your Package',
         description: 'Select the package that fits your framework',
         icon: Package,
-        code: `// For React applications
+        code: `// For React 18+ applications
 import { useQuery, registerFetcher, setDefaultConfig } from "qortex-react";
+
+// For React 16.8-17 applications
+import { useQuery, registerFetcher, setDefaultConfig } from "qortex-react-legacy";
 
 // For other frameworks
 import { registerFetcher, setDefaultConfig } from "qortex-core";`,
@@ -52,7 +69,11 @@ import { registerFetcher, setDefaultConfig } from "qortex-core";`,
         title: 'Import and Setup',
         description: 'Import qortex in your application',
         icon: Code,
-        code: `import { useQuery, registerFetcher, setDefaultConfig } from "qortex-react";
+        code: `// For React 18+
+import { useQuery, registerFetcher, setDefaultConfig } from "qortex-react";
+
+// For React 16.8-17
+import { useQuery, registerFetcher, setDefaultConfig } from "qortex-react-legacy";
 
 // Set global defaults (optional)
 setDefaultConfig({
@@ -100,7 +121,7 @@ registerFetcher(["todos"], {
 ]
 
 const requirements = [
-    'React 18 or higher',
+    'React 18 or higher (React 16.8+ supported with legacy package)',
     'TypeScript 5.0 or higher (recommended)',
     'Node.js 16 or higher',
 ]
@@ -108,10 +129,17 @@ const requirements = [
 const packageInfo = [
     {
         name: 'qortex-react',
-        description: 'Complete React data fetching solution (includes qortex-core)',
+        description: 'Complete React data fetching solution for React 18+ (includes qortex-core)',
         size: '< 2KB gzipped',
-        features: ['useQuery hook', 'useQueryData hook', 'Query management', 'Caching', 'Deduplication', 'Background updates', 'React integration'],
-        useCase: 'React applications',
+        features: ['useQuery hook', 'useQueryData hook', 'useQuerySelect hook', 'Query management', 'Caching', 'Deduplication', 'Background updates', 'React 18+ integration'],
+        useCase: 'React 18+ applications',
+    },
+    {
+        name: 'qortex-react-legacy',
+        description: 'React data fetching solution for React 16.8-17 (includes qortex-core)',
+        size: '< 2KB gzipped',
+        features: ['useQuery hook', 'useQueryData hook', 'useQuerySelect hook', 'Query management', 'Caching', 'Deduplication', 'Background updates', 'Legacy React support'],
+        useCase: 'React 16.8-17 applications',
     },
     {
         name: 'qortex-core',
@@ -213,7 +241,7 @@ export default function InstallationPage() {
                 {/* Package Information */}
                 <div className="mb-12">
                     <h2 className="text-2xl font-bold text-gray-900 mb-8">Package Information</h2>
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                         {packageInfo.map((pkg) => (
                             <div key={pkg.name} className="card">
                                 <div className="flex items-center justify-between mb-4">

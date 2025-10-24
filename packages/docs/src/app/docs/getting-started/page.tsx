@@ -8,21 +8,28 @@ const steps = [
     title: 'Install qortex',
     description: 'Choose the package that fits your framework',
     icon: CheckCircle,
-    code: `# For React applications
+    code: `# For React 18+ applications
 npm install qortex-react
+
+# For React 16.8-17 applications
+npm install qortex-react-legacy
 
 # For other frameworks (Vue, Svelte, vanilla JS)
 npm install qortex-core
 
 # Using pnpm or yarn
-pnpm add qortex-react  # or qortex-core
-yarn add qortex-react  # or qortex-core`,
+pnpm add qortex-react  # or qortex-react-legacy or qortex-core
+yarn add qortex-react  # or qortex-react-legacy or qortex-core`,
   },
   {
     title: 'Set up your first fetcher',
     description: 'Register a fetcher function to define how data is fetched',
     icon: Code,
-    code: `import { registerFetcher, setDefaultConfig } from "qortex-react";
+    code: `// For React 18+
+import { registerFetcher, setDefaultConfig } from "qortex-react";
+
+// For React 16.8-17
+import { registerFetcher, setDefaultConfig } from "qortex-react-legacy";
 
 // Register a fetcher for todos
 registerFetcher(["todos"], {
@@ -37,7 +44,11 @@ registerFetcher(["todos"], {
     title: 'Use in your React component',
     description: 'Use the useQuery hook to fetch and display data',
     icon: Zap,
-    code: `import { useQuery } from "qortex-react";
+    code: `// For React 18+
+import { useQuery } from "qortex-react";
+
+// For React 16.8-17
+import { useQuery } from "qortex-react-legacy";
 
 function TodosList() {
   const { data, isLoading, error, refetch } = useQuery(["todos"]);

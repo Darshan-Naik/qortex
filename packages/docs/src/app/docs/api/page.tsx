@@ -420,6 +420,18 @@ export default function APIPage() {
                     <p className="mt-4 text-xl text-gray-600">
                         Complete API reference for qortex-core and qortex-react. All functions, hooks, and configuration options.
                     </p>
+                    <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                                <span className="text-blue-400 text-lg">ℹ️</span>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm text-blue-700">
+                                    <strong>React Version Compatibility:</strong> Use <code className="bg-blue-100 px-1 rounded">qortex-react</code> for React 18+ and <code className="bg-blue-100 px-1 rounded">qortex-react-legacy</code> for React 16.8-17. Both packages provide the same API.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {apiSections.map((section) => (

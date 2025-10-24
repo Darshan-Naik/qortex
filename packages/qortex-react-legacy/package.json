@@ -1,0 +1,59 @@
+{
+  "name": "qortex-react-legacy",
+  "version": "0.1.0",
+  "description": "Qortex React hooks for legacy React versions (< 18) without useSyncExternalStore",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "react",
+    "query",
+    "state",
+    "data-fetching",
+    "legacy",
+    "react-16",
+    "react-17"
+  ],
+  "author": "Qortex Team",
+  "license": "MIT",
+  "dependencies": {
+    "qortex-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0 <18.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^12.1.5",
+    "@types/react": "^17.0.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/qortex.git",
+    "directory": "packages/qortex-react-legacy"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/qortex/issues"
+  },
+  "homepage": "https://github.com/your-org/qortex#readme"
+}

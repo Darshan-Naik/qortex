@@ -92,6 +92,38 @@ module.exports = {
       moduleNameMapper: {
         '^qortex-core$': '<rootDir>/packages/qortex-core/dist/index.js',
       },
+    },
+    {
+      displayName: 'qortex-react-legacy',
+      testEnvironment: 'jsdom',
+      roots: ['<rootDir>/packages/qortex-react-legacy'],
+      testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+        '/coverage/'
+      ],
+      testMatch: [
+        '**/__tests__/**/*.test.js',
+        '**/__tests__/**/*.test.jsx',
+        '**/?(*.)+(spec|test).js',
+        '**/?(*.)+(spec|test).jsx'
+      ],
+      collectCoverageFrom: [
+        'packages/qortex-react-legacy/src/**/*.{js,jsx,ts,tsx}',
+        '!packages/qortex-react-legacy/src/**/*.d.ts',
+        '!packages/qortex-react-legacy/src/**/*.test.{js,jsx,ts,tsx}',
+        '!packages/qortex-react-legacy/src/**/*.spec.{js,jsx,ts,tsx}'
+      ],
+      coverageDirectory: 'coverage/qortex-react-legacy',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      transform: {
+        '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+      },
+      moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
+      moduleNameMapper: {
+        '^qortex-core$': '<rootDir>/packages/qortex-core/dist/index.js',
+      },
     }
   ]
 };
