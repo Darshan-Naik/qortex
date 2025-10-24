@@ -405,11 +405,11 @@ const key3 = serializeKey(["posts", "published"]); // "posts,published"`
                     { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Default equality strategy for all queries' },
                     { name: 'persister?', type: 'Persister', description: 'Persister instance for data persistence' }
                 ],
-                example: `// Core package
+                example: `// Core package (tree-shakable)
 import { setDefaultConfig } from "qortex-core";
 import { createPersister } from "qortex-core/persister";
 
-// Or React package (convenience)
+// React package (with separate persister)
 import { setDefaultConfig } from "qortex-react";
 import { createPersister } from "qortex-react/persister";
 

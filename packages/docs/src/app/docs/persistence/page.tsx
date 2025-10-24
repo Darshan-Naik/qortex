@@ -58,7 +58,8 @@ const codeExamples = [
     {
         title: 'Basic localStorage Persistence',
         description: 'Simple setup with default configuration.',
-        code: `import { setDefaultConfig, createPersister } from 'qortex-core';
+        code: `import { setDefaultConfig } from 'qortex-core';
+import { createPersister } from 'qortex-core/persister';
 
 // Create a localStorage persister
 const persister = createPersister('local');
@@ -72,7 +73,8 @@ setDefaultConfig({ persister });
     {
         title: 'Custom Configuration',
         description: 'Advanced configuration with custom settings.',
-        code: `import { setDefaultConfig, createPersister } from 'qortex-core';
+        code: `import { setDefaultConfig } from 'qortex-core';
+import { createPersister } from 'qortex-core/persister';
 
 // Create persister with custom configuration
 const persister = createPersister('local', {
@@ -87,7 +89,8 @@ setDefaultConfig({ persister });`,
     {
         title: 'Session Storage',
         description: 'Use sessionStorage for temporary data.',
-        code: `import { setDefaultConfig, createPersister } from 'qortex-core';
+        code: `import { setDefaultConfig } from 'qortex-core';
+import { createPersister } from 'qortex-core/persister';
 
 // Session storage for temporary data
 const sessionPersister = createPersister('session', {
@@ -102,7 +105,7 @@ setDefaultConfig({ persister: sessionPersister });`,
         title: 'Tree-shakable Imports',
         description: 'Only import what you need to keep bundle size minimal.',
         code: `// Only imports persister functionality when used
-import { createPersister } from 'qortex-core';
+import { createPersister } from 'qortex-core/persister';
 
 // If you don't use persisters, they won't be included in your bundle
 const persister = createPersister('local');`,
@@ -110,22 +113,10 @@ const persister = createPersister('local');`,
     },
     {
         title: 'React Package Options',
-        description: 'React users have multiple import options for different use cases.',
-        code: `// Option 1: Everything from one package (convenience)
-import { setDefaultConfig, createPersister, useQuery } from 'qortex-react';
-
-// Option 2: Tree-shakable persister only
+        description: 'React users can import from the React package with separate persister entry point.',
+        code: `import { setDefaultConfig, useQuery } from 'qortex-react';
 import { createPersister } from 'qortex-react/persister';
-import { setDefaultConfig, useQuery } from 'qortex-react';
 
-// Option 3: Core + separate persister (maximum tree-shaking)
-import { setDefaultConfig } from 'qortex-core';
-import { createPersister } from 'qortex-core/persister';
-import { useQuery } from 'qortex-react';
-
-// All approaches work the same way
-const persister = createPersister('local');
-setDefaultConfig({ persister });
 
 function MyComponent() {
   const { data } = useQuery('users');
