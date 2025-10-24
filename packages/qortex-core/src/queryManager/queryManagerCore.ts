@@ -8,7 +8,7 @@ import {
   DefaultConfig,
 } from "./types";
 import type { QueryStateInternal } from "./internal-types";
-import { serializeKey, createDefaultState, equal, createPublicState, warnNoFetcherOrData } from "./utils";
+import { serializeKey, createDefaultState, equal, createPublicState, warnNoFetcherOrData, getEqualityFunction } from "./utils";
 import type { Persister } from "../persister";
 
 
@@ -161,7 +161,8 @@ export class QueryManagerCore {
     // Attach callbacks to the promise with atomic state updates
     promise.then((result: T) => {
       // Atomic update: set all success state properties together
-      state.data = state.equalityFn(state.data, result) ? state.data : result;
+      const equalityFn = getEqualityFunction(state.equalityStrategy, state.equalityFn);
+      state.data = equalityFn(state.data, result) ? state.data : result;
       state.status = "success";
       state.isError = false;
       state.isSuccess = true;
@@ -192,7 +193,8 @@ export class QueryManagerCore {
   setQueryData<T = any>(key: QueryKey, data: T): void {
     const state = this.ensureState(key);
     const old = state.data;
-    if (state.equalityFn(old, data)) return;
+    const equalityFn = getEqualityFunction(state.equalityStrategy, state.equalityFn);
+    if (equalityFn(old, data)) return;
     state.data = data;
     state.updatedAt = Date.now();
     state.error = undefined;

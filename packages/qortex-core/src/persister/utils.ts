@@ -1,6 +1,5 @@
-import { QueryStateInternal } from '../queryManager/internal-types';
-import { getEqualityFunction } from '../queryManager/utils';
-import { PersistedState, SerializedQueryState } from './types';
+import type { QueryStateInternal } from '../queryManager/internal-types';
+import type { PersistedState, SerializedQueryState } from './types';
 import { validatePersistedState } from './validator';
 
 /**
@@ -20,14 +19,10 @@ export function fromSerializableState<T = any>(
     serializableState: SerializedQueryState,
     originalState?: QueryStateInternal<T>
 ): QueryStateInternal<T> {
-    const state = {
+    return {
         ...(originalState ?? {}),
         ...serializableState,
     }
-    return {
-        ...state,
-        equalityFn: originalState?.equalityFn || getEqualityFunction(state.equalityStrategy),
-    };
 }
 
 /**

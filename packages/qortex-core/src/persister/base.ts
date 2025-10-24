@@ -1,7 +1,7 @@
 import { PersisterConfig } from './types';
 import { SerializedQueryState, PersistedState } from './types';
 import { toSerializableState, fromSerializableState, warnPersisterAfterQueriesUsed, safeParseJSON } from './utils';
-import { QueryStateInternal } from '../queryManager/internal-types';
+import type { QueryStateInternal } from '../queryManager/internal-types';
 
 /**
  * Base persister implementation
@@ -119,6 +119,5 @@ export class BasePersister {
     }
 
 }
-
 
 export type Persister = BasePersister;

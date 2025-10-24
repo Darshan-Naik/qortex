@@ -72,5 +72,4 @@ export const createPersister = (type: 'local' | 'session', config?: PersisterCon
     }
     return new BasePersister(storage, config)
 }
-
 export type { Persister };

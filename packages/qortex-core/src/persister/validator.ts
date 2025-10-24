@@ -1,4 +1,4 @@
-import { QueryStatus } from '../queryManager/types';
+import type { QueryStatus } from '../queryManager/types';
 import { SerializedQueryState, PersistedState } from './types';
 
 /**

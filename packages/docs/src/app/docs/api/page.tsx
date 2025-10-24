@@ -405,7 +405,13 @@ const key3 = serializeKey(["posts", "published"]); // "posts,published"`
                     { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Default equality strategy for all queries' },
                     { name: 'persister?', type: 'Persister', description: 'Persister instance for data persistence' }
                 ],
-                example: `import { setDefaultConfig, createPersister } from "qortex-core";
+                example: `// Core package
+import { setDefaultConfig } from "qortex-core";
+import { createPersister } from "qortex-core/persister";
+
+// Or React package (convenience)
+import { setDefaultConfig } from "qortex-react";
+import { createPersister } from "qortex-react/persister";
 
 setDefaultConfig({
   staleTime: 5 * 60 * 1000,
@@ -431,7 +437,7 @@ setDefaultConfig({
                     { name: 'config', type: 'PersisterConfig', description: 'Optional persister configuration' }
                 ],
                 returns: 'Persister | undefined',
-                example: `import { createPersister } from "qortex-core";
+                example: `import { createPersister } from "qortex-core/persister";
 
 // Basic localStorage persister
 const persister = createPersister('local');

@@ -13,7 +13,7 @@ export type QueryStateInternal<T = any, E = unknown> = {
   staleTime: number;
   isInvalidated: boolean;
   fetcher?: Fetcher<T> | null;
-  equalityFn: EqualityFn<T>;
+  equalityFn?: EqualityFn<T>;
   equalityStrategy: EqualityStrategy;
   placeholderData?: T;
   usePreviousDataOnError?: boolean;

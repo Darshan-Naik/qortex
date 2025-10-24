@@ -1,4 +1,4 @@
-import { QueryStateInternal } from "../queryManager/internal-types";
+import type { QueryStateInternal } from "../queryManager/internal-types";
 
 
 export type SerializedQueryState = Omit<QueryStateInternal, 'fetcher' | 'fetchPromise' | 'refetch' | 'equalityFn'>;

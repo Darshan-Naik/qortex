@@ -107,6 +107,31 @@ import { createPersister } from 'qortex-core';
 // If you don't use persisters, they won't be included in your bundle
 const persister = createPersister('local');`,
         language: 'typescript'
+    },
+    {
+        title: 'React Package Options',
+        description: 'React users have multiple import options for different use cases.',
+        code: `// Option 1: Everything from one package (convenience)
+import { setDefaultConfig, createPersister, useQuery } from 'qortex-react';
+
+// Option 2: Tree-shakable persister only
+import { createPersister } from 'qortex-react/persister';
+import { setDefaultConfig, useQuery } from 'qortex-react';
+
+// Option 3: Core + separate persister (maximum tree-shaking)
+import { setDefaultConfig } from 'qortex-core';
+import { createPersister } from 'qortex-core/persister';
+import { useQuery } from 'qortex-react';
+
+// All approaches work the same way
+const persister = createPersister('local');
+setDefaultConfig({ persister });
+
+function MyComponent() {
+  const { data } = useQuery('users');
+  return <div>{data?.name}</div>;
+}`,
+        language: 'typescript'
     }
 ]
 
