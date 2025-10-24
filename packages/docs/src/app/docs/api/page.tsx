@@ -1,4 +1,4 @@
-import { Code, Zap, Settings, Database } from 'lucide-react'
+import { Code, Zap, Settings, Database, HardDrive } from 'lucide-react'
 import { generateMetadata as generateSEOMetadata, seoConfigs } from '@/lib/seo'
 
 export const metadata = generateSEOMetadata(seoConfigs.api)
@@ -402,8 +402,84 @@ const key3 = serializeKey(["posts", "published"]); // "posts,published"`
                     { name: 'refetchOnSubscribe?', type: '"stale" | "always" | false', description: 'Default refetch behavior' },
                     { name: 'throttleTime?', type: 'number', description: 'Default throttle time for duplicate requests' },
                     { name: 'usePreviousDataOnError?', type: 'boolean', description: 'Keep previous data on error' },
-                    { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Default equality strategy for all queries' }
-                ]
+                    { name: 'equalityStrategy?', type: '"shallow" | "deep"', description: 'Default equality strategy for all queries' },
+                    { name: 'persister?', type: 'Persister', description: 'Persister instance for data persistence' }
+                ],
+                example: `import { setDefaultConfig, createPersister } from "qortex-core";
+
+setDefaultConfig({
+  staleTime: 5 * 60 * 1000,
+  refetchOnSubscribe: "stale",
+  persister: createPersister('local', {
+    burstKey: 'v1.0.0',
+    prefix: 'my_app'
+  })
+});`
+            }
+        ]
+    },
+    {
+        title: 'Data Persistence',
+        description: 'Persister functions for localStorage and sessionStorage',
+        icon: HardDrive,
+        items: [
+            {
+                name: 'createPersister(type, config?)',
+                description: 'Create a persister instance for data persistence',
+                parameters: [
+                    { name: 'type', type: '"local" | "session"', description: 'Storage type - localStorage or sessionStorage' },
+                    { name: 'config', type: 'PersisterConfig', description: 'Optional persister configuration' }
+                ],
+                returns: 'Persister | undefined',
+                example: `import { createPersister } from "qortex-core";
+
+// Basic localStorage persister
+const persister = createPersister('local');
+
+// With custom configuration
+const persister = createPersister('local', {
+  burstKey: 'v1.0.0',
+  prefix: 'my_app',
+  debounceTime: 50
+});
+
+// Session storage for temporary data
+const sessionPersister = createPersister('session', {
+  prefix: 'temp_data',
+  debounceTime: 200
+});`
+            },
+            {
+                name: 'PersisterConfig',
+                description: 'Configuration options for persister instances',
+                properties: [
+                    { name: 'burstKey?', type: 'string', description: 'Version key for cache invalidation. When changed, existing cached data will be cleared. Defaults to current Qortex version.' },
+                    { name: 'prefix?', type: 'string', description: 'Storage key prefix for namespacing persisted data. Defaults to "qortex".' },
+                    { name: 'debounceTime?', type: 'number', description: 'Debounce time in milliseconds for sync operations. Defaults to 100ms.' }
+                ],
+                example: `const config: PersisterConfig = {
+  burstKey: 'v1.0.0',
+  prefix: 'my_app',
+  debounceTime: 50
+};`
+            },
+            {
+                name: 'Persister',
+                description: 'Interface for persister instances',
+                properties: [
+                    { name: 'burstKey', type: 'string', description: 'The current burst key for cache invalidation' },
+                    { name: 'storageKey', type: 'string', description: 'The storage key prefix being used' }
+                ],
+                methods: [
+                    { name: 'save(state)', description: 'Saves serialized query state data to storage' },
+                    { name: 'load(cache)', description: 'Loads and hydrates query state data from storage' },
+                    { name: 'clear()', description: 'Clears all persisted data from storage' },
+                    { name: 'sync(cache)', description: 'Debounced sync operation that saves current cache state' }
+                ],
+                example: `const persister = createPersister('local');
+
+// The persister is automatically used by the query manager
+// when set via setDefaultConfig({ persister })`
             }
         ]
     }

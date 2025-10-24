@@ -1,4 +1,4 @@
-import { Zap, Shield, Code, Cpu, RefreshCw, Globe, Layers, CheckCircle } from 'lucide-react'
+import { Zap, Shield, Code, Cpu, RefreshCw, Globe, Layers, CheckCircle, Database } from 'lucide-react'
 import { generateMetadata as generateSEOMetadata, seoConfigs } from '@/lib/seo'
 
 export const metadata = generateSEOMetadata(seoConfigs.features)
@@ -68,7 +68,6 @@ const features = [
       'useQueryData hook',
       'useQuerySelect with smart subscription',
       'Automatic cleanup',
-      'SSR support'
     ]
   },
   {
@@ -91,6 +90,18 @@ const features = [
       'Per-query customization',
       'Custom equality functions',
       'Placeholder data support'
+    ]
+  },
+  {
+    name: 'Data Persistence',
+    description: 'Built-in persistence support with localStorage and sessionStorage for offline-first applications.',
+    icon: Database,
+    details: [
+      'localStorage and sessionStorage support',
+      'Configurable debounce timing',
+      'Burst key cache invalidation',
+      'Automatic serialization and validation',
+      'Tree-shakable persister exports'
     ]
   }
 ]

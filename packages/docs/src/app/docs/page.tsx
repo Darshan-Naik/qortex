@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, Book, Code, Zap, Shield, Star } from 'lucide-react'
+import { ArrowRight, Book, Code, Zap, Shield, Star, Database } from 'lucide-react'
 
 export const metadata: Metadata = {
     title: 'Documentation',
@@ -31,6 +31,14 @@ const docSections = [
         href: '/docs/api',
         color: 'text-blue-600',
         bgColor: 'bg-blue-100',
+    },
+    {
+        title: 'Data Persistence',
+        description: 'Learn how to persist query data with localStorage and sessionStorage.',
+        icon: Database,
+        href: '/docs/persistence',
+        color: 'text-indigo-600',
+        bgColor: 'bg-indigo-100',
     },
     {
         title: 'Guides',

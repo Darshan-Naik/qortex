@@ -7,7 +7,8 @@ import {
     RefreshCw,
     Globe,
     Layers,
-    ArrowRight
+    ArrowRight,
+    Database
 } from 'lucide-react'
 
 const features = [
@@ -60,6 +61,14 @@ const features = [
         color: 'text-pink-600',
         bgColor: 'bg-pink-100',
     },
+    {
+        name: 'Data Persistence',
+        description: 'Built-in localStorage and sessionStorage support with configurable debounce timing.',
+        icon: Database,
+        color: 'text-indigo-600',
+        bgColor: 'bg-indigo-100',
+        isNew: true,
+    },
 ]
 
 export function Features() {
@@ -78,12 +87,19 @@ export function Features() {
 
                 <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                     {features.map((feature) => (
-                        <div key={feature.name} className="card group hover:scale-105 transition-transform duration-200">
+                        <div key={feature.name} className="card group hover:scale-105 transition-transform duration-200 relative">
+                            {feature.isNew && (
+                                <div className="absolute -top-2 -right-2 z-10">
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-lg animate-pulse">
+                                        NEW
+                                    </span>
+                                </div>
+                            )}
                             <div className="flex items-center">
                                 <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${feature.bgColor}`}>
                                     <feature.icon className={`h-6 w-6 ${feature.color}`} />
                                 </div>
-                                <div className="ml-4">
+                                <div className="ml-4 flex-1">
                                     <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
                                         {feature.name}
                                     </h3>

@@ -8,7 +8,7 @@ export function Hero() {
                 <div className="text-center">
                     <div className="inline-flex items-center rounded-full glass-effect px-4 py-2 text-sm font-medium text-gray-700 mb-8 animate-float">
                         <Zap className="h-4 w-4 mr-2 text-primary-600" />
-                        Lightning Fast • Minimal Bundle • TypeScript First
+                        Lightning Fast • Data Persistence • TypeScript First
                     </div>
 
                     <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl lg:text-8xl mb-6">
@@ -16,7 +16,7 @@ export function Hero() {
                     </h1>
 
                     <p className="mx-auto mt-6 max-w-3xl text-xl text-gray-600 leading-relaxed">
-                        A minimal, performant data fetching library with React integration.
+                        A minimal, performant data fetching library with React integration and built-in persistence.
                         Built for <strong>simplicity</strong>, <strong>efficiency</strong>, and
                         <strong> developer happiness</strong>! 🎉
                     </p>
