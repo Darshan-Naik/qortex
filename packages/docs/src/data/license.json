@@ -1,0 +1,54 @@
+{
+    "id": "license",
+    "title": "License",
+    "subtitle": "License information",
+    "description": "Qortex is released under the LGPL-3.0 license. Learn about your rights and obligations when using Qortex in your projects.",
+    "category": "About",
+    "tags": [
+        "license",
+        "legal",
+        "lgpl",
+        "open-source"
+    ],
+    "status": "stable",
+    "content": "Qortex is released under the GNU Lesser General Public License v3.0 (LGPL-3.0).",
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Open Source",
+            "content": "Qortex is free and open source software. You can use, modify, and distribute it according to the LGPL-3.0 license terms.",
+            "icon": "info"
+        }
+    ],
+    "sections": [
+        {
+            "title": "License Summary",
+            "content": "The LGPL-3.0 license allows you to:",
+            "code": {
+                "language": "text",
+                "code": "✅ Use Qortex in commercial projects\n✅ Modify the source code\n✅ Distribute modified versions\n✅ Use in proprietary applications\n\n❌ You must provide source code for LGPL-licensed parts\n❌ You must license derivative works under LGPL-3.0\n❌ You must include the original license and copyright notice"
+            }
+        },
+        {
+            "title": "Full License Text",
+            "content": "For the complete license text, please visit:",
+            "code": {
+                "language": "text",
+                "code": "https://opensource.org/licenses/LGPL-3.0"
+            }
+        }
+    ],
+    "badges": [
+        {
+            "text": "LGPL-3.0",
+            "variant": "info"
+        },
+        {
+            "text": "Open Source",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "contributing"
+    ]
+}

@@ -1,0 +1,141 @@
+{
+    "id": "fetchQuery",
+    "title": "fetchQuery",
+    "subtitle": "Execute a fetch operation",
+    "description": "Execute a fetch operation programmatically without React hooks. Perfect for one-time operations, event handlers, and server-side usage.",
+    "category": "Core APIs",
+    "tags": [
+        "core",
+        "fetch",
+        "programmatic",
+        "one-time"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function fetchQuery<TData, TError = Error>(\n  queryKey: QueryKey,\n  options?: QueryOptions<TData, TError>\n): Promise<TData>"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string, array, or object."
+            },
+            {
+                "name": "options",
+                "type": "QueryOptions<TData, TError>",
+                "required": false,
+                "default": "-",
+                "description": "Optional configuration object. If no fetcher is provided, uses a previously registered fetcher."
+            },
+            {
+                "name": "options.fetcher",
+                "type": "() => Promise<TData>",
+                "required": false,
+                "default": "-",
+                "description": "Function that returns a Promise resolving to the data. Optional if fetcher was already registered."
+            },
+            {
+                "name": "options.staleTime",
+                "type": "number",
+                "required": false,
+                "default": "0",
+                "description": "Time in milliseconds after which data is considered stale."
+            }
+        ]
+    },
+    "returns": {
+        "type": "Promise<TData>",
+        "description": "Promise that resolves to the fetched data"
+    },
+    "examples": [
+        {
+            "title": "With Fetcher",
+            "description": "Execute a one-time fetch operation with inline fetcher",
+            "language": "tsx",
+            "code": "import { fetchQuery } from 'qortex-react';\n\nasync function handleSubmit() {\n  try {\n    const result = await fetchQuery(\n      'submit-form',\n      {\n        fetcher: async () => {\n          const response = await fetch('/api/submit', {\n            method: 'POST',\n            body: JSON.stringify(formData)\n          });\n          return response.json();\n        }\n      }\n    );\n    \n    console.log('Form submitted:', result);\n  } catch (error) {\n    console.error('Submission failed:', error);\n  }\n}"
+        },
+        {
+            "title": "Using Registered Fetcher",
+            "description": "Use fetchQuery with a previously registered fetcher",
+            "language": "tsx",
+            "code": "import { fetchQuery, registerFetcher } from 'qortex-react';\n\n// First, register a fetcher\nregisterFetcher('user-data', {\n  fetcher: async () => {\n    const response = await fetch('/api/user');\n    return response.json();\n  }\n});\n\nfunction RefreshButton() {\n  const handleRefresh = async () => {\n    try {\n      // No need to provide fetcher - uses registered one\n      await fetchQuery('user-data');\n      \n      // Data is now cached and will update all components using this query\n      console.log('Data refreshed!');\n    } catch (error) {\n      console.error('Refresh failed:', error);\n    }\n  };\n\n  return (\n    <button onClick={handleRefresh}>\n      Refresh Data\n    </button>\n  );\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "One-time Execution",
+            "description": "Executes the fetch operation once and returns the result",
+            "icon": "zap"
+        },
+        {
+            "title": "Cache Integration",
+            "description": "Updates the cache, affecting all components using the same query key",
+            "icon": "database"
+        },
+        {
+            "title": "Error Handling",
+            "description": "Throws errors that can be caught with try/catch",
+            "icon": "alert-triangle"
+        },
+        {
+            "title": "Promise-based",
+            "description": "Returns a Promise for async/await or .then() usage",
+            "icon": "refresh-cw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use for one-time operations like form submissions",
+            "Handle errors with try/catch blocks",
+            "Use in event handlers and server-side code",
+            "Combine with useQuery for reactive updates"
+        ],
+        "donts": [
+            "Don't use in render functions (use useQuery instead)",
+            "Don't forget to handle Promise rejections",
+            "Don't use for continuous data fetching",
+            "Don't use without proper error handling"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Cache Integration",
+            "content": "fetchQuery updates the cache, so any components using useQuery with the same key will automatically re-render with the new data.",
+            "icon": "database"
+        },
+        {
+            "type": "warning",
+            "title": "Error Handling",
+            "content": "Always wrap fetchQuery calls in try/catch blocks to handle potential errors gracefully.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Core API",
+            "variant": "info"
+        },
+        {
+            "text": "Promise-based",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "useQuery",
+        "registerFetcher",
+        "QueryOptions"
+    ]
+}

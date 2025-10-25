@@ -1,0 +1,135 @@
+{
+    "id": "subscribeQuery",
+    "title": "subscribeQuery",
+    "subtitle": "Subscribe to query state changes",
+    "description": "Subscribe to query state changes programmatically. Useful for non-React code, event handlers, and custom state management.",
+    "category": "Core APIs",
+    "tags": [
+        "core",
+        "subscription",
+        "state",
+        "non-react"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function subscribeQuery<TData, TError = Error>(\n  queryKey: QueryKey,\n  callback: (state: QueryState<TData, TError>) => void,\n  options?: QueryOptions<TData>\n): () => void"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string or array of primitives."
+            },
+            {
+                "name": "callback",
+                "type": "(state: QueryState<TData, TError>) => void",
+                "required": true,
+                "default": "-",
+                "description": "Function called whenever the query state changes."
+            },
+            {
+                "name": "options",
+                "type": "QueryOptions<TData>",
+                "required": false,
+                "default": "-",
+                "description": "Optional configuration object. If no fetcher is provided, uses a previously registered fetcher."
+            }
+        ]
+    },
+    "returns": {
+        "type": "() => void",
+        "description": "Unsubscribe function to stop listening to state changes"
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Subscribe to query state changes",
+            "language": "tsx",
+            "code": "import { subscribeQuery } from 'qortex-react';\n\nfunction setupUserSubscription() {\n  // Subscribe to user data changes\n  const unsubscribe = subscribeQuery(['user', 'current'], (state) => {\n    console.log('User state changed:', {\n      data: state.data,\n      isLoading: state.isLoading,\n      error: state.error\n    });\n    \n    // Handle different states\n    if (state.isLoading) {\n      console.log('Loading user data...');\n    } else if (state.error) {\n      console.error('Failed to load user:', state.error);\n    } else if (state.data) {\n      console.log('User loaded:', state.data.name);\n    }\n  });\n  \n  // Return unsubscribe function for cleanup\n  return unsubscribe;\n}\n\n// Usage\nconst unsubscribe = setupUserSubscription();\n\n// Later, when you want to stop listening\nunsubscribe();"
+        },
+        {
+            "title": "Custom State Management",
+            "description": "Use in custom state management systems",
+            "language": "tsx",
+            "code": "import { subscribeQuery } from 'qortex-react';\n\nclass CustomStateManager {\n  private subscriptions: (() => void)[] = [];\n  \n  subscribeToUser(userId: string, onUserChange: (user: any) => void) {\n    const unsubscribe = subscribeQuery(['user', userId], (state) => {\n      if (state.data) {\n        onUserChange(state.data);\n      }\n    });\n    \n    this.subscriptions.push(unsubscribe);\n    return unsubscribe;\n  }\n  \n  subscribeToPosts(onPostsChange: (posts: any[]) => void) {\n    const unsubscribe = subscribeQuery('posts', (state) => {\n      if (state.data) {\n        onPostsChange(state.data);\n      }\n    });\n    \n    this.subscriptions.push(unsubscribe);\n    return unsubscribe;\n  }\n  \n  cleanup() {\n    this.subscriptions.forEach(unsubscribe => unsubscribe());\n    this.subscriptions = [];\n  }\n}\n\n// Usage\nconst stateManager = new CustomStateManager();\n\nstateManager.subscribeToUser('123', (user) => {\n  console.log('User updated:', user);\n});\n\nstateManager.subscribeToPosts((posts) => {\n  console.log('Posts updated:', posts);\n});\n\n// Cleanup when done\nstateManager.cleanup();"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "State Changes",
+            "description": "Calls the callback whenever the query state changes",
+            "icon": "activity"
+        },
+        {
+            "title": "Non-React",
+            "description": "Perfect for non-React code and custom state management",
+            "icon": "zap"
+        },
+        {
+            "title": "Unsubscribe",
+            "description": "Returns an unsubscribe function for cleanup",
+            "icon": "refresh-cw"
+        },
+        {
+            "title": "Type Safe",
+            "description": "Provides properly typed state in the callback",
+            "icon": "database"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Always call the unsubscribe function for cleanup",
+            "Use in non-React code and custom state management",
+            "Handle all possible state combinations in the callback",
+            "Use for event handlers and side effects"
+        ],
+        "donts": [
+            "Don't use in React components (use useQuery instead)",
+            "Don't forget to unsubscribe to prevent memory leaks",
+            "Don't use for simple one-time operations",
+            "Don't create new functions in the callback on every call"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Non-React Usage",
+            "content": "subscribeQuery is perfect for non-React code, custom state management, and event handlers.",
+            "icon": "activity"
+        },
+        {
+            "type": "warning",
+            "title": "Memory Leaks",
+            "content": "Always call the unsubscribe function to prevent memory leaks. Store it and call it when appropriate.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Core API",
+            "variant": "info"
+        },
+        {
+            "text": "Non-React",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "useQuery",
+        "getQueryState",
+        "QueryState",
+        "QueryKey"
+    ]
+}

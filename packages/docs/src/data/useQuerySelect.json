@@ -1,0 +1,128 @@
+{
+    "id": "useQuerySelect",
+    "title": "useQuerySelect",
+    "subtitle": "Hook that returns QueryState with optimized re-renders",
+    "description": "A hook that returns the full QueryState object but with optimized re-renders based on which properties of the state are actually used in the component.",
+    "category": "React Hooks",
+    "tags": [
+        "react",
+        "hook",
+        "optimization",
+        "performance",
+        "selector"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function useQuerySelect<TData, TError = Error>(\n  queryKey: QueryKey,\n  options?: QueryOptions<TData>\n): QueryState<TData, TError>"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string or array of primitives."
+            },
+            {
+                "name": "options",
+                "type": "QueryOptions<TData>",
+                "required": false,
+                "default": "-",
+                "description": "Optional configuration object. If no fetcher is provided, uses a previously registered fetcher."
+            }
+        ]
+    },
+    "returns": {
+        "type": "QueryState<TData, TError>",
+        "description": "The complete query state object with optimized re-renders based on property usage"
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Access query state with optimized re-renders",
+            "language": "tsx",
+            "code": "import { useQuerySelect } from 'qortex-react';\n\nfunction UserName({ userId }: { userId: string }) {\n  const userState = useQuerySelect(['user', userId], {\n    fetcher: async () => {\n      const response = await fetch(`/api/users/${userId}`);\n      return response.json();\n    }\n  });\n\n  // Only re-renders when userState.data changes, not when other state properties change\n  return <span>{userState.data?.name ?? 'Unknown'}</span>;\n}"
+        },
+        {
+            "title": "State Property Access",
+            "description": "Access specific state properties with optimized re-renders",
+            "language": "tsx",
+            "code": "import { useQuerySelect } from 'qortex-react';\n\nfunction ProductStats({ productId }: { productId: string }) {\n  const productState = useQuerySelect(['product', productId], {\n    fetcher: async () => {\n      const response = await fetch(`/api/products/${productId}`);\n      return response.json();\n    }\n  });\n\n  // Component only re-renders when accessed state properties change\n  return (\n    <div>\n      <h3>{productState.data?.name ?? 'Unknown Product'}</h3>\n      <p>Price: ${productState.data?.price ?? 0}</p>\n      <p>In Stock: {(productState.data?.inventory ?? 0) > 0 ? 'Yes' : 'No'}</p>\n      {productState.isLoading && <div>Loading...</div>}\n      {productState.isError && <div>Error: {productState.error?.message}</div>}\n    </div>\n  );\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "State-Based Optimization",
+            "description": "Returns full QueryState but only re-renders when accessed state properties change",
+            "icon": "zap"
+        },
+        {
+            "title": "Performance Optimized",
+            "description": "Automatically optimizes re-renders based on which state properties are used",
+            "icon": "activity"
+        },
+        {
+            "title": "Full State Access",
+            "description": "Provides access to all QueryState properties (data, isLoading, error, etc.)",
+            "icon": "refresh-cw"
+        },
+        {
+            "title": "Type Safe",
+            "description": "Full TypeScript support with proper type inference",
+            "icon": "database"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use for accessing specific state properties with optimization",
+            "Access only the state properties you need in your component",
+            "Use TypeScript for better type safety",
+            "Handle all state properties appropriately (data, isLoading, error, etc.)"
+        ],
+        "donts": [
+            "Don't use for simple data access (use useQueryData instead)",
+            "Don't access all state properties if you only need a few",
+            "Don't forget to handle loading and error states",
+            "Don't use for complex data transformations"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "State-Based Optimization",
+            "content": "useQuerySelect returns the full QueryState object but only re-renders when the specific state properties you access change.",
+            "icon": "zap"
+        },
+        {
+            "type": "warning",
+            "title": "State Property Access",
+            "content": "The optimization tracks which QueryState properties you access (data, isLoading, error, etc.). Access only the properties you need for optimal performance.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "React Hook",
+            "variant": "info"
+        },
+        {
+            "text": "Performance",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "useQuery",
+        "useQueryData",
+        "QueryOptions"
+    ]
+}

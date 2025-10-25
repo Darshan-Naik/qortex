@@ -11,7 +11,7 @@ export function HeroButtons() {
     return (
         <div className="mt-10 relative">
             <div className="flex items-center justify-center gap-6">
-                <Link href="/docs" className="btn-primary text-lg px-8 py-4 flex items-center justify-center w-fit h-14">
+                <Link href="/docs/installation" className="btn-primary text-lg px-8 py-4 flex items-center justify-center w-fit h-14">
                     Get Started
                     <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>

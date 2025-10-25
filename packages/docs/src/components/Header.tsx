@@ -2,21 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Menu, X, Github, ExternalLink, Package, BrainCircuit } from 'lucide-react'
+import { ExternalLink, Package, BrainCircuit } from 'lucide-react'
 import { StarButton } from './StarButton'
 
-const navigation = [
-    { name: 'Docs', href: '/docs' },
-    { name: 'Features', href: '/docs/features' },
-    { name: 'API Reference', href: '/docs/api' },
-    { name: 'Getting Started', href: '/docs/getting-started' },
-]
+// No navigation items needed - only Home and Docs pages
 
 export function Header() {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [packageMenuOpen, setPackageMenuOpen] = useState(false)
-    const pathname = usePathname()
     const packageMenuRef = useRef<HTMLDivElement>(null)
 
     // Close package menu when clicking outside
@@ -48,25 +40,7 @@ export function Header() {
                         </Link>
                     </div>
 
-                    <div className="ml-10 hidden space-x-8 lg:block">
-                        {navigation.map((item) => {
-                            const isActive = item.href === '/docs'
-                                ? pathname === '/docs'
-                                : pathname === item.href || pathname.startsWith(item.href)
-                            return (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className={`font-medium transition-colors duration-200 ${isActive
-                                        ? 'text-primary-600 border-b-2 border-primary-600 pb-1'
-                                        : 'text-gray-700 hover:text-primary-600'
-                                        }`}
-                                >
-                                    {item.name}
-                                </Link>
-                            )
-                        })}
-                    </div>
+                    {/* Navigation removed - only Home and Docs pages */}
 
                     <div className="ml-6 flex items-center space-x-4">
                         <StarButton size="sm" showCount={true} showMessage={false} />
@@ -110,45 +84,11 @@ export function Header() {
                             )}
                         </div>
 
-                        <button
-                            type="button"
-                            className="lg:hidden text-gray-700 hover:text-primary-600"
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        >
-                            {mobileMenuOpen ? (
-                                <X className="h-6 w-6" />
-                            ) : (
-                                <Menu className="h-6 w-6" />
-                            )}
-                        </button>
+                        {/* Mobile menu button removed - no navigation items */}
                     </div>
                 </div>
 
-                {/* Mobile menu */}
-                {mobileMenuOpen && (
-                    <div className="lg:hidden">
-                        <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
-                            {navigation.map((item) => {
-                                const isActive = item.href === '/docs'
-                                    ? pathname === '/docs'
-                                    : pathname === item.href || pathname.startsWith(item.href)
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className={`block px-3 py-2 font-medium transition-colors duration-200 ${isActive
-                                            ? 'text-primary-600 bg-primary-50 rounded-md'
-                                            : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md'
-                                            }`}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        {item.name}
-                                    </Link>
-                                )
-                            })}
-                        </div>
-                    </div>
-                )}
+                {/* Mobile menu removed - no navigation items */}
             </nav>
         </header>
     )
