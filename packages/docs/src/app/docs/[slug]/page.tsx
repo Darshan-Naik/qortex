@@ -50,13 +50,3 @@ export default async function DocPage({ params }: PageProps) {
         </div>
     );
 }
-
-// Generate static params for all navigation items
-export async function generateStaticParams() {
-    const { getAllDocumentationSlugs } = await import('@/lib/documentation');
-    const slugs = getAllDocumentationSlugs();
-
-    return slugs.map(slug => ({
-        slug,
-    }));
-}
