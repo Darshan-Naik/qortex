@@ -2,7 +2,7 @@ import QueryManagerCore from "./queryManagerCore";
 
 export const _queryManager = new QueryManagerCore();
 
-// Re-export the class to preserve JSDoc comments
+// Re-export the class
 export { QueryManagerCore };
 
 /**
