@@ -1,0 +1,177 @@
+{
+    "id": "useQuery",
+    "title": "useQuery",
+    "subtitle": "Main React hook for reactive data fetching",
+    "description": "The primary hook for reactive data fetching with automatic re-renders on state changes. Perfect for server state management with built-in caching, background updates, and error handling.",
+    "category": "React Hooks",
+    "tags": [
+        "react",
+        "hook",
+        "data-fetching",
+        "state-management"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function useQuery<TData, TError = Error>(\n  queryKey: QueryKey,\n  options?: QueryOptions<TData, TError>\n): QueryState<TData, TError>"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string, array, or object."
+            },
+            {
+                "name": "options",
+                "type": "QueryOptions<TData, TError>",
+                "required": false,
+                "default": "-",
+                "description": "Optional configuration object. If no fetcher is provided, uses a previously registered fetcher."
+            },
+            {
+                "name": "options.fetcher",
+                "type": "() => Promise<TData>",
+                "required": false,
+                "default": "-",
+                "description": "Function that returns a Promise resolving to the data. Optional if fetcher was already registered."
+            },
+            {
+                "name": "options.staleTime",
+                "type": "number",
+                "required": false,
+                "default": "0",
+                "description": "Time in milliseconds after which data is considered stale."
+            },
+            {
+                "name": "options.refetchOnSubscribe",
+                "type": "'always' | 'stale' | false",
+                "required": false,
+                "default": "'stale'",
+                "description": "When to refetch data when component subscribes."
+            }
+        ]
+    },
+    "returns": {
+        "type": "QueryState<TData, TError>",
+        "description": "Object containing the current query state",
+        "properties": [
+            {
+                "name": "data",
+                "type": "TData | undefined",
+                "description": "The fetched data, undefined while loading or on error"
+            },
+            {
+                "name": "isLoading",
+                "type": "boolean",
+                "description": "True if the query is currently fetching for the first time"
+            },
+            {
+                "name": "isFetching",
+                "type": "boolean",
+                "description": "True if the query is currently fetching (including background refetches)"
+            },
+            {
+                "name": "error",
+                "type": "TError | null",
+                "description": "Error object if the query failed, null otherwise"
+            },
+            {
+                "name": "isError",
+                "type": "boolean",
+                "description": "True if the query failed with an error"
+            },
+            {
+                "name": "isSuccess",
+                "type": "boolean",
+                "description": "True if the query succeeded and has data"
+            }
+        ]
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Simple data fetching with useQuery",
+            "language": "tsx",
+            "code": "import { useQuery } from 'qortex-react';\n\nfunction UserProfile({ userId }: { userId: string }) {\n  const { data, isLoading, error } = useQuery(\n    ['user', userId],\n    {\n      fetcher: async () => {\n        const response = await fetch(`/api/users/${userId}`);\n        return response.json();\n      }\n    }\n  );\n\n  if (isLoading) return <div>Loading...</div>;\n  if (error) return <div>Error: {error.message}</div>;\n  \n  return <div>Hello, {data.name}!</div>;\n}"
+        },
+        {
+            "title": "With Configuration",
+            "description": "Advanced configuration with stale time and refetch options",
+            "language": "tsx",
+            "code": "import { useQuery } from 'qortex-react';\n\nfunction ProductList() {\n  const { data, isFetching } = useQuery(\n    'products',\n    {\n      fetcher: async () => {\n        const response = await fetch('/api/products');\n        return response.json();\n      },\n      staleTime: 5 * 60 * 1000, // 5 minutes\n      refetchOnSubscribe: 'stale'\n    }\n  );\n\n  return (\n    <div>\n      {isFetching && <div>Updating...</div>}\n      {data?.map(product => (\n        <div key={product.id}>{product.name}</div>\n      ))}\n    </div>\n  );\n}"
+        },
+        {
+            "title": "Using Registered Fetcher",
+            "description": "Using useQuery with a previously registered fetcher",
+            "language": "tsx",
+            "code": "import { useQuery, registerFetcher } from 'qortex-react';\n\n// Register a fetcher once\nregisterFetcher('user-data', {\n  fetcher: async () => {\n    const response = await fetch('/api/user');\n    return response.json();\n  }\n});\n\nfunction UserProfile() {\n  // No need to provide fetcher - uses registered one\n  const { data, isLoading, error } = useQuery('user-data');\n\n  if (isLoading) return <div>Loading...</div>;\n  if (error) return <div>Error: {error.message}</div>;\n  \n  return <div>Hello, {data.name}!</div>;\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Automatic Re-renders",
+            "description": "Component automatically re-renders when query state changes",
+            "icon": "refresh-cw"
+        },
+        {
+            "title": "Background Updates",
+            "description": "Stale data is refetched in the background without blocking UI",
+            "icon": "activity"
+        },
+        {
+            "title": "Error Handling",
+            "description": "Built-in error states with retry capabilities",
+            "icon": "alert-triangle"
+        },
+        {
+            "title": "Caching",
+            "description": "Automatic caching with configurable stale time",
+            "icon": "database"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use descriptive query keys that include all dependencies",
+            "Handle loading and error states appropriately",
+            "Set appropriate staleTime for your data freshness requirements",
+            "Use TypeScript for better type safety"
+        ],
+        "donts": [
+            "Don't mutate the returned data object directly",
+            "Don't forget to handle error states in your UI",
+            "Don't use useQuery for one-time operations (use fetchQuery instead)",
+            "Don't create new objects in the fetcher function on every render"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Performance Tip",
+            "content": "useQuery automatically deduplicates identical requests and shares cache between components.",
+            "icon": "zap"
+        }
+    ],
+    "badges": [
+        {
+            "text": "React Hook",
+            "variant": "info"
+        }
+    ],
+    "relatedPages": [
+        "useQueryData",
+        "useQuerySelect",
+        "fetchQuery",
+        "QueryOptions"
+    ]
+}

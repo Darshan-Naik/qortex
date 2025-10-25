@@ -1,0 +1,117 @@
+{
+    "id": "QueryOptions",
+    "title": "QueryOptions",
+    "subtitle": "Query configuration options",
+    "description": "Configuration interface for query options. Defines all available options for customizing query behavior including fetching, caching, and error handling.",
+    "category": "Types & Utilities",
+    "tags": [
+        "types",
+        "configuration",
+        "options",
+        "query"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "interface QueryOptions<TData, TError = Error> {\n  fetcher?: () => Promise<TData>;\n  staleTime?: number;\n  refetchOnSubscribe?: 'always' | 'stale' | false;\n}"
+    },
+    "parameters": {
+        "columns": [
+            "Property",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "fetcher",
+                "type": "() => Promise<TData>",
+                "required": false,
+                "default": "-",
+                "description": "Function that returns a Promise resolving to the data. Optional if fetcher was already registered."
+            },
+            {
+                "name": "staleTime",
+                "type": "number",
+                "required": false,
+                "default": "0",
+                "description": "Time in milliseconds after which data is considered stale."
+            },
+            {
+                "name": "refetchOnSubscribe",
+                "type": "'always' | 'stale' | false",
+                "required": false,
+                "default": "'stale'",
+                "description": "When to refetch data when component subscribes."
+            }
+        ]
+    },
+    "behavior": [
+        {
+            "title": "Configurable",
+            "description": "Highly configurable with many options for customization",
+            "icon": "settings"
+        },
+        {
+            "title": "Type Safe",
+            "description": "Full TypeScript support with proper type inference",
+            "icon": "database"
+        },
+        {
+            "title": "Flexible",
+            "description": "Supports various use cases and scenarios",
+            "icon": "activity"
+        },
+        {
+            "title": "Extensible",
+            "description": "Easy to extend with additional options",
+            "icon": "refresh-cw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use appropriate staleTime for your data freshness requirements",
+            "Configure retry logic for network resilience",
+            "Use callbacks for side effects and logging",
+            "Set refetchOnSubscribe based on your use case"
+        ],
+        "donts": [
+            "Don't set staleTime too high for frequently changing data",
+            "Don't use too many retries for non-critical data",
+            "Don't forget to handle errors in onError callbacks",
+            "Don't use callbacks for state management"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Configuration Flexibility",
+            "content": "QueryOptions provides extensive configuration options to customize query behavior for different use cases and scenarios.",
+            "icon": "settings"
+        },
+        {
+            "type": "warning",
+            "title": "Performance Impact",
+            "content": "Be mindful of configuration choices that can impact performance, such as staleTime, retry count, and refetch behavior.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Type",
+            "variant": "info"
+        },
+        {
+            "text": "Configuration",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "QueryState",
+        "QueryKey",
+        "useQuery",
+        "setDefaultConfig"
+    ]
+}

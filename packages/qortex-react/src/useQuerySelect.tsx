@@ -2,20 +2,36 @@ import { useSyncExternalStore, useCallback, useRef, useMemo } from "react";
 import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, subscribeQuery, getQueryState, serializeKey } from "qortex-core";
 
 /**
- * useQuerySelect hook for React integration with qortex
- * Provides reactive data fetching with automatic re-renders on state changes
- * Enhanced with automatic type inference from fetchers
+ * React hook for reactive data fetching with smart subscription optimization
  * 
- * Now includes smart subscription: automatically detects which properties are accessed
- * and only re-renders when those specific properties change, not the entire state.
+ * @param key - Unique identifier for the query (string or array of primitives)
+ * @param opts - Query configuration options
+ * @param opts.fetcher - Async function that fetches data for this query
+ * @param opts.enabled - Whether the query should be active (default: true)
+ * @param opts.staleTime - Time in ms before data is considered stale (default: 0)
+ * @param opts.equalityStrategy - How to compare data for changes ('shallow' | 'deep')
+ * @param opts.equalityFn - Custom equality function for data comparison
+ * @param opts.refetchOnSubscribe - When to refetch on subscription ('always' | 'stale' | false)
+ * @param opts.placeholderData - Initial data to show while loading
+ * @param opts.usePreviousDataOnError - Keep previous data when error occurs
+ * @param opts.usePlaceholderOnError - Use placeholder data when error occurs
+ * @returns QueryState object with data, error, status, and computed flags
  * 
- * @example
- * ```tsx
- * const query = useQuerySelect('users', { fetcher: fetchUsers });
+ * Returns an object containing:
+ * - data: The current data value
+ * - error: Any error that occurred during fetching
+ * - status: Current status ('idle' | 'fetching' | 'success' | 'error')
+ * - isStale: Whether the data is considered stale
+ * - isLoading: Whether the query is currently loading
+ * - isFetching: Whether a fetch is in progress
+ * - isError: Whether the query is in an error state
+ * - isSuccess: Whether the query completed successfully
+ * - refetch: Function to manually trigger a refetch
  * 
- * // Only re-renders when data or isSuccess changes, not when isError changes
- * return <div>{query.isSuccess ? query.data?.name : 'Loading...'}</div>;
- * ```
+ * Features smart subscription optimization: automatically detects which properties are accessed
+ * during render and only triggers re-renders when those specific properties change, not the entire state.
+ * This prevents unnecessary re-renders when unrelated properties change, improving performance.
+ * Enhanced with automatic type inference from fetcher functions. Handles mount logic to potentially start fetching.
  */
 
 // Overload for when fetcher is provided - automatically infers return type

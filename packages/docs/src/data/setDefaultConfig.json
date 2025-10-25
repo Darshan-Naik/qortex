@@ -1,0 +1,127 @@
+{
+    "id": "setDefaultConfig",
+    "title": "setDefaultConfig",
+    "subtitle": "Set default configuration",
+    "description": "Set global default configuration options for all queries. These defaults will be applied to all queries unless overridden by specific query options.",
+    "category": "Core APIs",
+    "tags": [
+        "core",
+        "configuration",
+        "defaults",
+        "global"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function setDefaultConfig(\n  config: DefaultConfig\n): void"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "config",
+                "type": "DefaultConfig",
+                "required": true,
+                "default": "-",
+                "description": "Configuration object with default options to apply to all queries."
+            }
+        ]
+    },
+    "returns": {
+        "type": "void",
+        "description": "No return value"
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Set global default configuration",
+            "language": "tsx",
+            "code": "import { setDefaultConfig } from 'qortex-react';\n\n// Set global defaults\nsetDefaultConfig({\n  staleTime: 5 * 60 * 1000, // 5 minutes\n  refetchOnSubscribe: 'stale'\n});\n\n// Now all queries will use these defaults\nfunction UserProfile() {\n  const { data } = useQuery(['user', 'current'], {\n    fetcher: fetchUser\n    // Will use staleTime: 5 minutes, refetchOnSubscribe: 'stale'\n  });\n  \n  return <div>{data?.name}</div>;\n}"
+        },
+        {
+            "title": "Environment-specific Config",
+            "description": "Set different defaults for different environments",
+            "language": "tsx",
+            "code": "import { setDefaultConfig } from 'qortex-react';\n\n// Set environment-specific defaults\nif (process.env.NODE_ENV === 'development') {\n  setDefaultConfig({\n    staleTime: 0, // Always fresh in development\n    refetchOnSubscribe: 'always'\n  });\n} else {\n  setDefaultConfig({\n    staleTime: 10 * 60 * 1000, // 10 minutes in production\n    refetchOnSubscribe: 'stale'\n  });\n}\n\n// All queries will use environment-appropriate defaults"
+        },
+        {
+            "title": "Override Defaults",
+            "description": "Override defaults for specific queries",
+            "language": "tsx",
+            "code": "import { setDefaultConfig } from 'qortex-react';\n\n// Set global defaults\nsetDefaultConfig({\n  staleTime: 5 * 60 * 1000, // 5 minutes\n  refetchOnSubscribe: 'stale'\n});\n\nfunction RealTimeData() {\n  // Override defaults for real-time data\n  const { data } = useQuery('real-time-data', {\n    fetcher: fetchRealTimeData,\n    staleTime: 0, // Always fresh\n    refetchOnSubscribe: 'always' // Always refetch\n  });\n  \n  return <div>{data?.value}</div>;\n}\n\nfunction CachedData() {\n  // Uses global defaults (5 minutes stale time)\n  const { data } = useQuery('cached-data', {\n    fetcher: fetchCachedData\n  });\n  \n  return <div>{data?.value}</div>;\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Global Application",
+            "description": "Applies to all queries unless overridden",
+            "icon": "database"
+        },
+        {
+            "title": "Partial Override",
+            "description": "Only overrides specified options, keeps others as default",
+            "icon": "refresh-cw"
+        },
+        {
+            "title": "Query Override",
+            "description": "Individual queries can override global defaults",
+            "icon": "activity"
+        },
+        {
+            "title": "Immediate Effect",
+            "description": "Takes effect immediately for new queries",
+            "icon": "zap"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Set defaults early in your application lifecycle",
+            "Use environment-specific configurations",
+            "Override defaults for specific use cases",
+            "Document your default configuration choices"
+        ],
+        "donts": [
+            "Don't set defaults in render functions",
+            "Don't change defaults frequently",
+            "Don't forget that individual queries can override defaults",
+            "Don't set defaults that conflict with your use cases"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Global Configuration",
+            "content": "setDefaultConfig is perfect for setting application-wide defaults that work for most of your queries.",
+            "icon": "settings"
+        },
+        {
+            "type": "warning",
+            "title": "Override Behavior",
+            "content": "Individual queries can override global defaults. Make sure your defaults work well with your specific use cases.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Core API",
+            "variant": "info"
+        },
+        {
+            "text": "Global Config",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "QueryOptions",
+        "useQuery",
+        "fetchQuery",
+        "registerFetcher"
+    ]
+}

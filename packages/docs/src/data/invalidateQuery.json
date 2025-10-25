@@ -1,0 +1,127 @@
+{
+    "id": "invalidateQuery",
+    "title": "invalidateQuery",
+    "subtitle": "Invalidate and refetch a query",
+    "description": "Mark a query as stale and trigger a refetch. Useful for refreshing data after mutations or when you know the data is outdated.",
+    "category": "Core APIs",
+    "tags": [
+        "core",
+        "invalidation",
+        "refetch",
+        "cache"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function invalidateQuery(\n  queryKey: QueryKey\n): void"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string, array, or object."
+            }
+        ]
+    },
+    "returns": {
+        "type": "void",
+        "description": "No return value. Invalidation is synchronous, but triggers async refetch."
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Invalidate and refetch a query",
+            "language": "tsx",
+            "code": "import { invalidateQuery } from 'qortex-react';\n\nfunction RefreshButton() {\n  const handleRefresh = () => {\n    // Invalidate and refetch user data (synchronous)\n    invalidateQuery(['user', 'current']);\n    console.log('User data refresh triggered');\n  };\n\n  return (\n    <button onClick={handleRefresh}>\n      Refresh User Data\n    </button>\n  );\n}"
+        },
+        {
+            "title": "After Mutation",
+            "description": "Invalidate related queries after a mutation",
+            "language": "tsx",
+            "code": "import { invalidateQuery } from 'qortex-react';\n\nasync function handleCreatePost(postData: any) {\n  try {\n    // Create the post\n    const response = await fetch('/api/posts', {\n      method: 'POST',\n      body: JSON.stringify(postData)\n    });\n    \n    if (response.ok) {\n      // Invalidate posts list to refetch with new post\n      invalidateQuery('posts');\n      \n      // Invalidate user posts if it exists\n      invalidateQuery(['user', 'posts']);\n      \n      console.log('Post created and cache invalidated');\n    }\n  } catch (error) {\n    console.error('Failed to create post:', error);\n  }\n}"
+        },
+        {
+            "title": "Bulk Invalidation",
+            "description": "Invalidate multiple related queries",
+            "language": "tsx",
+            "code": "import { invalidateQuery } from 'qortex-react';\n\nasync function handleUserUpdate(userId: string) {\n  try {\n    // Update user data\n    await fetch(`/api/users/${userId}`, {\n      method: 'PUT',\n      body: JSON.stringify(userData)\n    });\n    \n    // Invalidate all user-related queries\n    const queriesToInvalidate = [\n      ['user', userId],\n      ['user', 'current'],\n      ['user', 'profile'],\n      ['user', 'settings']\n    ];\n    \n    queriesToInvalidate.forEach(queryKey => invalidateQuery(queryKey));\n    \n    console.log('All user queries invalidated');\n  } catch (error) {\n    console.error('Failed to update user:', error);\n  }\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Stale Marking",
+            "description": "Marks the query as stale, triggering a refetch",
+            "icon": "refresh-cw"
+        },
+        {
+            "title": "Automatic Refetch",
+            "description": "Automatically refetches data if components are subscribed",
+            "icon": "activity"
+        },
+        {
+            "title": "Promise-based",
+            "description": "Returns a Promise for async/await usage",
+            "icon": "zap"
+        },
+        {
+            "title": "Cache Integration",
+            "description": "Works seamlessly with the query cache system",
+            "icon": "database"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use after mutations to refresh related data",
+            "Use for manual refresh functionality",
+            "Invalidate related queries together",
+            "Handle errors appropriately"
+        ],
+        "donts": [
+            "Don't use for initial data loading",
+            "Don't invalidate too frequently",
+            "Don't forget to handle Promise rejections",
+            "Don't use without understanding the impact on performance"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Post-Mutation Invalidation",
+            "content": "invalidateQuery is commonly used after mutations to ensure related data is refreshed and up-to-date.",
+            "icon": "refresh-cw"
+        },
+        {
+            "type": "warning",
+            "title": "Performance Consideration",
+            "content": "Invalidating queries triggers refetches. Be mindful of the impact on performance and network usage.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Core API",
+            "variant": "info"
+        },
+        {
+            "text": "Cache Management",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "fetchQuery",
+        "setQueryData",
+        "getQueryData",
+        "QueryKey"
+    ]
+}

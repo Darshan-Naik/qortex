@@ -1,0 +1,60 @@
+{
+    "id": "quick-start",
+    "title": "Quick Start",
+    "subtitle": "Get up and running in minutes",
+    "description": "Learn how to set up Qortex in your React application and start fetching data immediately.",
+    "category": "Getting Started",
+    "tags": [
+        "setup",
+        "react",
+        "getting-started",
+        "tutorial"
+    ],
+    "status": "stable",
+    "content": "Get up and running with Qortex in minutes with this quick start guide.",
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Prerequisites",
+            "content": "Make sure you have React 18+ and Node.js 16+ installed.",
+            "icon": "info"
+        }
+    ],
+    "sections": [
+        {
+            "title": "1. Installation",
+            "content": "Install the required packages:",
+            "code": {
+                "language": "bash",
+                "code": "# npm\nnpm install qortex-core qortex-react\n\n# yarn\nyarn add qortex-core qortex-react\n\n# pnpm\npnpm add qortex-core qortex-react"
+            }
+        },
+        {
+            "title": "2. Basic Setup",
+            "content": "Create your first query with useQuery:",
+            "code": {
+                "language": "tsx",
+                "code": "import { useQuery } from 'qortex-react';\n\nfunction UserProfile({ userId }: { userId: string }) {\n  const { data, isLoading, error } = useQuery(\n    ['user', userId],\n    {\n      fetcher: async () => {\n        const response = await fetch(`/api/users/${userId}`);\n        return response.json();\n      }\n    }\n  );\n\n  if (isLoading) return <div>Loading...</div>;\n  if (error) return <div>Error: {error.message}</div>;\n  \n  return <div>Hello, {data.name}!</div>;\n}"
+            }
+        },
+        {
+            "title": "3. Advanced Configuration",
+            "content": "Set up global defaults and advanced options:",
+            "code": {
+                "language": "tsx",
+                "code": "import { setDefaultConfig } from 'qortex-core';\n\n// Set global defaults\nsetDefaultConfig({\n  staleTime: 5 * 60 * 1000, // 5 minutes\n  refetchOnSubscribe: 'stale'\n});\n\n// Use with custom options\nconst { data } = useQuery(\n  'products',\n  {\n    fetcher: fetchProducts,\n    staleTime: 10 * 60 * 1000, // 10 minutes\n    refetchOnSubscribe: 'always'\n  }\n);"
+            }
+        }
+    ],
+    "badges": [
+        {
+            "text": "Getting Started",
+            "variant": "info"
+        }
+    ],
+    "relatedPages": [
+        "installation",
+        "useQuery",
+        "useQueryData"
+    ]
+}

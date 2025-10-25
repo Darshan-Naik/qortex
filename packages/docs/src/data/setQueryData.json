@@ -1,0 +1,134 @@
+{
+    "id": "setQueryData",
+    "title": "setQueryData",
+    "subtitle": "Manually set query data",
+    "description": "Manually set or update the cached data for a query. Useful for optimistic updates, cache invalidation, and programmatic data management.",
+    "category": "Core APIs",
+    "tags": [
+        "core",
+        "cache",
+        "data",
+        "optimistic-updates"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function setQueryData<TData>(\n  queryKey: QueryKey,\n  data: TData\n): void"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string, array, or object."
+            },
+            {
+                "name": "data",
+                "type": "TData",
+                "required": true,
+                "default": "-",
+                "description": "New data to set for the query."
+            }
+        ]
+    },
+    "returns": {
+        "type": "void",
+        "description": "No return value"
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Set query data directly",
+            "language": "tsx",
+            "code": "import { setQueryData } from 'qortex-react';\n\nfunction handleUserUpdate() {\n  // Set user data directly\n  setQueryData(['user', 'current'], {\n    id: '123',\n    name: 'John Doe',\n    email: 'john@example.com'\n  });\n  \n  // All components using this query will re-render with new data\n  console.log('User data updated');\n}"
+        },
+        {
+            "title": "Optimistic Updates",
+            "description": "Update data optimistically before server response",
+            "language": "tsx",
+            "code": "import { setQueryData, getQueryData } from 'qortex-react';\n\nfunction handleLikePost(postId: string) {\n  // Get current post data\n  const currentPost = getQueryData(['post', postId]);\n  \n  if (currentPost) {\n    // Optimistically update the post data\n    setQueryData(['post', postId], {\n      ...currentPost,\n      likes: currentPost.likes + 1,\n      liked: true\n    });\n  }\n  \n  // Send the actual like request\n  fetch(`/api/posts/${postId}/like`, { method: 'POST' })\n    .then(() => {\n      // Server confirmed, data is already updated\n      console.log('Like successful');\n    })\n    .catch(() => {\n      // Revert the optimistic update on error\n      if (currentPost) {\n        setQueryData(['post', postId], {\n          ...currentPost,\n          likes: currentPost.likes - 1,\n          liked: false\n        });\n      }\n    });\n}"
+        },
+        {
+            "title": "Cache Invalidation",
+            "description": "Clear or reset query data",
+            "language": "tsx",
+            "code": "import { setQueryData } from 'qortex-react';\n\nfunction handleLogout() {\n  // Clear user data from cache\n  setQueryData(['user', 'current'], undefined);\n  \n  // Clear all user-related queries\n  setQueryData(['user', 'profile'], undefined);\n  setQueryData(['user', 'settings'], undefined);\n  \n  console.log('User data cleared from cache');\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Immediate Update",
+            "description": "Updates cache immediately and triggers re-renders",
+            "icon": "zap"
+        },
+        {
+            "title": "Optimistic Updates",
+            "description": "Perfect for optimistic UI updates before server confirmation",
+            "icon": "activity"
+        },
+        {
+            "title": "Cache Management",
+            "description": "Allows manual cache manipulation and invalidation",
+            "icon": "database"
+        },
+        {
+            "title": "Function Updates",
+            "description": "Supports functional updates for complex state changes",
+            "icon": "refresh-cw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use for optimistic updates in user interactions",
+            "Use functional updates for complex state changes",
+            "Handle error cases by reverting optimistic updates",
+            "Use for cache invalidation and cleanup"
+        ],
+        "donts": [
+            "Don't use for initial data loading (use fetchQuery instead)",
+            "Don't forget to handle error cases in optimistic updates",
+            "Don't mutate the data object directly",
+            "Don't use without understanding the impact on components"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Optimistic Updates",
+            "content": "setQueryData is perfect for optimistic updates. Update the UI immediately, then revert if the server request fails.",
+            "icon": "zap"
+        },
+        {
+            "type": "warning",
+            "title": "Error Handling",
+            "content": "Always handle error cases when using optimistic updates. Revert the changes if the server request fails.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Core API",
+            "variant": "info"
+        },
+        {
+            "text": "Optimistic Updates",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "getQueryData",
+        "invalidateQuery",
+        "fetchQuery",
+        "QueryKey"
+    ]
+}

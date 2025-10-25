@@ -1,0 +1,135 @@
+{
+    "id": "useQueryData",
+    "title": "useQueryData",
+    "subtitle": "Hook that returns only the data value",
+    "description": "A lightweight hook that returns only the data value from a query, perfect for simple data consumption without loading states.",
+    "category": "React Hooks",
+    "tags": [
+        "react",
+        "hook",
+        "data-fetching",
+        "lightweight"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function useQueryData<TData>(\n  queryKey: QueryKey,\n  options?: QueryOptions<TData>\n): TData | undefined"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string, array, or object."
+            },
+            {
+                "name": "options",
+                "type": "QueryOptions<TData>",
+                "required": false,
+                "default": "-",
+                "description": "Optional configuration object. If no fetcher is provided, uses a previously registered fetcher."
+            },
+            {
+                "name": "options.fetcher",
+                "type": "() => Promise<TData>",
+                "required": false,
+                "default": "-",
+                "description": "Function that returns a Promise resolving to the data. Optional if fetcher was already registered."
+            }
+        ]
+    },
+    "returns": {
+        "type": "TData | undefined",
+        "description": "The fetched data, undefined while loading or on error"
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Simple data consumption without loading states",
+            "language": "tsx",
+            "code": "import { useQueryData } from 'qortex-react';\n\nfunction UserName({ userId }: { userId: string }) {\n  const userName = useQueryData(\n    ['user', userId],\n    {\n      fetcher: async () => {\n        const response = await fetch(`/api/users/${userId}`);\n        const user = await response.json();\n        return user.name;\n      }\n    }\n  );\n\n  return <span>{userName || 'Loading...'}</span>;\n}"
+        },
+        {
+            "title": "With Default Value",
+            "description": "Provide a default value for better UX",
+            "language": "tsx",
+            "code": "import { useQueryData } from 'qortex-react';\n\nfunction ProductPrice({ productId }: { productId: string }) {\n  const price = useQueryData(\n    ['product', productId],\n    {\n      fetcher: async () => {\n        const response = await fetch(`/api/products/${productId}`);\n        const product = await response.json();\n        return product.price;\n      }\n    }\n  );\n\n  return <span>${price ?? '0.00'}</span>;\n}"
+        },
+        {
+            "title": "Using Registered Fetcher",
+            "description": "Using useQueryData with a previously registered fetcher",
+            "language": "tsx",
+            "code": "import { useQueryData, registerFetcher } from 'qortex-react';\n\n// Register a fetcher once\nregisterFetcher('user-name', {\n  fetcher: async () => {\n    const response = await fetch('/api/user');\n    const user = await response.json();\n    return user.name;\n  }\n});\n\nfunction UserName() {\n  // No need to provide fetcher - uses registered one\n  const userName = useQueryData('user-name');\n\n  return <span>{userName || 'Loading...'}</span>;\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Data Only",
+            "description": "Returns only the data value, no loading or error states",
+            "icon": "database"
+        },
+        {
+            "title": "Lightweight",
+            "description": "Minimal overhead, perfect for simple data consumption",
+            "icon": "zap"
+        },
+        {
+            "title": "Automatic Caching",
+            "description": "Shares cache with other hooks using the same query key",
+            "icon": "refresh-cw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use for simple data consumption where you don't need loading states",
+            "Provide meaningful default values for better UX",
+            "Use with TypeScript for type safety",
+            "Combine with useQuery when you need loading/error states"
+        ],
+        "donts": [
+            "Don't use when you need loading or error states",
+            "Don't use for complex data transformations",
+            "Don't forget to handle undefined values",
+            "Don't use for one-time operations"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "When to Use",
+            "content": "useQueryData is perfect for simple data consumption where you don't need loading states. Use useQuery when you need full state management.",
+            "icon": "info"
+        },
+        {
+            "type": "warning",
+            "title": "Undefined Values",
+            "content": "Always handle undefined values since the hook returns undefined while loading or on error.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "React Hook",
+            "variant": "info"
+        },
+        {
+            "text": "Lightweight",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "useQuery",
+        "useQuerySelect",
+        "fetchQuery"
+    ]
+}

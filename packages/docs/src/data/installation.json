@@ -1,0 +1,52 @@
+{
+    "id": "installation",
+    "title": "Installation",
+    "subtitle": "Get started with Qortex",
+    "description": "Install qortex using your preferred package manager and set up your project.",
+    "category": "Getting Started",
+    "tags": [
+        "setup",
+        "installation",
+        "getting-started"
+    ],
+    "status": "stable",
+    "content": "Install qortex using your preferred package manager. Choose the package that fits your needs:",
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Choose Your Package",
+            "content": "Install qortex-core OR qortex-react - not both! qortex-react includes all core APIs.",
+            "icon": "info"
+        }
+    ],
+    "sections": [
+        {
+            "title": "For React Projects",
+            "content": "If you're using React, install qortex-react (includes all core APIs):",
+            "code": {
+                "language": "bash",
+                "code": "# npm\nnpm install qortex-react\n\n# yarn\nyarn add qortex-react\n\n# pnpm\npnpm add qortex-react"
+            }
+        },
+        {
+            "title": "For Non-React Projects",
+            "content": "If you're using vanilla JS, Vue, or other frameworks, install qortex-core:",
+            "code": {
+                "language": "bash",
+                "code": "# npm\nnpm install qortex-core\n\n# yarn\nyarn add qortex-core\n\n# pnpm\npnpm add qortex-core"
+            }
+        },
+        {
+            "title": "Import Examples",
+            "content": "How to import from each package:",
+            "code": {
+                "language": "typescript",
+                "code": "// React users - everything from qortex-react\nimport { useQuery, useQueryData, registerFetcher, fetchQuery } from 'qortex-react';\n\n// Core-only users - core APIs from qortex-core\nimport { registerFetcher, fetchQuery } from 'qortex-core';\n\n// Persister (subpackage) - for both React and core users\nimport { createPersister } from 'qortex-core/persister'; // or 'qortex-react/persister'"
+            }
+        }
+    ],
+    "relatedPages": [
+        "quick-start",
+        "useQuery"
+    ]
+}

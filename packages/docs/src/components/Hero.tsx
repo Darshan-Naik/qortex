@@ -1,4 +1,4 @@
-import { Zap, Shield, Code } from 'lucide-react'
+import { Zap, Shield, Code, ExternalLink } from 'lucide-react'
 import { HeroButtons } from './HeroButtons'
 
 export function Hero() {
@@ -8,7 +8,7 @@ export function Hero() {
                 <div className="text-center">
                     <div className="inline-flex items-center rounded-full glass-effect px-4 py-2 text-sm font-medium text-gray-700 mb-8 animate-float">
                         <Zap className="h-4 w-4 mr-2 text-primary-600" />
-                        Lightning Fast • Minimal Bundle • TypeScript First
+                        Lightning Fast • Data Persistence • TypeScript First
                     </div>
 
                     <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl lg:text-8xl mb-6">
@@ -16,12 +16,34 @@ export function Hero() {
                     </h1>
 
                     <p className="mx-auto mt-6 max-w-3xl text-xl text-gray-600 leading-relaxed">
-                        A minimal, performant data fetching library with React integration.
+                        A minimal, performant data fetching library with React integration and built-in persistence.
                         Built for <strong>simplicity</strong>, <strong>efficiency</strong>, and
                         <strong> developer happiness</strong>! 🎉
                     </p>
 
                     <HeroButtons />
+
+                    {/* NPM Package Links */}
+                    <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a
+                            href="https://www.npmjs.com/package/qortex-core"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-lg"
+                        >
+                            <span className="font-semibold">qortex-core</span>
+                            <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                        <a
+                            href="https://www.npmjs.com/package/qortex-react"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-lg"
+                        >
+                            <span className="font-semibold">qortex-react</span>
+                            <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                    </div>
 
                     <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-3">
                         <div className="flex flex-col items-center text-center card animate-fade-in">

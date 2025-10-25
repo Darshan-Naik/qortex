@@ -47,7 +47,7 @@
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
   }
@@ -55,31 +55,79 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-5 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md;
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
   }
-  
+
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-5 rounded-lg border border-gray-200 transition-all duration-200 shadow-sm hover:shadow-md;
+    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-xl border border-gray-200 transition-all duration-300 shadow-sm hover:shadow-md;
   }
-  
+
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-200 backdrop-blur-sm;
+    @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300 backdrop-blur-sm hover:-translate-y-1;
   }
-  
+
   .code-block {
-    @apply bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-sm overflow-x-auto border border-gray-800;
+    @apply bg-gray-900 text-gray-100 rounded-xl p-6 font-mono text-sm overflow-x-auto border border-gray-800 shadow-2xl;
   }
-  
+
   .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent font-bold;
   }
-  
+
   .gradient-bg {
-    @apply bg-gradient-to-br from-primary-50 via-white to-secondary-50;
+    @apply bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50;
   }
-  
+
   .glass-effect {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
+    @apply bg-white/90 backdrop-blur-xl border border-white/30 shadow-xl;
+  }
+
+  /* Modern sidebar styles */
+  .sidebar-item {
+    @apply relative overflow-hidden rounded-xl transition-all duration-300 hover:shadow-md;
+  }
+
+  .sidebar-item::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 transition-opacity duration-300;
+  }
+
+  .sidebar-item:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Modern table styles */
+  .modern-table {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden;
+  }
+
+  .modern-table th {
+    @apply bg-gradient-to-r from-gray-50 to-gray-100 text-gray-900 font-semibold px-6 py-4 text-left border-b border-gray-200;
+  }
+
+  .modern-table td {
+    @apply px-6 py-4 border-b border-gray-100 text-gray-700;
+  }
+
+  .modern-table tr:hover {
+    @apply bg-gray-50;
+  }
+
+  /* Modern callout boxes */
+  .callout-success {
+    @apply bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-xl p-6 shadow-lg;
+  }
+
+  .callout-warning {
+    @apply bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 rounded-xl p-6 shadow-lg;
+  }
+
+  .callout-error {
+    @apply bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 rounded-xl p-6 shadow-lg;
+  }
+
+  .callout-info {
+    @apply bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-xl p-6 shadow-lg;
   }
 }
 
@@ -100,27 +148,65 @@
   @apply bg-gray-400;
 }
 
-/* Syntax highlighting */
-.hljs {
-  @apply bg-gray-900 text-gray-100;
+/* Basic syntax highlighting */
+pre code {
+  @apply text-gray-100;
 }
 
-.hljs-keyword {
+/* TypeScript/JavaScript syntax highlighting */
+.language-typescript .token.keyword,
+.language-javascript .token.keyword {
   @apply text-blue-400;
 }
 
-.hljs-string {
+.language-typescript .token.string,
+.language-javascript .token.string {
   @apply text-green-400;
 }
 
-.hljs-comment {
+.language-typescript .token.comment,
+.language-javascript .token.comment {
   @apply text-gray-500;
 }
 
-.hljs-number {
+.language-typescript .token.number,
+.language-javascript .token.number {
   @apply text-yellow-400;
 }
 
-.hljs-function {
+.language-typescript .token.function,
+.language-javascript .token.function {
   @apply text-purple-400;
+}
+
+.language-typescript .token.class-name,
+.language-javascript .token.class-name {
+  @apply text-cyan-400;
+}
+
+.language-typescript .token.operator,
+.language-javascript .token.operator {
+  @apply text-pink-400;
+}
+
+/* Bash syntax highlighting */
+.language-bash .token.function {
+  @apply text-green-400;
+}
+
+.language-bash .token.string {
+  @apply text-yellow-400;
+}
+
+/* JSON syntax highlighting */
+.language-json .token.property {
+  @apply text-blue-400;
+}
+
+.language-json .token.string {
+  @apply text-green-400;
+}
+
+.language-json .token.number {
+  @apply text-yellow-400;
 }

@@ -1,0 +1,102 @@
+{
+    "id": "PersisterConfig",
+    "title": "PersisterConfig",
+    "subtitle": "Configuration options for persisters",
+    "description": "Configuration interface for creating persister instances. Defines storage backend, serialization options, and cache management settings.",
+    "category": "Persistence",
+    "tags": [
+        "persistence",
+        "configuration",
+        "storage",
+        "interface"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "interface PersisterConfig {\n  burstKey?: string;\n  prefix?: string;\n  debounceTime?: number;\n}"
+    },
+    "parameters": {
+        "columns": [
+            "Property",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "burstKey",
+                "type": "string",
+                "required": false,
+                "default": "'0.3.0'",
+                "description": "Version key to invalidate old cached data when breaking changes occur."
+            },
+            {
+                "name": "prefix",
+                "type": "string",
+                "required": false,
+                "default": "'qortex'",
+                "description": "Prefix for storage keys to avoid conflicts with other applications."
+            },
+            {
+                "name": "debounceTime",
+                "type": "number",
+                "required": false,
+                "default": "100",
+                "description": "Time in milliseconds to debounce save operations for performance."
+            }
+        ]
+    },
+    "behavior": [
+        {
+            "title": "Storage Interface",
+            "description": "Defines the storage backend interface",
+            "icon": "database"
+        },
+        {
+            "title": "Serialization",
+            "description": "Configurable data serialization and deserialization",
+            "icon": "refresh-cw"
+        },
+        {
+            "title": "Age Management",
+            "description": "Configurable cache age limits",
+            "icon": "activity"
+        },
+        {
+            "title": "Flexible",
+            "description": "Supports various storage backends and configurations",
+            "icon": "settings"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use appropriate storage backend for your use case",
+            "Set reasonable maxAge values",
+            "Use custom serialization for complex data types",
+            "Handle storage errors gracefully"
+        ],
+        "donts": [
+            "Don't store sensitive data in localStorage",
+            "Don't set maxAge too high for frequently changing data",
+            "Don't forget to handle storage quota exceeded errors",
+            "Don't use synchronous storage operations"
+        ]
+    },
+    "badges": [
+        {
+            "text": "Persistence",
+            "variant": "info"
+        },
+        {
+            "text": "Configuration",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "createPersister",
+        "Persister",
+        "Storage"
+    ]
+}

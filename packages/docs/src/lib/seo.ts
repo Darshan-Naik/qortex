@@ -30,7 +30,12 @@ export function generateMetadata({
         'typescript',
         'cache',
         'query',
-        'performance'
+        'performance',
+        'react hooks',
+        'state management',
+        'api client',
+        'persistence',
+        'optimization'
     ]
 
     return {
@@ -70,28 +75,40 @@ export const seoConfigs = {
         description: 'A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness! Get started with Qortex today.',
         url: '/',
     },
-    features: {
-        title: 'Features',
-        description: 'Discover Qortex features: intelligent caching, React integration, TypeScript support, and performance optimizations.',
-        url: '/docs/features',
-        keywords: ['features', 'caching', 'react hooks', 'typescript'],
+    installation: {
+        title: 'Installation',
+        description: 'Install Qortex in your React or vanilla JavaScript project. Choose between qortex-react for React apps or qortex-core for other frameworks.',
+        url: '/docs/installation',
+        keywords: ['installation', 'qortex-react', 'qortex-core', 'npm', 'yarn', 'pnpm'],
     },
-    gettingStarted: {
-        title: 'Getting Started',
-        description: 'Learn how to get started with Qortex in minutes. Installation, basic usage, and first steps with our data fetching library.',
-        url: '/docs/getting-started',
-        keywords: ['installation', 'getting started', 'tutorial', 'quick start'],
+    quickStart: {
+        title: 'Quick Start',
+        description: 'Get up and running with Qortex in minutes. Learn the basics of data fetching, caching, and React integration.',
+        url: '/docs/quick-start',
+        keywords: ['quick start', 'tutorial', 'getting started', 'react hooks', 'useQuery'],
     },
-    api: {
-        title: 'API Reference',
-        description: 'Complete API reference for Qortex. Documentation for all methods, hooks, and configuration options.',
-        url: '/docs/api',
-        keywords: ['api', 'reference', 'documentation', 'methods', 'hooks'],
+    useQuery: {
+        title: 'useQuery Hook',
+        description: 'The main React hook for reactive data fetching with automatic re-renders, caching, and error handling.',
+        url: '/docs/useQuery',
+        keywords: ['useQuery', 'react hook', 'data fetching', 'caching', 'error handling'],
     },
-    performance: {
-        title: 'Performance',
-        description: 'Learn about Qortex performance optimizations, caching strategies, and best practices for efficient data fetching.',
-        url: '/docs/performance',
-        keywords: ['performance', 'optimization', 'caching', 'best practices'],
+    coreApis: {
+        title: 'Core APIs',
+        description: 'Core APIs for data fetching, cache management, and query operations. Includes registerFetcher, fetchQuery, and more.',
+        url: '/docs/core-apis',
+        keywords: ['core apis', 'registerFetcher', 'fetchQuery', 'getQueryData', 'setQueryData'],
+    },
+    persistence: {
+        title: 'Persistence',
+        description: 'Persist query cache data across sessions with localStorage, sessionStorage, or custom storage backends.',
+        url: '/docs/persistence',
+        keywords: ['persistence', 'localStorage', 'sessionStorage', 'createPersister', 'cache'],
+    },
+    types: {
+        title: 'Types',
+        description: 'TypeScript type definitions for Qortex. QueryKey, QueryOptions, QueryState, and other essential types.',
+        url: '/docs/types',
+        keywords: ['types', 'typescript', 'QueryKey', 'QueryOptions', 'QueryState', 'type definitions'],
     },
 }
