@@ -83,7 +83,9 @@ export const SidebarContent = memo(function SidebarContent({
                                             <li key={item.href}>
                                                 <Link
                                                     href={item.href}
-                                                    onClick={() => {
+                                                    onClick={(e) => {
+                                                        // Prevent event bubbling to avoid collapsing the section
+                                                        e.stopPropagation();
                                                         // Close sidebar on mobile when item is clicked
                                                         if (window.innerWidth < 1024 && onClose) {
                                                             onClose();
