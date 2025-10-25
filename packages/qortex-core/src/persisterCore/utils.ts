@@ -7,7 +7,7 @@ import { validatePersistedState } from './validator';
  * Removes non-serializable properties like functions and promises
  */
 export function toSerializableState<T = any>(state: QueryStateInternal<T>): SerializedQueryState {
-    const { fetcher, equalityFn, fetchPromise, refetch, ...serializable } = state;
+    const { fetcher, equalityFn, fetchPromise, refetch, fromPersisterCache, ...serializable } = state;
     return serializable;
 }
 
@@ -22,6 +22,7 @@ export function fromSerializableState<T = any>(
     return {
         ...(originalState ?? {}),
         ...serializableState,
+        fromPersisterCache: !originalState, // Set flag if loading from persistence (no existing state)
     }
 }
 

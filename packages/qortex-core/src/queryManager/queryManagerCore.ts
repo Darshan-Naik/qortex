@@ -61,9 +61,14 @@ export class QueryManagerCore {
     // Merge with default config 
 
     if (state) {
-      const mergedOpts = { ...this.defaultConfig, ...state, ...opts };
+      // Build merged options based on whether state was loaded from persistence
+      const mergedOpts = state.fromPersisterCache
+        ? { ...state, ...this.defaultConfig, ...opts }  // Respect persisted config first
+        : { ...this.defaultConfig, ...state, ...opts }; // Normal behavior
+
       Object.assign(state, mergedOpts);
       state.enabled = mergedOpts.enabled === false ? false : true;
+      state.fromPersisterCache = false;
       this.cache.set(serializedKey, state);
     } else {
       const mergedOpts = { ...this.defaultConfig, ...opts };

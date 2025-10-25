@@ -289,4 +289,59 @@ describe('Persister Integration', () => {
             consoleSpy.mockRestore();
         });
     });
+
+    describe('Config Value Handling', () => {
+        it('should load data from persistence but use current default config', async () => {
+            const store: Record<string, string> = {};
+            const mockStorage = {
+                getItem: jest.fn((key: string) => store[key] || null),
+                setItem: jest.fn((key: string, value: string) => { store[key] = value; }),
+                removeItem: jest.fn((key: string) => { delete store[key]; }),
+                clear: jest.fn(() => { Object.keys(store).forEach(key => delete store[key]); }),
+                length: 0,
+                key: () => null
+            } as Storage;
+
+            // First, create a query manager and fetch data
+            const persister1 = new BasePersister(mockStorage, {
+                burstKey: 'v1.0.0',
+                prefix: 'test-persister'
+            });
+
+            const queryManager1 = new QueryManagerCore();
+            queryManager1.setDefaultConfig({
+                persister: persister1,
+                staleTime: 1000
+            });
+
+            // Create a query and fetch data
+            const fetcher = jest.fn().mockResolvedValue({ id: 1, name: 'Test' });
+            queryManager1.registerFetcher('test-query', { fetcher });
+            await queryManager1.fetchQuery('test-query');
+
+            // Verify data was fetched
+            const data1 = queryManager1.getQueryData('test-query', { fetcher });
+            expect(data1).toEqual({ id: 1, name: 'Test' });
+
+            // Wait for persister to save data
+            await new Promise(resolve => setTimeout(resolve, 150));
+
+            // Now create a new query manager with different default config
+            const queryManager2 = new QueryManagerCore();
+            queryManager2.setDefaultConfig({
+                persister: persister1, // Same persister, so it will load the persisted data
+                staleTime: 5000
+            });
+
+            // Create the same query - it should load data from persistence
+            queryManager2.registerFetcher('test-query', { fetcher });
+            const data2 = queryManager2.getQueryData('test-query', { fetcher });
+
+            // The data should be loaded from persistence
+            expect(data2).toEqual({ id: 1, name: 'Test' });
+
+            // The fetcher should not be called again because data is loaded from persistence
+            expect(fetcher).toHaveBeenCalledTimes(1);
+        });
+    });
 });
