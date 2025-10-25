@@ -112,11 +112,14 @@ const persister = createPersister('local');`,
         language: 'typescript'
     },
     {
-        title: 'React Package Options',
+        title: 'React Package Usage',
         description: 'React users can import from the React package with separate persister entry point.',
         code: `import { setDefaultConfig, useQuery } from 'qortex-react';
 import { createPersister } from 'qortex-react/persister';
 
+// Create persister and configure
+const persister = createPersister('local');
+setDefaultConfig({ persister });
 
 function MyComponent() {
   const { data } = useQuery('users');
