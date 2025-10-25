@@ -61,13 +61,13 @@ export const SidebarContent = memo(function SidebarContent({
 
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto bg-white">
-                <div className="p-4">
-                    <ul className="space-y-2">
+                <div className="p-3">
+                    <ul className="space-y-1">
                         {navigationData.map((section) => (
                             <li key={section.title}>
                                 <button
                                     onClick={() => toggleSection(section.title)}
-                                    className="w-full flex items-center justify-between p-3 text-left text-sm font-semibold text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200"
+                                    className="w-full flex items-center justify-between px-3 py-2 text-left text-sm font-semibold text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200"
                                 >
                                     <span>{section.title}</span>
                                     {expandedSections.has(section.title) ? (
@@ -78,7 +78,7 @@ export const SidebarContent = memo(function SidebarContent({
                                 </button>
 
                                 {expandedSections.has(section.title) && (
-                                    <ul className="ml-2 mt-2 space-y-1 border-l border-gray-200 pl-4">
+                                    <ul className="ml-2 mt-1 space-y-0.5 border-l border-gray-200 pl-3">
                                         {section.items.map((item) => (
                                             <li key={item.href}>
                                                 <Link
@@ -89,17 +89,12 @@ export const SidebarContent = memo(function SidebarContent({
                                                             onClose();
                                                         }
                                                     }}
-                                                    className={`block p-3 text-sm rounded-lg transition-all duration-200 ${isActive(item.href)
-                                                        ? 'bg-blue-100 text-primary-900 font-semibold shadow-lg transform scale-[1.02]'
-                                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-sm'
+                                                    className={`block px-2 py-1.5 text-sm rounded-md transition-all duration-200 ${isActive(item.href)
+                                                        ? 'bg-blue-100 text-primary-900 font-semibold shadow-sm'
+                                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                                                         }`}
                                                 >
-                                                    <div className="font-medium">{item.title}</div>
-                                                    {item.description && (
-                                                        <div className="text-xs text-gray-500 mt-1 leading-relaxed">
-                                                            {item.description}
-                                                        </div>
-                                                    )}
+                                                    {item.title}
                                                 </Link>
                                             </li>
                                         ))}

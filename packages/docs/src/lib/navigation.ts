@@ -1,7 +1,6 @@
 export interface NavigationItem {
     title: string;
     href: string;
-    description?: string;
 }
 
 export interface NavigationSection {
@@ -15,13 +14,11 @@ export const navigationData: NavigationSection[] = [
         items: [
             {
                 title: "Installation",
-                href: "/docs/installation",
-                description: "Install qortex in your project"
+                href: "/docs/installation"
             },
             {
                 title: "Quick Start",
-                href: "/docs/quick-start",
-                description: "Get up and running in minutes"
+                href: "/docs/quick-start"
             }
         ]
     },
@@ -30,18 +27,15 @@ export const navigationData: NavigationSection[] = [
         items: [
             {
                 title: "useQuery",
-                href: "/docs/useQuery",
-                description: "Main hook for reactive data fetching"
+                href: "/docs/useQuery"
             },
             {
                 title: "useQueryData",
-                href: "/docs/useQueryData",
-                description: "Hook that returns only the data value"
+                href: "/docs/useQueryData"
             },
             {
                 title: "useQuerySelect",
-                href: "/docs/useQuerySelect",
-                description: "Optimized hook with smart subscription"
+                href: "/docs/useQuerySelect"
             }
         ]
     },
@@ -50,48 +44,39 @@ export const navigationData: NavigationSection[] = [
         items: [
             {
                 title: "registerFetcher",
-                href: "/docs/registerFetcher",
-                description: "Register a fetcher function for a query"
+                href: "/docs/registerFetcher"
             },
             {
                 title: "fetchQuery",
-                href: "/docs/fetchQuery",
-                description: "Execute a fetch operation"
+                href: "/docs/fetchQuery"
             },
             {
                 title: "getQueryData",
-                href: "/docs/getQueryData",
-                description: "Get current data for a query"
+                href: "/docs/getQueryData"
             },
             {
                 title: "getQueryState",
-                href: "/docs/getQueryState",
-                description: "Get complete query state"
+                href: "/docs/getQueryState"
             },
             {
                 title: "setQueryData",
-                href: "/docs/setQueryData",
-                description: "Manually set query data"
+                href: "/docs/setQueryData"
             },
             {
                 title: "invalidateQuery",
-                href: "/docs/invalidateQuery",
-                description: "Invalidate and refetch a query"
+                href: "/docs/invalidateQuery"
             },
             {
                 title: "subscribeQuery",
-                href: "/docs/subscribeQuery",
-                description: "Subscribe to query state changes"
+                href: "/docs/subscribeQuery"
             },
             {
                 title: "setDefaultConfig",
-                href: "/docs/setDefaultConfig",
-                description: "Set default configuration"
+                href: "/docs/setDefaultConfig"
             },
             {
                 title: "dangerClearCache",
-                href: "/docs/dangerClearCache",
-                description: "Clear all cached data (testing only)"
+                href: "/docs/dangerClearCache"
             }
         ]
     },
@@ -100,13 +85,11 @@ export const navigationData: NavigationSection[] = [
         items: [
             {
                 title: "createPersister",
-                href: "/docs/createPersister",
-                description: "Create a persister instance"
+                href: "/docs/createPersister"
             },
             {
                 title: "PersisterConfig",
-                href: "/docs/PersisterConfig",
-                description: "Configuration options for persisters"
+                href: "/docs/PersisterConfig"
             }
         ]
     },
@@ -115,18 +98,15 @@ export const navigationData: NavigationSection[] = [
         items: [
             {
                 title: "QueryKey",
-                href: "/docs/QueryKey",
-                description: "Query key type definition"
+                href: "/docs/QueryKey"
             },
             {
                 title: "QueryOptions",
-                href: "/docs/QueryOptions",
-                description: "Query configuration options"
+                href: "/docs/QueryOptions"
             },
             {
                 title: "QueryState",
-                href: "/docs/QueryState",
-                description: "Query state type definition"
+                href: "/docs/QueryState"
             }
         ]
     },
@@ -135,13 +115,11 @@ export const navigationData: NavigationSection[] = [
         items: [
             {
                 title: "License",
-                href: "/docs/license",
-                description: "License information"
+                href: "/docs/license"
             },
             {
                 title: "Contributing",
-                href: "/docs/contributing",
-                description: "How to contribute to qortex"
+                href: "/docs/contributing"
             }
         ]
     }
