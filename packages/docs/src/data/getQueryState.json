@@ -101,12 +101,6 @@
             "title": "Complete State Access",
             "content": "getQueryState provides access to the complete query state, including loading status, errors, and metadata.",
             "icon": "database"
-        },
-        {
-            "type": "warning",
-            "title": "State Availability",
-            "content": "The query state might be undefined if the query hasn't been created yet or has been cleaned up.",
-            "icon": "alert-triangle"
         }
     ],
     "badges": [
