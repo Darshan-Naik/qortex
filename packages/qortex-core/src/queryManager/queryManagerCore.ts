@@ -43,8 +43,8 @@ export class QueryManagerCore {
       this.persister = persister;
 
       // Hydrate cache from persister
-      // Persister handles all hydration logic internally and updates queries with current defaults
-      this.persister?.load(this.cache, this.hasQueriesBeenUsed, this.defaultConfig);
+      // Persister handles all hydration logic internally
+      this.persister?.load(this.cache, this.hasQueriesBeenUsed);
     }
 
   }
@@ -72,7 +72,7 @@ export class QueryManagerCore {
     }
 
     // Sync to persister 
-    this.persister?.sync(this.cache, this.defaultConfig);
+    this.persister?.sync(this.cache);
 
     return this.cache.get(serializedKey)!;
   }
@@ -85,7 +85,7 @@ export class QueryManagerCore {
     this.cache.set(stateKey, state);
 
     // Sync to persister - persister handles all serialization internally
-    this.persister?.sync(this.cache, this.defaultConfig);
+    this.persister?.sync(this.cache);
 
     const set = this.subs.get(stateKey);
     if (!set) return;

@@ -2,7 +2,6 @@ import { PersisterConfig } from './types';
 import { SerializedQueryState, PersistedState } from './types';
 import { toSerializableState, fromSerializableState, warnPersisterAfterQueriesUsed, safeParseJSON } from './utils';
 import type { QueryStateInternal } from '../queryManager/internal-types';
-import type { DefaultConfig } from '../queryManager/types';
 
 /**
  * Base persister implementation
@@ -27,13 +26,12 @@ export class BasePersister {
     /**
      * Save state to storage
      */
-    save(state: Record<string, SerializedQueryState>, defaultConfig?: DefaultConfig): void {
+    save(state: Record<string, SerializedQueryState>): void {
         try {
             const persistedState: PersistedState = {
                 queries: {},
                 burstKey: this.burstKey,
-                timestamp: Date.now(),
-                defaultConfig: defaultConfig
+                timestamp: Date.now()
             };
 
             // Convert internal state to persisted queries
@@ -51,7 +49,7 @@ export class BasePersister {
     /**
      * Load state from storage and hydrate cache
      */
-    load(cache: Map<string, QueryStateInternal>, hasQueriesBeenUsed: boolean, currentDefaultConfig?: DefaultConfig): void {
+    load(cache: Map<string, QueryStateInternal>, hasQueriesBeenUsed: boolean): void {
         if (hasQueriesBeenUsed) {
             warnPersisterAfterQueriesUsed()
         }
@@ -75,50 +73,17 @@ export class BasePersister {
                 return;
             }
 
-            // Check if default config has changed
-            const storedDefaultConfig = persistedState.defaultConfig || {};
-            const hasDefaultConfigChanged = this.hasDefaultConfigChanged(storedDefaultConfig, currentDefaultConfig);
-
             // Hydrate cache with persisted states
             for (const [key, query] of Object.entries(persistedState.queries)) {
                 const serializableState = query;
                 const existingState = cache.get(key);
                 const internalState = fromSerializableState(serializableState, existingState);
-
-                // Only update with new default config if it has changed
-                if (hasDefaultConfigChanged) {
-                    Object.keys(currentDefaultConfig).forEach(configKey => {
-                        const newDefaultValue = currentDefaultConfig[configKey];
-                        if (newDefaultValue !== undefined) {
-                            (internalState as any)[configKey] = newDefaultValue;
-                        }
-                    });
-
-                    // Ensure enabled state is properly set
-                    internalState.enabled = currentDefaultConfig.enabled === false ? false : true;
-                }
-
                 cache.set(key, internalState);
             }
         } catch (error) {
             console.warn(`[Qortex] Failed to load persisted state:`, error);
             this.clear();
         }
-    }
-
-    /**
-     * Checks if the default config has changed by comparing stored and current configs
-     */
-    private hasDefaultConfigChanged(storedConfig: DefaultConfig, currentConfig: DefaultConfig): boolean {
-        // If no stored config, consider it changed (first time)
-        if (!storedConfig || Object.keys(storedConfig).length === 0) {
-            return true;
-        }
-
-        // Check if any property in current config differs from stored config
-        return Object.keys(currentConfig).some(key =>
-            storedConfig[key] !== currentConfig[key]
-        );
     }
 
     /**
@@ -136,7 +101,7 @@ export class BasePersister {
      * Sync with debounced save (100ms delay)
      * Handles serialization internally
      */
-    sync(cache: Map<string, QueryStateInternal>, defaultConfig?: DefaultConfig): void {
+    sync(cache: Map<string, QueryStateInternal>): void {
         if (this.syncTimeout) {
             clearTimeout(this.syncTimeout);
         }
@@ -150,7 +115,7 @@ export class BasePersister {
                 serializableStates[key] = toSerializableState(state);
             }
 
-            this.save(serializableStates, defaultConfig);
+            this.save(serializableStates);
         }, this.debounceTime);
     }
 

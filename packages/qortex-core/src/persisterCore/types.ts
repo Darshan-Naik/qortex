@@ -1,5 +1,4 @@
 import type { QueryStateInternal } from "../queryManager/internal-types";
-import type { DefaultConfig } from "../queryManager/types";
 
 
 export type SerializedQueryState = Omit<QueryStateInternal, 'fetcher' | 'fetchPromise' | 'refetch' | 'equalityFn'>;
@@ -11,7 +10,6 @@ export interface PersistedState {
     queries: Record<string, SerializedQueryState>;
     burstKey: string;
     timestamp: number;
-    defaultConfig?: DefaultConfig;
 }
 
 /**
