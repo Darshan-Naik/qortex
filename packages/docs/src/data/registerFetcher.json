@@ -122,12 +122,6 @@
             "title": "Centralized Configuration",
             "content": "registerFetcher is perfect for centralizing your data fetching logic and configuration in one place.",
             "icon": "settings"
-        },
-        {
-            "type": "warning",
-            "title": "Single Registration",
-            "content": "Each query key can only be registered once. Subsequent registrations will be ignored.",
-            "icon": "alert-triangle"
         }
     ],
     "badges": [
