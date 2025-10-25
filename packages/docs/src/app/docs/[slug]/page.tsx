@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getNavigationItemByHref, getNavigationSectionByHref } from '@/lib/navigation';
 import { getDocumentation } from '@/lib/documentation';
-import { DocumentationRenderer } from '@/components/DocumentationRenderer';
+import { DocumentationRenderer } from '@/components/documentation';
 
 interface PageProps {
     params: {

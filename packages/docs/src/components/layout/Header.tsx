@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { ExternalLink, Package, BrainCircuit } from 'lucide-react'
-import { StarButton } from './StarButton'
+import { StarButton } from '../StarButton'
 
 // No navigation items needed - only Home and Docs pages
 

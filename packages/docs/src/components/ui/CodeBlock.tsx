@@ -84,7 +84,7 @@ export function CodeBlock({ children, language = 'typescript' }: CodeBlockProps)
     const processedCode = processCode(children, language);
 
     return (
-        <div className="relative group my-6">
+        <div className="relative group">
             <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 <button
                     onClick={copyToClipboard}
@@ -111,7 +111,7 @@ export function CodeBlock({ children, language = 'typescript' }: CodeBlockProps)
             >
                 {({ className, style, tokens, getLineProps, getTokenProps }) => (
                     <pre
-                        className={`${className} rounded-xl overflow-x-auto text-sm leading-relaxed border border-gray-800 shadow-2xl`}
+                        className={`${className}  overflow-x-auto text-sm leading-relaxed border border-gray-800 shadow-2xl`}
                         style={{
                             ...style,
                             padding: '1.5rem',

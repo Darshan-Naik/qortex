@@ -1,45 +1,21 @@
 'use client';
 
-import { useState, useEffect, useRef, memo } from 'react';
+import { useState, memo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, ChevronRight, Menu, X, BrainCircuit } from 'lucide-react';
-import { navigationData, NavigationSection } from '@/lib/navigation';
+import { ChevronDown, ChevronRight, X, BrainCircuit } from 'lucide-react';
+import { navigationData } from '@/lib/navigation';
 
-interface DocSidebarProps {
-    isOpen: boolean;
-    onClose: () => void;
+interface SidebarContentProps {
+    onClose?: () => void;
 }
 
-export const DocSidebar = memo(function DocSidebar({ isOpen, onClose }: DocSidebarProps) {
-    const pathname = usePathname();
-    const navRef = useRef<HTMLElement>(null);
+export const SidebarContent = memo(function SidebarContent({
+    onClose
+}: SidebarContentProps) {
     const [expandedSections, setExpandedSections] = useState<Set<string>>(
         new Set(['Getting Started', 'React Hooks'])
     );
-
-    // Preserve scroll position and auto-expand active section
-    useEffect(() => {
-        const savedScrollPosition = sessionStorage.getItem('sidebar-scroll');
-        if (savedScrollPosition && navRef.current) {
-            navRef.current.scrollTop = parseInt(savedScrollPosition, 10);
-        }
-
-        // Auto-expand section containing the active item
-        const activeSection = navigationData.find(section =>
-            section.items.some(item => isActive(item.href))
-        );
-
-        if (activeSection) {
-            setExpandedSections(prev => new Set(Array.from(prev).concat(activeSection.title)));
-        }
-    }, [pathname]);
-
-    const saveScrollPosition = () => {
-        if (navRef.current) {
-            sessionStorage.setItem('sidebar-scroll', navRef.current.scrollTop.toString());
-        }
-    };
 
     const toggleSection = (sectionTitle: string) => {
         const newExpanded = new Set(expandedSections);
@@ -50,15 +26,15 @@ export const DocSidebar = memo(function DocSidebar({ isOpen, onClose }: DocSideb
         }
         setExpandedSections(newExpanded);
     };
+    const pathname = usePathname();
 
     const isActive = (href: string) => {
         const currentSlug = pathname.split('/').filter(Boolean).join('');
         const targetSlug = href.split('/').filter(Boolean).join('');
         return currentSlug === targetSlug;
-
     };
 
-    const SidebarContent = () => (
+    return (
         <div className="h-full flex flex-col">
             {/* Header with Branding */}
             <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
@@ -72,21 +48,19 @@ export const DocSidebar = memo(function DocSidebar({ isOpen, onClose }: DocSideb
                             <p className="text-xs text-gray-600">Documentation</p>
                         </div>
                     </Link>
-                    <button
-                        onClick={onClose}
-                        className="lg:hidden p-1 rounded-md hover:bg-gray-100 transition-colors"
-                    >
-                        <X className="h-5 w-5" />
-                    </button>
+                    {onClose && (
+                        <button
+                            onClick={onClose}
+                            className="lg:hidden p-1 rounded-md hover:bg-gray-100 transition-colors"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
+                    )}
                 </div>
             </div>
 
             {/* Navigation */}
-            <nav
-                ref={navRef}
-                className="flex-1 overflow-y-auto bg-white"
-                onScroll={saveScrollPosition}
-            >
+            <nav className="flex-1 overflow-y-auto bg-white">
                 <div className="p-4">
                     <ul className="space-y-2">
                         {navigationData.map((section) => (
@@ -111,7 +85,7 @@ export const DocSidebar = memo(function DocSidebar({ isOpen, onClose }: DocSideb
                                                     href={item.href}
                                                     onClick={() => {
                                                         // Close sidebar on mobile when item is clicked
-                                                        if (window.innerWidth < 1024) {
+                                                        if (window.innerWidth < 1024 && onClose) {
                                                             onClose();
                                                         }
                                                     }}
@@ -137,44 +111,5 @@ export const DocSidebar = memo(function DocSidebar({ isOpen, onClose }: DocSideb
                 </div>
             </nav>
         </div>
-    );
-
-    return (
-        <>
-            {/* Desktop Sidebar */}
-            <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 lg:z-40">
-                <div className="flex flex-col h-screen bg-white border-r border-gray-200">
-                    <SidebarContent />
-                </div>
-            </div>
-
-            {/* Mobile Sidebar Overlay */}
-            {isOpen && (
-                <div className="lg:hidden">
-                    {/* Backdrop */}
-                    <div
-                        className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 transition-opacity"
-                        onClick={onClose}
-                    />
-
-                    {/* Sidebar */}
-                    <div className="fixed inset-y-0 left-0 z-50 w-64 h-screen bg-white shadow-xl transform transition-transform">
-                        <SidebarContent />
-                    </div>
-                </div>
-            )}
-        </>
-    );
-});
-
-// Mobile menu button component
-export const MobileMenuButton = memo(function MobileMenuButton({ onClick }: { onClick: () => void }) {
-    return (
-        <button
-            onClick={onClick}
-            className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-        >
-            <Menu className="h-5 w-5" />
-        </button>
     );
 });

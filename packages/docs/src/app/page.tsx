@@ -1,7 +1,7 @@
 import { Hero } from '@/components/Hero'
 import { Features } from '@/components/Features'
 import { BundleSize } from '@/components/BundleSize'
-import { Footer } from '@/components/Footer'
+import { Footer } from '@/components/layout'
 import { generateMetadata as generateSEOMetadata, seoConfigs } from '@/lib/seo'
 
 export const metadata = generateSEOMetadata(seoConfigs.home)
