@@ -110,14 +110,14 @@ export const subscribeQuery = _queryManager.subscribeQuery.bind(_queryManager);
  * Sets default configuration that applies to all queries
  * 
  * @param config - Default configuration object
- * @param config.enabled - Default enabled state for all queries
- * @param config.staleTime - Default stale time in milliseconds
- * @param config.refetchOnSubscribe - Default refetch behavior on subscription
- * @param config.equalityStrategy - Default equality comparison strategy
- * @param config.equalityFn - Default equality function
- * @param config.usePreviousDataOnError - Default behavior for previous data on error
- * @param config.usePlaceholderOnError - Default behavior for placeholder data on error
- * @param config.throttleTime - Time in ms to throttle fetch requests (default: 1000)
+ * @param config.enabled - Default enabled state for all queries. Default: `true`
+ * @param config.staleTime - Default stale time in milliseconds. Default: `0` (data becomes stale immediately after fetch)
+ * @param config.refetchOnSubscribe - Default refetch behavior on subscription. Default: `"stale"`
+ * @param config.equalityStrategy - Default equality comparison strategy. Default: `"shallow"`
+ * @param config.equalityFn - Default equality function. Default: `Object.is`
+ * @param config.usePreviousDataOnError - Default behavior for previous data on error. Default: `false`
+ * @param config.usePlaceholderOnError - Default behavior for placeholder data on error. Default: `false`
+ * @param config.throttleTime - Time in ms to throttle fetch requests. Default: `50`
  * @param config.persister - Persister instance for data persistence
  * 
  * These defaults will be merged with individual query options. Useful for setting global behavior

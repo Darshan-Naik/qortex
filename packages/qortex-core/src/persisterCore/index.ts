@@ -33,6 +33,9 @@ const getStorage = (type: 'local' | 'session') => {
  *   - `'local'`: Uses localStorage for persistent data across browser sessions
  *   - `'session'`: Uses sessionStorage for data that persists only during the current session
  * @param {PersisterConfig} [config] - Optional configuration for the persister
+ *   - `burstKey`: Default `"0.3.0"`
+ *   - `prefix`: Default `"qortex"`
+ *   - `debounceTime`: Default `100` (ms)
  * @returns {Persister | undefined} A persister instance, or undefined if storage is not available
  * 
  * @example

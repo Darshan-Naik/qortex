@@ -12,14 +12,6 @@ export function serializeKey(key: QueryKey): string {
   return Array.isArray(key) ? key.join("-") : String(key);
 }
 
-/**
- * Performs equality comparison between two values based on strategy
- * Handles null/undefined, primitives, and objects with same key structure
- * @param a - First value to compare
- * @param b - Second value to compare
- * @param strategy - Comparison strategy ('shallow' or 'deep')
- * @returns true if values are equal according to the strategy
- */
 export function equal<T = unknown>(a: T | undefined, b: T | undefined, strategy: EqualityStrategy = 'shallow'): boolean {
   if (a === b) return true;
   if (a == null || b == null) return a === b;
@@ -66,12 +58,6 @@ export function equal<T = unknown>(a: T | undefined, b: T | undefined, strategy:
 }
 
 
-/**
- * Returns the appropriate equality function based on strategy
- * @param strategy - The equality strategy ('shallow' or 'deep')
- * @param customFn - Optional custom equality function
- * @returns The equality function to use
- */
 export function getEqualityFunction<T = any>(
   strategy?: EqualityStrategy,
   customFn?: EqualityFn<T>
@@ -82,10 +68,6 @@ export function getEqualityFunction<T = any>(
   return ((a: T | undefined, b: T | undefined) => equal(a, b, strategy || 'shallow')) as EqualityFn<T>;
 }
 
-/**
- * Creates a new query state with default values
- * Used when initializing queries that don't exist in cache
- */
 export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<any>) {
   return {
     status: "idle" as const,
@@ -107,10 +89,6 @@ export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<
   };
 }
 
-/**
- * Creates a public QueryState object from internal state
- * Handles placeholder data, stale state logic, and computed properties
- */
 export function createPublicState<T = any, E = unknown>(state: QueryStateInternal<T, E>): QueryState<T, E> {
   const now = Date.now();
   // isStale is true only when:
@@ -166,10 +144,6 @@ export function createPublicState<T = any, E = unknown>(state: QueryStateInterna
   };
 }
 
-/**
- * Logs a developer-friendly warning when no fetcher or data is available
- * @param key - The query key that's missing fetcher/data
- */
 export function warnNoFetcherOrData(key: QueryKey): void {
   console.warn(
     `[qortex] No fetcher or data for key "${serializeKey(key)}". ` +
