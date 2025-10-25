@@ -84,20 +84,6 @@
             "Don't use synchronous storage operations"
         ]
     },
-    "callouts": [
-        {
-            "type": "info",
-            "title": "Storage Interface",
-            "content": "The storage interface must implement getItem, setItem, and removeItem methods. All methods should be asynchronous.",
-            "icon": "database"
-        },
-        {
-            "type": "warning",
-            "title": "Data Freshness",
-            "content": "Be mindful of maxAge settings. Too high values can lead to stale data, while too low values reduce persistence benefits.",
-            "icon": "alert-triangle"
-        }
-    ],
     "badges": [
         {
             "text": "Persistence",
