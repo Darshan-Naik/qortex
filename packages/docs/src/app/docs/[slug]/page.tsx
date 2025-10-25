@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     return {
         title: item.title,
-        description: item.description || `Documentation for ${item.title}`,
+        description: `Documentation for ${item.title}`,
     };
 }
 
