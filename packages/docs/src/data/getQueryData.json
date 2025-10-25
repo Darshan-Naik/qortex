@@ -1,0 +1,128 @@
+{
+    "id": "getQueryData",
+    "title": "getQueryData",
+    "subtitle": "Get current data for a query",
+    "description": "Synchronously get the current cached data for a query without triggering a fetch or subscription.",
+    "category": "Core APIs",
+    "tags": [
+        "core",
+        "data",
+        "cache",
+        "synchronous"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function getQueryData<TData>(\n  queryKey: QueryKey,\n  options?: QueryOptions<TData>\n): TData | undefined"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string or array of primitives."
+            },
+            {
+                "name": "options",
+                "type": "QueryOptions<TData>",
+                "required": false,
+                "default": "-",
+                "description": "Optional configuration object. If no fetcher is provided, uses a previously registered fetcher."
+            }
+        ]
+    },
+    "returns": {
+        "type": "TData | undefined",
+        "description": "The current cached data for the query, or undefined if not cached"
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Get cached data synchronously",
+            "language": "tsx",
+            "code": "import { getQueryData } from 'qortex-react';\n\nfunction handleFormSubmit() {\n  // Get current user data from cache\n  const currentUser = getQueryData(['user', 'current']);\n  \n  if (currentUser) {\n    console.log('Current user:', currentUser.name);\n    // Use cached data for form submission\n    submitForm({ userId: currentUser.id, ...formData });\n  } else {\n    console.log('No user data cached');\n  }\n}"
+        },
+        {
+            "title": "Conditional Logic",
+            "description": "Use cached data for conditional operations",
+            "language": "tsx",
+            "code": "import { getQueryData } from 'qortex-react';\n\nfunction NavigationMenu() {\n  const handleNavigation = (path: string) => {\n    // Check if user is authenticated using cached data\n    const user = getQueryData(['user', 'current']);\n    \n    if (user && user.role === 'admin') {\n      // Admin can access all routes\n      navigate(path);\n    } else if (user && path !== '/admin') {\n      // Regular user can access non-admin routes\n      navigate(path);\n    } else {\n      // Redirect to login\n      navigate('/login');\n    }\n  };\n\n  return (\n    <nav>\n      <button onClick={() => handleNavigation('/dashboard')}>\n        Dashboard\n      </button>\n      <button onClick={() => handleNavigation('/admin')}>\n        Admin\n      </button>\n    </nav>\n  );\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Synchronous",
+            "description": "Returns data immediately without waiting for network requests",
+            "icon": "zap"
+        },
+        {
+            "title": "Cache Only",
+            "description": "Only returns data that's already in the cache",
+            "icon": "database"
+        },
+        {
+            "title": "No Side Effects",
+            "description": "Does not trigger fetches or subscriptions",
+            "icon": "activity"
+        },
+        {
+            "title": "Type Safe",
+            "description": "Returns properly typed data or undefined",
+            "icon": "refresh-cw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use for conditional logic based on cached data",
+            "Handle undefined return values appropriately",
+            "Use in event handlers and non-React code",
+            "Combine with other cache operations"
+        ],
+        "donts": [
+            "Don't use in render functions (use useQuery instead)",
+            "Don't assume data will always be available",
+            "Don't use for data that must be fresh",
+            "Don't forget to handle undefined cases"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Cache Access",
+            "content": "getQueryData only returns data that's already cached. It won't trigger a fetch if the data doesn't exist.",
+            "icon": "database"
+        },
+        {
+            "type": "warning",
+            "title": "Undefined Handling",
+            "content": "Always handle the case where getQueryData returns undefined, as the data might not be cached yet.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Core API",
+            "variant": "info"
+        },
+        {
+            "text": "Synchronous",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "getQueryState",
+        "setQueryData",
+        "fetchQuery",
+        "QueryKey"
+    ]
+}

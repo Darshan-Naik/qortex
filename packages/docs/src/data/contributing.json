@@ -1,0 +1,62 @@
+{
+    "id": "contributing",
+    "title": "Contributing",
+    "subtitle": "How to contribute to Qortex",
+    "description": "Learn how to contribute to Qortex development, report bugs, suggest features, and submit pull requests.",
+    "category": "About",
+    "tags": [
+        "contributing",
+        "development",
+        "github",
+        "community"
+    ],
+    "status": "stable",
+    "content": "We welcome contributions to Qortex! Whether you're fixing bugs, adding features, or improving documentation, your help is appreciated.",
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Getting Started",
+            "content": "Before contributing, please read this guide and check our GitHub repository for current issues and discussions.",
+            "icon": "info"
+        }
+    ],
+    "sections": [
+        {
+            "title": "Ways to Contribute",
+            "content": "There are many ways you can contribute to Qortex:",
+            "code": {
+                "language": "text",
+                "code": "🐛 Report bugs and issues\n💡 Suggest new features\n📝 Improve documentation\n🧪 Write tests\n🔧 Fix bugs and implement features\n🎨 Improve the codebase\n📖 Write tutorials and guides"
+            }
+        },
+        {
+            "title": "Development Setup",
+            "content": "To set up the development environment:",
+            "code": {
+                "language": "bash",
+                "code": "# Clone the repository\ngit clone https://github.com/darshannaik/qortex.git\ncd qortex\n\n# Install dependencies\npnpm install\n\n# Run tests\npnpm test\n\n# Build packages\npnpm build\n\n# Start development server\npnpm dev"
+            }
+        },
+        {
+            "title": "Submitting Changes",
+            "content": "When submitting changes:",
+            "code": {
+                "language": "text",
+                "code": "1. Fork the repository\n2. Create a feature branch\n3. Make your changes\n4. Add tests if applicable\n5. Run the test suite\n6. Submit a pull request"
+            }
+        }
+    ],
+    "badges": [
+        {
+            "text": "Community",
+            "variant": "info"
+        },
+        {
+            "text": "Open Source",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "license"
+    ]
+}

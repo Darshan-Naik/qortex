@@ -1,0 +1,108 @@
+{
+    "id": "QueryKey",
+    "title": "QueryKey",
+    "subtitle": "Query key type definition",
+    "description": "Type definition for query keys. Query keys are unique identifiers for queries and can be strings, arrays, or objects.",
+    "category": "Types & Utilities",
+    "tags": [
+        "types",
+        "query-key",
+        "identifier",
+        "cache"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "type QueryKey = string | readonly (string | number)[]"
+    },
+    "parameters": {
+        "columns": [
+            "Type",
+            "Description",
+            "Example"
+        ],
+        "rows": [
+            {
+                "name": "string",
+                "type": "string",
+                "required": false,
+                "default": "-",
+                "description": "Simple string identifier for the query."
+            },
+            {
+                "name": "readonly (string | number)[]",
+                "type": "readonly (string | number)[]",
+                "required": false,
+                "default": "-",
+                "description": "Readonly array of strings and numbers for hierarchical identification."
+            }
+        ]
+    },
+    "behavior": [
+        {
+            "title": "Unique Identification",
+            "description": "Query keys must be unique to identify different queries",
+            "icon": "database"
+        },
+        {
+            "title": "Serializable",
+            "description": "Query keys are serialized for cache storage and comparison",
+            "icon": "refresh-cw"
+        },
+        {
+            "title": "Hierarchical",
+            "description": "Array and object keys support hierarchical identification",
+            "icon": "activity"
+        },
+        {
+            "title": "Type Safe",
+            "description": "Full TypeScript support with proper type inference",
+            "icon": "zap"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use descriptive and meaningful query keys",
+            "Use array keys for hierarchical identification",
+            "Use object keys for complex structured identification",
+            "Keep query keys consistent across your application"
+        ],
+        "donts": [
+            "Don't use query keys that change on every render",
+            "Don't use complex objects that are hard to serialize",
+            "Don't use query keys that contain sensitive data",
+            "Don't use query keys that are too long or complex"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Key Uniqueness",
+            "content": "Query keys must be unique to identify different queries. Use descriptive and meaningful keys that clearly identify the data being fetched.",
+            "icon": "database"
+        },
+        {
+            "type": "warning",
+            "title": "Key Stability",
+            "content": "Query keys should be stable and not change on every render. Avoid using objects or arrays that are recreated on each render.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Type",
+            "variant": "info"
+        },
+        {
+            "text": "Query Key",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "QueryOptions",
+        "QueryState",
+        "serializeKey",
+        "useQuery"
+    ]
+}

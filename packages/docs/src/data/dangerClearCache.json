@@ -1,0 +1,119 @@
+{
+    "id": "dangerClearCache",
+    "title": "dangerClearCache",
+    "subtitle": "Clear all cached data (testing only)",
+    "description": "Clear all cached data from the query cache. This is primarily intended for testing purposes and should be used with caution in production code.",
+    "category": "Core APIs",
+    "tags": [
+        "core",
+        "cache",
+        "testing",
+        "dangerous"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function dangerClearCache(): void"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": []
+    },
+    "returns": {
+        "type": "void",
+        "description": "No return value"
+    },
+    "examples": [
+        {
+            "title": "Testing Usage",
+            "description": "Clear cache between tests",
+            "language": "tsx",
+            "code": "import { dangerClearCache, fetchQuery } from 'qortex-react';\n\n// In your test setup\nbeforeEach(() => {\n  // Clear all cached data before each test\n  dangerClearCache();\n});\n\ndescribe('User API', () => {\n  it('should fetch user data', async () => {\n    // Test user data fetching\n    const user = await fetchQuery(['user', '123'], {\n      fetcher: () => fetchUser('123')\n    });\n    \n    expect(user).toBeDefined();\n  });\n  \n  it('should handle user not found', async () => {\n    // Cache is cleared, so this test starts fresh\n    try {\n      await fetchQuery(['user', 'nonexistent'], {\n        fetcher: () => fetchUser('nonexistent')\n      });\n    } catch (error) {\n      expect(error.message).toBe('User not found');\n    }\n  });\n});"
+        },
+        {
+            "title": "Development Tools",
+            "description": "Clear cache in development tools",
+            "language": "tsx",
+            "code": "import { dangerClearCache } from 'qortex-react';\n\n// Development utility function\nfunction clearAllData() {\n  if (process.env.NODE_ENV === 'development') {\n    dangerClearCache();\n    console.log('All cached data cleared');\n  } else {\n    console.warn('dangerClearCache should only be used in development');\n  }\n}\n\n// Add to window for debugging\nif (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {\n  (window as any).clearQortexCache = clearAllData;\n}\n\n// Usage in browser console:\n// clearQortexCache()"
+        },
+        {
+            "title": "Logout Handler",
+            "description": "Clear cache on user logout (use with caution)",
+            "language": "tsx",
+            "code": "import { dangerClearCache, setQueryData } from 'qortex-react';\n\nfunction handleLogout() {\n  // Clear all cached data on logout\n  // This ensures no user data remains in memory\n  dangerClearCache();\n  \n  // Redirect to login\n  window.location.href = '/login';\n}\n\n// Alternative: More targeted approach\nfunction handleLogoutSafe() {\n  // Instead of clearing everything, clear specific user data\n  setQueryData(['user', 'current'], undefined);\n  setQueryData(['user', 'profile'], undefined);\n  setQueryData(['user', 'settings'], undefined);\n  \n  // Redirect to login\n  window.location.href = '/login';\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Complete Clear",
+            "description": "Removes all cached data from the query cache",
+            "icon": "trash-2"
+        },
+        {
+            "title": "Immediate Effect",
+            "description": "Takes effect immediately",
+            "icon": "zap"
+        },
+        {
+            "title": "No Side Effects",
+            "description": "Does not trigger any network requests",
+            "icon": "activity"
+        },
+        {
+            "title": "Testing Focused",
+            "description": "Primarily intended for testing scenarios",
+            "icon": "refresh-cw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use primarily in testing environments",
+            "Use in development tools and debugging",
+            "Use when you need to completely reset the application state",
+            "Document why you're using this function"
+        ],
+        "donts": [
+            "Don't use in production code without careful consideration",
+            "Don't use for normal cache invalidation (use invalidateQuery instead)",
+            "Don't use without understanding the impact on all components",
+            "Don't use as a regular part of your application flow"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "error",
+            "title": "Dangerous Operation",
+            "content": "This function clears ALL cached data. Use with extreme caution and only when absolutely necessary.",
+            "icon": "alert-triangle"
+        },
+        {
+            "type": "warning",
+            "title": "Testing Only",
+            "content": "This function is primarily intended for testing. Consider using invalidateQuery or setQueryData for normal cache management.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Core API",
+            "variant": "error"
+        },
+        {
+            "text": "Testing Only",
+            "variant": "warning"
+        }
+    ],
+    "relatedPages": [
+        "invalidateQuery",
+        "setQueryData",
+        "getQueryData",
+        "QueryKey"
+    ]
+}

@@ -1,8 +1,7 @@
 import { Hero } from '@/components/Hero'
 import { Features } from '@/components/Features'
 import { BundleSize } from '@/components/BundleSize'
-import { QuickStart } from '@/components/QuickStart'
-import { CTA } from '@/components/CTA'
+import { Footer } from '@/components/layout'
 import { generateMetadata as generateSEOMetadata, seoConfigs } from '@/lib/seo'
 
 export const metadata = generateSEOMetadata(seoConfigs.home)
@@ -13,8 +12,7 @@ export default function HomePage() {
       <Hero />
       <Features />
       <BundleSize />
-      <QuickStart />
-      <CTA />
+      <Footer />
     </>
   )
 }

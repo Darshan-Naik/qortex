@@ -1,0 +1,128 @@
+{
+    "id": "getQueryState",
+    "title": "getQueryState",
+    "subtitle": "Get complete query state",
+    "description": "Synchronously get the complete state of a query including data, loading status, error, and metadata.",
+    "category": "Core APIs",
+    "tags": [
+        "core",
+        "state",
+        "cache",
+        "synchronous"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function getQueryState<TData, TError = Error>(\n  queryKey: QueryKey,\n  options?: QueryOptions<TData>\n): QueryState<TData, TError>"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string or array of primitives."
+            },
+            {
+                "name": "options",
+                "type": "QueryOptions<TData>",
+                "required": false,
+                "default": "-",
+                "description": "Optional configuration object. If no fetcher is provided, uses a previously registered fetcher."
+            }
+        ]
+    },
+    "returns": {
+        "type": "QueryState<TData, TError>",
+        "description": "The complete query state. Always returns a state object, creating one if it doesn't exist."
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Get complete query state synchronously",
+            "language": "tsx",
+            "code": "import { getQueryState } from 'qortex-core';\n\nfunction handleUserAction() {\n  const userState = getQueryState(['user', 'current']);\n  \n  if (userState) {\n    console.log('User data:', userState.data);\n    console.log('Is loading:', userState.isLoading);\n    console.log('Is fetching:', userState.isFetching);\n    console.log('Error:', userState.error);\n    \n    if (userState.isLoading) {\n      console.log('User data is still loading...');\n    } else if (userState.error) {\n      console.log('Failed to load user:', userState.error.message);\n    } else if (userState.data) {\n      console.log('User loaded successfully:', userState.data.name);\n    }\n  } else {\n    console.log('No user query found');\n  }\n}"
+        },
+        {
+            "title": "Conditional Operations",
+            "description": "Use query state for conditional operations",
+            "language": "tsx",
+            "code": "import { getQueryState } from 'qortex-core';\n\nfunction SmartButton() {\n  const handleClick = () => {\n    const productsState = getQueryState('products');\n    \n    if (!productsState) {\n      // No products query exists, start fresh\n      fetchQuery('products', { fetcher: fetchProducts });\n    } else if (productsState.error) {\n      // Previous fetch failed, retry\n      invalidateQuery('products');\n    } else if (productsState.isFetching) {\n      // Already fetching, do nothing\n      console.log('Products are already being fetched');\n    } else {\n      // Data is available, proceed with action\n      console.log('Products ready:', productsState.data);\n    }\n  };\n\n  return (\n    <button onClick={handleClick}>\n      Load Products\n    </button>\n  );\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Complete State",
+            "description": "Returns all query state including data, loading, error, and metadata",
+            "icon": "database"
+        },
+        {
+            "title": "Synchronous",
+            "description": "Returns state immediately without waiting for network requests",
+            "icon": "zap"
+        },
+        {
+            "title": "No Side Effects",
+            "description": "Does not trigger fetches or subscriptions",
+            "icon": "activity"
+        },
+        {
+            "title": "Type Safe",
+            "description": "Returns properly typed state or undefined",
+            "icon": "refresh-cw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use for conditional logic based on complete query state",
+            "Handle undefined return values appropriately",
+            "Use in event handlers and non-React code",
+            "Check multiple state properties for comprehensive logic"
+        ],
+        "donts": [
+            "Don't use in render functions (use useQuery instead)",
+            "Don't assume state will always be available",
+            "Don't use for data that must be fresh",
+            "Don't forget to handle all possible state combinations"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Complete State Access",
+            "content": "getQueryState provides access to the complete query state, including loading status, errors, and metadata.",
+            "icon": "database"
+        },
+        {
+            "type": "warning",
+            "title": "State Availability",
+            "content": "The query state might be undefined if the query hasn't been created yet or has been cleaned up.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Core API",
+            "variant": "info"
+        },
+        {
+            "text": "Complete State",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "getQueryData",
+        "QueryState",
+        "fetchQuery",
+        "QueryKey"
+    ]
+}

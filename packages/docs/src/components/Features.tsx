@@ -113,8 +113,8 @@ export function Features() {
                 </div>
 
                 <div className="mt-16 text-center">
-                    <Link href="/docs/features" className="inline-flex items-center text-primary-600 hover:text-primary-700 font-semibold transition-colors">
-                        Explore all features
+                    <Link href="/docs/installation" className="inline-flex items-center text-primary-600 hover:text-primary-700 font-semibold transition-colors">
+                        Get Started
                         <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                 </div>

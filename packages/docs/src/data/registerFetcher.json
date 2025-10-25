@@ -1,0 +1,148 @@
+{
+    "id": "registerFetcher",
+    "title": "registerFetcher",
+    "subtitle": "Register a fetcher function for a query",
+    "description": "Register a global fetcher function for a query key, allowing you to use the query without specifying a fetcher in each useQuery call.",
+    "category": "Core APIs",
+    "tags": [
+        "core",
+        "fetcher",
+        "global",
+        "registration"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "function registerFetcher<TData, TError = Error>(\n  queryKey: QueryKey,\n  options: QueryOptions<TData, TError> & { fetcher: () => Promise<TData> }\n): void"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": true,
+                "default": "-",
+                "description": "Unique identifier for the query. Can be a string or array of primitives."
+            },
+            {
+                "name": "options",
+                "type": "QueryOptions<TData, TError> & { fetcher: () => Promise<TData> }",
+                "required": true,
+                "default": "-",
+                "description": "Configuration object containing the fetcher function and optional settings."
+            },
+            {
+                "name": "options.fetcher",
+                "type": "() => Promise<TData>",
+                "required": true,
+                "default": "-",
+                "description": "Function that returns a Promise resolving to the data."
+            },
+            {
+                "name": "options.staleTime",
+                "type": "number",
+                "required": false,
+                "default": "0",
+                "description": "Time in milliseconds after which data is considered stale."
+            },
+            {
+                "name": "options.refetchOnSubscribe",
+                "type": "'always' | 'stale' | false",
+                "required": false,
+                "default": "'stale'",
+                "description": "When to refetch data when component subscribes."
+            }
+        ]
+    },
+    "returns": {
+        "type": "void",
+        "description": "No return value"
+    },
+    "examples": [
+        {
+            "title": "Basic Registration",
+            "description": "Register a fetcher for a query key",
+            "language": "tsx",
+            "code": "import { registerFetcher } from 'qortex-react';\n\n// Register a fetcher for user data\nregisterFetcher(\n  'user-data',\n  {\n    fetcher: async () => {\n      const response = await fetch('/api/user');\n      return response.json();\n    }\n  }\n);\n\n// Now you can use it without specifying a fetcher\nfunction UserProfile() {\n  const { data, isLoading } = useQuery('user-data', {});\n  \n  if (isLoading) return <div>Loading...</div>;\n  return <div>Hello, {data.name}!</div>;\n}"
+        },
+        {
+            "title": "With Options",
+            "description": "Register a fetcher with default options",
+            "language": "tsx",
+            "code": "import { registerFetcher } from 'qortex-react';\n\n// Register with default options\nregisterFetcher(\n  'products',\n  {\n    fetcher: async () => {\n      const response = await fetch('/api/products');\n      return response.json();\n    },\n    staleTime: 5 * 60 * 1000, // 5 minutes\n    refetchOnSubscribe: 'stale'\n  }\n);\n\n// Use with minimal configuration\nfunction ProductList() {\n  const { data } = useQuery('products', {});\n  \n  return (\n    <div>\n      {data?.map(product => (\n        <div key={product.id}>{product.name}</div>\n      ))}\n    </div>\n  );\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Global Registration",
+            "description": "Makes the fetcher available globally for the query key",
+            "icon": "database"
+        },
+        {
+            "title": "Default Options",
+            "description": "Sets default options that apply to all uses of the query",
+            "icon": "settings"
+        },
+        {
+            "title": "Simplified Usage",
+            "description": "Allows useQuery calls without specifying a fetcher",
+            "icon": "zap"
+        },
+        {
+            "title": "Centralized Logic",
+            "description": "Centralizes data fetching logic in one place",
+            "icon": "refresh-cw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Register fetchers early in your application lifecycle",
+            "Use descriptive query keys that match your API endpoints",
+            "Set appropriate default options for your use case",
+            "Keep fetcher functions pure and focused"
+        ],
+        "donts": [
+            "Don't register the same query key multiple times",
+            "Don't use complex logic in fetcher functions",
+            "Don't forget to handle errors in your fetchers",
+            "Don't register fetchers in render functions"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Centralized Configuration",
+            "content": "registerFetcher is perfect for centralizing your data fetching logic and configuration in one place.",
+            "icon": "settings"
+        },
+        {
+            "type": "warning",
+            "title": "Single Registration",
+            "content": "Each query key can only be registered once. Subsequent registrations will be ignored.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Core API",
+            "variant": "info"
+        },
+        {
+            "text": "Global",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "useQuery",
+        "fetchQuery",
+        "QueryOptions"
+    ]
+}

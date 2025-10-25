@@ -1,0 +1,159 @@
+{
+    "id": "QueryState",
+    "title": "QueryState",
+    "subtitle": "Query state type definition",
+    "description": "Type definition for query state. Represents the current state of a query including data, loading status, error, and metadata.",
+    "category": "Types & Utilities",
+    "tags": [
+        "types",
+        "state",
+        "query",
+        "status"
+    ],
+    "status": "stable",
+    "version": "0.3.0",
+    "signature": {
+        "language": "typescript",
+        "code": "interface QueryState<TData, TError = Error> {\n  data: TData | undefined;\n  isLoading: boolean;\n  isFetching: boolean;\n  error: TError | null;\n  isError: boolean;\n  isSuccess: boolean;\n  isStale: boolean;\n  lastUpdated: number | undefined;\n  fetchCount: number;\n}"
+    },
+    "parameters": {
+        "columns": [
+            "Property",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "data",
+                "type": "TData | undefined",
+                "required": true,
+                "default": "-",
+                "description": "The fetched data, undefined while loading or on error."
+            },
+            {
+                "name": "isLoading",
+                "type": "boolean",
+                "required": true,
+                "default": "-",
+                "description": "True if the query is currently fetching for the first time."
+            },
+            {
+                "name": "isFetching",
+                "type": "boolean",
+                "required": true,
+                "default": "-",
+                "description": "True if the query is currently fetching (including background refetches)."
+            },
+            {
+                "name": "error",
+                "type": "TError | null",
+                "required": true,
+                "default": "-",
+                "description": "Error object if the query failed, null otherwise."
+            },
+            {
+                "name": "isError",
+                "type": "boolean",
+                "required": true,
+                "default": "-",
+                "description": "True if the query failed with an error."
+            },
+            {
+                "name": "isSuccess",
+                "type": "boolean",
+                "required": true,
+                "default": "-",
+                "description": "True if the query succeeded and has data."
+            },
+            {
+                "name": "isStale",
+                "type": "boolean",
+                "required": true,
+                "default": "-",
+                "description": "True if the data is considered stale and should be refetched."
+            },
+            {
+                "name": "lastUpdated",
+                "type": "number | undefined",
+                "required": true,
+                "default": "-",
+                "description": "Timestamp of when the data was last successfully fetched."
+            },
+            {
+                "name": "fetchCount",
+                "type": "number",
+                "required": true,
+                "default": "-",
+                "description": "Number of times this query has been fetched."
+            }
+        ]
+    },
+    "behavior": [
+        {
+            "title": "Reactive",
+            "description": "State changes trigger component re-renders",
+            "icon": "activity"
+        },
+        {
+            "title": "Comprehensive",
+            "description": "Provides all necessary state information",
+            "icon": "database"
+        },
+        {
+            "title": "Type Safe",
+            "description": "Full TypeScript support with proper type inference",
+            "icon": "zap"
+        },
+        {
+            "title": "Consistent",
+            "description": "Consistent state representation across all queries",
+            "icon": "refresh-cw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use appropriate state properties for your use case",
+            "Handle all possible state combinations",
+            "Use state for conditional rendering and logic",
+            "Check state before performing actions"
+        ],
+        "donts": [
+            "Don't assume data is always available",
+            "Don't forget to handle error states",
+            "Don't use state for side effects",
+            "Don't ignore loading states"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "State Management",
+            "content": "QueryState provides comprehensive state information for managing query lifecycle and user experience.",
+            "icon": "activity"
+        },
+        {
+            "type": "warning",
+            "title": "State Handling",
+            "content": "Always handle all possible state combinations to provide a good user experience and prevent runtime errors.",
+            "icon": "alert-triangle"
+        }
+    ],
+    "badges": [
+        {
+            "text": "Type",
+            "variant": "info"
+        },
+        {
+            "text": "State",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "QueryOptions",
+        "QueryKey",
+        "useQuery",
+        "getQueryState"
+    ]
+}

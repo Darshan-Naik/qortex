@@ -1,4 +1,4 @@
-import { Zap, Shield, Code } from 'lucide-react'
+import { Zap, Shield, Code, ExternalLink } from 'lucide-react'
 import { HeroButtons } from './HeroButtons'
 
 export function Hero() {
@@ -22,6 +22,28 @@ export function Hero() {
                     </p>
 
                     <HeroButtons />
+
+                    {/* NPM Package Links */}
+                    <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a
+                            href="https://www.npmjs.com/package/qortex-core"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-lg"
+                        >
+                            <span className="font-semibold">qortex-core</span>
+                            <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                        <a
+                            href="https://www.npmjs.com/package/qortex-react"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-lg"
+                        >
+                            <span className="font-semibold">qortex-react</span>
+                            <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                    </div>
 
                     <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-3">
                         <div className="flex flex-col items-center text-center card animate-fade-in">
