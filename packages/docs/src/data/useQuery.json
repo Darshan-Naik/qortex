@@ -160,12 +160,6 @@
             "title": "Performance Tip",
             "content": "useQuery automatically deduplicates identical requests and shares cache between components.",
             "icon": "zap"
-        },
-        {
-            "type": "warning",
-            "title": "Memory Management",
-            "content": "Query cache is automatically cleaned up when no components are using a query.",
-            "icon": "trash-2"
         }
     ],
     "badges": [
