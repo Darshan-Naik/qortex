@@ -9,7 +9,7 @@ import { DEFAULT_STALE_TIME } from "./constants";
  * Arrays are joined with commas, primitives are converted to strings
  */
 export function serializeKey(key: QueryKey): string {
-  return Array.isArray(key) ? key.join(",") : String(key);
+  return Array.isArray(key) ? key.join("-") : String(key);
 }
 
 /**
