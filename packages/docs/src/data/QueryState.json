@@ -132,12 +132,6 @@
             "title": "State Management",
             "content": "QueryState provides comprehensive state information for managing query lifecycle and user experience.",
             "icon": "activity"
-        },
-        {
-            "type": "warning",
-            "title": "State Handling",
-            "content": "Always handle all possible state combinations to provide a good user experience and prevent runtime errors.",
-            "icon": "alert-triangle"
         }
     ],
     "badges": [

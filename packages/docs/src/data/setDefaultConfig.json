@@ -102,10 +102,10 @@
             "icon": "settings"
         },
         {
-            "type": "warning",
-            "title": "Override Behavior",
-            "content": "Individual queries can override global defaults. Make sure your defaults work well with your specific use cases.",
-            "icon": "alert-triangle"
+            "type": "info",
+            "title": "Setting Global Configuration",
+            "content": "Call setDefaultConfig early in your application lifecycle, ideally before any queries are executed. This ensures all queries inherit your preferred defaults from the start.",
+            "icon": "settings"
         }
     ],
     "badges": [

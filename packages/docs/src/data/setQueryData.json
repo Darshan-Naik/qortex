@@ -107,12 +107,6 @@
             "title": "Optimistic Updates",
             "content": "setQueryData is perfect for optimistic updates. Update the UI immediately, then revert if the server request fails.",
             "icon": "zap"
-        },
-        {
-            "type": "warning",
-            "title": "Error Handling",
-            "content": "Always handle error cases when using optimistic updates. Revert the changes if the server request fails.",
-            "icon": "alert-triangle"
         }
     ],
     "badges": [

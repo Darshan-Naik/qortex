@@ -115,12 +115,6 @@
             "title": "Cache Integration",
             "content": "fetchQuery updates the cache, so any components using useQuery with the same key will automatically re-render with the new data.",
             "icon": "database"
-        },
-        {
-            "type": "warning",
-            "title": "Error Handling",
-            "content": "Always wrap fetchQuery calls in try/catch blocks to handle potential errors gracefully.",
-            "icon": "alert-triangle"
         }
     ],
     "badges": [

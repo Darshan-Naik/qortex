@@ -81,12 +81,6 @@
             "title": "Key Uniqueness",
             "content": "Query keys must be unique to identify different queries. Use descriptive and meaningful keys that clearly identify the data being fetched.",
             "icon": "database"
-        },
-        {
-            "type": "warning",
-            "title": "Key Stability",
-            "content": "Query keys should be stable and not change on every render. Avoid using objects or arrays that are recreated on each render.",
-            "icon": "alert-triangle"
         }
     ],
     "badges": [

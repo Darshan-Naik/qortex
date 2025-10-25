@@ -101,12 +101,6 @@
             "title": "Cache Access",
             "content": "getQueryData only returns data that's already cached. It won't trigger a fetch if the data doesn't exist.",
             "icon": "database"
-        },
-        {
-            "type": "warning",
-            "title": "Undefined Handling",
-            "content": "Always handle the case where getQueryData returns undefined, as the data might not be cached yet.",
-            "icon": "alert-triangle"
         }
     ],
     "badges": [

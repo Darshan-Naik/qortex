@@ -109,12 +109,6 @@
             "title": "When to Use",
             "content": "useQueryData is perfect for simple data consumption where you don't need loading states. Use useQuery when you need full state management.",
             "icon": "info"
-        },
-        {
-            "type": "warning",
-            "title": "Undefined Values",
-            "content": "Always handle undefined values since the hook returns undefined while loading or on error.",
-            "icon": "alert-triangle"
         }
     ],
     "badges": [

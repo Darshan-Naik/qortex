@@ -94,7 +94,7 @@
         {
             "type": "warning",
             "title": "Performance Impact",
-            "content": "Be mindful of configuration choices that can impact performance, such as staleTime, retry count, and refetch behavior.",
+            "content": "Be mindful of configuration choices that can impact performance, such as staleTime, and refetchOnSubscribe.",
             "icon": "alert-triangle"
         }
     ],

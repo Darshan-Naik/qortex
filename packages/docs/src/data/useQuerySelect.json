@@ -102,12 +102,6 @@
             "title": "State-Based Optimization",
             "content": "useQuerySelect returns the full QueryState object but only re-renders when the specific state properties you access change.",
             "icon": "zap"
-        },
-        {
-            "type": "warning",
-            "title": "State Property Access",
-            "content": "The optimization tracks which QueryState properties you access (data, isLoading, error, etc.). Access only the properties you need for optimal performance.",
-            "icon": "alert-triangle"
         }
     ],
     "badges": [
