@@ -216,7 +216,7 @@ describe('Persister Integration', () => {
             expect(storedData).toBeTruthy();
 
             const parsedData = JSON.parse(storedData!);
-            expect(parsedData.entries['debounce-query'].data).toEqual({ id: 1, name: 'DebounceTest' });
+            expect(parsedData.queries['debounce-query'].data).toEqual({ id: 1, name: 'DebounceTest' });
         });
 
         it('should use default debounce time when not specified', async () => {
@@ -246,7 +246,7 @@ describe('Persister Integration', () => {
             expect(storedData).toBeTruthy();
 
             const parsedData = JSON.parse(storedData!);
-            expect(parsedData.entries['default-query'].data).toEqual({ id: 2, name: 'DefaultTest' });
+            expect(parsedData.queries['default-query'].data).toEqual({ id: 2, name: 'DefaultTest' });
         });
     });
 

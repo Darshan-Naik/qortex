@@ -29,14 +29,14 @@ export class BasePersister {
     save(state: Record<string, SerializedQueryState>): void {
         try {
             const persistedState: PersistedState = {
-                entries: {},
+                queries: {},
                 burstKey: this.burstKey,
                 timestamp: Date.now()
             };
 
-            // Convert internal state to persisted entries
+            // Convert internal state to persisted queries
             for (const [key, queryState] of Object.entries(state)) {
-                persistedState.entries[key] = queryState
+                persistedState.queries[key] = queryState
             }
 
             const serialized = JSON.stringify(persistedState);
@@ -74,8 +74,8 @@ export class BasePersister {
             }
 
             // Hydrate cache with persisted states
-            for (const [key, entry] of Object.entries(persistedState.entries)) {
-                const serializableState = entry;
+            for (const [key, query] of Object.entries(persistedState.queries)) {
+                const serializableState = query;
                 const existingState = cache.get(key);
                 const internalState = fromSerializableState(serializableState, existingState);
                 cache.set(key, internalState);
@@ -111,6 +111,7 @@ export class BasePersister {
             const serializableStates: Record<string, SerializedQueryState> = {};
 
             for (const [key, state] of cache.entries()) {
+                // Key is already serialized by the query manager, so we use it directly
                 serializableStates[key] = toSerializableState(state);
             }
 

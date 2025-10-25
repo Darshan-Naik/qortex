@@ -67,16 +67,16 @@ export function validatePersistedState(data: any): data is PersistedState {
         return false;
     }
 
-    if (!data.entries || typeof data.entries !== 'object') {
+    if (!data.queries || typeof data.queries !== 'object') {
         return false;
     }
 
-    // Validate all entries
-    for (const [key, entry] of Object.entries(data.entries)) {
+    // Validate all queries
+    for (const [key, query] of Object.entries(data.queries)) {
         if (typeof key !== 'string') {
             return false;
         }
-        if (!validateSerializableQueryState(entry)) {
+        if (!validateSerializableQueryState(query)) {
             return false;
         }
     }

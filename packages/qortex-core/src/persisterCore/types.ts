@@ -7,7 +7,7 @@ export type SerializedQueryState = Omit<QueryStateInternal, 'fetcher' | 'fetchPr
  * Complete persisted state structure
  */
 export interface PersistedState {
-    entries: Record<string, SerializedQueryState>;
+    queries: Record<string, SerializedQueryState>;
     burstKey: string;
     timestamp: number;
 }
