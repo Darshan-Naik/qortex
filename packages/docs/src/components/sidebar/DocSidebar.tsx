@@ -10,7 +10,7 @@ export const DocSidebar = memo(function DocSidebar() {
     return (
         <>
             {/* Mobile Header */}
-            <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3">
+            <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-2">
                 <div className="flex items-center justify-between">
                     <h1 className="text-lg font-semibold text-gray-900">Documentation</h1>
                     <button

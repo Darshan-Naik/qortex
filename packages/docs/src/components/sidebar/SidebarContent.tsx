@@ -37,8 +37,8 @@ export const SidebarContent = memo(function SidebarContent({
     return (
         <div className="h-full flex flex-col">
             {/* Header with Branding */}
-            <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
-                <div className="flex items-center justify-between mb-3">
+            <div className="py-2 px-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+                <div className="flex items-center justify-between">
                     <Link href="/" className="flex items-center space-x-3 group">
                         <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
                             <BrainCircuit className="text-white h-5 w-5" />
