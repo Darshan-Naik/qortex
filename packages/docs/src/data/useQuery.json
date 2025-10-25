@@ -172,10 +172,6 @@
         {
             "text": "React Hook",
             "variant": "info"
-        },
-        {
-            "text": "Stable",
-            "variant": "success"
         }
     ],
     "relatedPages": [

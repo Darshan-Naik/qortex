@@ -15,7 +15,7 @@
         {
             "type": "info",
             "title": "Choose Your Package",
-            "content": "Install EITHER qortex-core OR qortex-react - not both! qortex-react includes all core APIs.",
+            "content": "Install qortex-core OR qortex-react - not both! qortex-react includes all core APIs.",
             "icon": "info"
         }
     ],

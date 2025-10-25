@@ -16,7 +16,7 @@
         {
             "type": "info",
             "title": "Prerequisites",
-            "content": "Make sure you have React 16.8+ and Node.js 14+ installed.",
+            "content": "Make sure you have React 18+ and Node.js 16+ installed.",
             "icon": "info"
         }
     ],
@@ -50,10 +50,6 @@
         {
             "text": "Getting Started",
             "variant": "info"
-        },
-        {
-            "text": "5 min read",
-            "variant": "default"
         }
     ],
     "relatedPages": [
