@@ -19,7 +19,7 @@
         "../qortex-core/src"
       ],
       "qortex-core/persister": [
-        "../qortex-core/src/persister-export"
+        "../qortex-core/src/persister"
       ]
     }
   },

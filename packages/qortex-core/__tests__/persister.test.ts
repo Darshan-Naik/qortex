@@ -1,6 +1,6 @@
 import { QueryManagerCore } from '../src/queryManager/queryManagerCore';
 import { createPersister } from '../src/persister';
-import { BasePersister } from '../src/persister/base';
+import { BasePersister } from '../src/persisterCore/base';
 
 // Mock localStorage and sessionStorage
 const mockStorage = () => {

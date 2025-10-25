@@ -24,37 +24,12 @@ export class QueryManagerCore {
   private persister: Persister | null = null;
   private hasQueriesBeenUsed = false;
 
-  /**
-   * ⚠️ DANGER: Clear all cached data and subscriptions
-   * 
-   * This method completely wipes all internal state including:
-   * - All cached query data
-   * - All active subscriptions
-   * - All state references
-   * - All persisted data
-   * 
-   * @warning This should ONLY be used in testing environments or when you need to completely reset the query manager state. Using this in production will cause all active queries to lose their data and subscriptions to break.
-   * 
-   * @example
-   * ```typescript
-   * // ✅ Safe usage in tests
-   * beforeEach(() => {
-   *   queryManager.dangerClearCache();
-   * });
-   * 
-   * // ❌ Dangerous usage in production
-   * // queryManager.dangerClearCache(); // Don't do this!
-   * ```
-   */
   dangerClearCache(): void {
     this.cache.clear();
     this.subs.clear();
     this.persister?.clear();
   }
 
-  /**
-   * Set default configuration for all queries
-   */
   setDefaultConfig({ throttleTime, persister, ...config }: DefaultConfig): void {
     this.defaultConfig = { ...this.defaultConfig, ...config };
 
@@ -118,11 +93,6 @@ export class QueryManagerCore {
   }
 
 
-  /**
-  * Registers a fetcher function for a query key
-  * Automatically fetches if enabled is not false
-  * Enhanced with automatic type inference from fetcher
-  */
   registerFetcher<T = any>(key: QueryKey, opts: QueryOptions<T>): void;
   registerFetcher<F extends Fetcher>(key: QueryKey, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): void;
   registerFetcher<T = any>(key: QueryKey, opts: QueryOptions<T>): void {
@@ -130,11 +100,6 @@ export class QueryManagerCore {
     this.handleMountLogic(key, state);
   }
 
-  /**
-  * Executes a fetch operation with proper error handling and state management
-  * Prevents duplicate fetches
-  * Enhanced with automatic type inference from fetcher
-  */
   fetchQuery<T = any>(key: QueryKey, opts?: QueryOptions<T>): Promise<T>;
   fetchQuery<F extends Fetcher>(key: QueryKey, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): Promise<InferFetcherResult<F>>;
   fetchQuery<T = any>(key: QueryKey, opts?: QueryOptions<T>): Promise<T> {
@@ -186,10 +151,6 @@ export class QueryManagerCore {
     return promise;
   }
 
-  /**
-   * Manually sets query data without triggering a fetch
-   * Marks query as successful
-   */
   setQueryData<T = any>(key: QueryKey, data: T): void {
     const state = this.ensureState(key);
     const old = state.data;
@@ -205,10 +166,6 @@ export class QueryManagerCore {
     this.emit(key, state);
   }
 
-  /**
-   * Gets query data
-   * Handles mount logic to potentially start fetching
-   */
   getQueryData<T = any>(key: QueryKey, opts?: QueryOptions<T>): T | undefined;
   getQueryData<F extends Fetcher>(key: QueryKey, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): InferFetcherResult<F> | undefined;
   getQueryData<T = any>(key: QueryKey, opts?: QueryOptions<T>): T | undefined {
@@ -217,11 +174,6 @@ export class QueryManagerCore {
     return createPublicState(state).data;
   }
 
-  /**
-   * Gets comprehensive query state including computed flags
-   * Handles placeholder data and error states appropriately
-   * Handles mount logic to potentially start fetching
-   */
   getQueryState<T = unknown>(key: QueryKey, opts?: QueryOptions<T>): QueryState<T>;
   getQueryState<F extends Fetcher>(key: QueryKey, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): QueryState<InferFetcherResult<F>>;
   getQueryState<T = unknown>(key: QueryKey, opts?: QueryOptions<T>): QueryState<T> {
@@ -245,9 +197,6 @@ export class QueryManagerCore {
     return lastState as QueryState<T>;
   }
 
-  /**
-   * Marks a query as invalidated, triggering refetch
-   */
   invalidateQuery(key: QueryKey): void {
     const state = this.ensureState(key);
     state.isInvalidated = true;
@@ -256,10 +205,6 @@ export class QueryManagerCore {
   }
 
 
-  /**
-   * Subscribes to query state changes with automatic subscription management
-   * Handles mount logic to potentially start fetching
-   */
   subscribeQuery(key: QueryKey, cb: (state: QueryState<any>) => void): () => void;
   subscribeQuery<F extends Fetcher>(key: QueryKey, cb: (state: QueryState<InferFetcherResult<F>>) => void, opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }): () => void;
   subscribeQuery<T = any>(key: QueryKey, cb: (state: QueryState<T>) => void, opts?: QueryOptions<T>): () => void;
