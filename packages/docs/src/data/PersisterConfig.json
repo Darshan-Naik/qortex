@@ -70,20 +70,6 @@
             "icon": "settings"
         }
     ],
-    "bestPractices": {
-        "dos": [
-            "Use appropriate storage backend for your use case",
-            "Set reasonable maxAge values",
-            "Use custom serialization for complex data types",
-            "Handle storage errors gracefully"
-        ],
-        "donts": [
-            "Don't store sensitive data in localStorage",
-            "Don't set maxAge too high for frequently changing data",
-            "Don't forget to handle storage quota exceeded errors",
-            "Don't use synchronous storage operations"
-        ]
-    },
     "badges": [
         {
             "text": "Persistence",

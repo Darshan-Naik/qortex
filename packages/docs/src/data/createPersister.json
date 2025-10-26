@@ -108,20 +108,6 @@
             "icon": "refresh-cw"
         }
     ],
-    "bestPractices": {
-        "dos": [
-            "Use appropriate storage backend for your use case",
-            "Set reasonable maxAge values to prevent stale data",
-            "Handle storage errors gracefully",
-            "Use custom serialization for complex data types"
-        ],
-        "donts": [
-            "Don't store sensitive data in localStorage",
-            "Don't set maxAge too high for frequently changing data",
-            "Don't forget to handle storage quota exceeded errors",
-            "Don't use synchronous storage operations"
-        ]
-    },
     "callouts": [
         {
             "type": "info",
