@@ -2,7 +2,7 @@
     "id": "fetchQuery",
     "title": "fetchQuery",
     "subtitle": "Execute a fetch operation",
-    "description": "Execute a fetch operation programmatically without React hooks. Perfect for one-time operations, event handlers, and server-side usage.",
+    "description": "Execute a fetch operation programmatically without React hooks. Perfect for one-time operations and event handlers usage.",
     "category": "Core APIs",
     "tags": [
         "core",
@@ -99,7 +99,7 @@
         "dos": [
             "Use for one-time operations like form submissions",
             "Handle errors with try/catch blocks",
-            "Use in event handlers and server-side code",
+            "Use in event handlers code",
             "Combine with useQuery for reactive updates"
         ],
         "donts": [
