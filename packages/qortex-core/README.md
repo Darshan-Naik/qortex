@@ -13,11 +13,10 @@
 
 - 🔐 **App core data** - Authentication, user profiles accessible from anywhere
 - 🎯 **Cross-framework** - Share data between React, Vue, vanilla JS, Node.js
-- 🔄 **Background services** - WebSocket updates, timers, external events
 - ⚡ **Real-time apps** - Push changes from anywhere, see them everywhere instantly
 
 ```bash
-pnpm add qortex-core
+npm install qortex-core
 ```
 
 ## 📚 Documentation
@@ -28,7 +27,7 @@ pnpm add qortex-core
 
 ## 📄 License
 
-MIT License - feel free to use this in your projects! 🎉
+LGPL-3.0 License - see [LICENSE](../../LICENSE) file for details.
 
 ## 🎯 Support
 

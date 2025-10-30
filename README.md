@@ -20,10 +20,10 @@ Tired of complex data fetching libraries that make simple tasks complicated? **q
 
 ## 📦 Packages
 
-| Package | Description | Size |
-|---------|-------------|------|
-| **`qortex-core`** | Core runtime with query management | <2KB gzipped |
-| **`qortex-react`** | React hooks and components | <2KB gzipped |
+| Package            | Description                        | Size         |
+| ------------------ | ---------------------------------- | ------------ |
+| **`qortex-core`**  | Core runtime with query management | <2KB gzipped |
+| **`qortex-react`** | React hooks and components         | <2KB gzipped |
 
 ## 📥 Installation
 
@@ -47,7 +47,6 @@ npm install qortex-react
 - **🔄 Background refetching** with smart invalidation and throttling
 - **💾 Previous data preservation** during refetches (no loading states for cached data!)
 - **⚡ Shallow equality** to prevent unnecessary re-renders
-- **🛑 Smart cleanup** and resource management
 - **🎭 TypeScript** support with full type safety
 - **🎨 Framework agnostic** - use anywhere!
 - **⚡ Smart throttling** - prevents duplicate fetches
@@ -55,7 +54,7 @@ npm install qortex-react
 
 ## 📄 License
 
-MIT License - feel free to use this in your projects! 🎉
+LGPL-3.0 License - see [LICENSE](LICENSE) file for details.
 
 ## 🎯 Support
 

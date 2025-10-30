@@ -18,7 +18,7 @@
 - ⚡ **Real-time updates** - Push changes from anywhere, see them in React instantly
 
 ```bash
-pnpm add qortex-react qortex-core
+npm install qortex-react
 ```
 
 ## 📚 Documentation
@@ -29,7 +29,7 @@ pnpm add qortex-react qortex-core
 
 ## 📄 License
 
-MIT License - feel free to use this in your projects! 🎉
+LGPL-3.0 License - see [LICENSE](../../LICENSE) file for details.
 
 ## 🎯 Support
 

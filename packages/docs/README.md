@@ -82,4 +82,4 @@ The site is configured for static export and can be deployed to any static hosti
 
 ## License
 
-MIT License - see LICENSE file for details.
+LGPL-3.0 License - see [LICENSE](../../LICENSE) file for details.
