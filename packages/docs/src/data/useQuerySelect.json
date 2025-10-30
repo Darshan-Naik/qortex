@@ -12,7 +12,6 @@
         "selector"
     ],
     "status": "stable",
-    "version": "0.3.0",
     "signature": {
         "language": "typescript",
         "code": "function useQuerySelect<TData, TError = Error>(\n  queryKey: QueryKey,\n  options?: QueryOptions<TData>\n): QueryState<TData, TError>"

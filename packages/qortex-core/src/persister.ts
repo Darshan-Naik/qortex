@@ -3,7 +3,7 @@
  * 
  * @param type - Storage type to use ('local' for localStorage, 'session' for sessionStorage)
  * @param config - Optional configuration for the persister
- * @param config.burstKey - Version key to invalidate old cached data (default: '0.3.0')
+ * @param config.burstKey - Version key to invalidate old cached data (default: 'package version')
  * @param config.prefix - Prefix for storage keys (default: 'qortex')
  * @param config.debounceTime - Time in ms to debounce save operations (default: 100)
  * @returns Persister instance or undefined if storage is not available

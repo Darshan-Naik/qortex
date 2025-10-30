@@ -11,7 +11,6 @@
         "state-management"
     ],
     "status": "stable",
-    "version": "0.3.0",
     "signature": {
         "language": "typescript",
         "code": "function useQuery<TData, TError = Error>(\n  queryKey: QueryKey,\n  options?: QueryOptions<TData, TError>\n): QueryState<TData, TError>"
