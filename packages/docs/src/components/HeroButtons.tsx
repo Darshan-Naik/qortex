@@ -1,38 +1,51 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import { StarButton } from './StarButton'
-import { useStar } from '../contexts/StarContext'
+import { ArrowRight, Github, ExternalLink, Package } from 'lucide-react'
 
 export function HeroButtons() {
-    const { message } = useStar()
-
     return (
-        <div className="mt-10 relative">
+        <div className="mt-10">
             <div className="flex items-center justify-center gap-6">
                 <Link href="/docs/installation" className="btn-primary text-lg px-8 py-4 flex items-center justify-center w-fit h-14">
                     Get Started
                     <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
-                <div className="h-14 flex items-center">
-                    <StarButton size="lg" showMessage={false} />
-                </div>
+                <a
+                    href="https://github.com/Darshan-Naik/qortex"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 text-lg rounded-lg font-medium transition-all duration-200 bg-gray-900 text-white hover:bg-gray-800 hover:scale-105 active:scale-95 shadow-lg"
+                >
+                    <Github className="h-5 w-5" />
+                    <span>GitHub</span>
+                    <ExternalLink className="h-4 w-4" />
+                </a>
             </div>
 
-            {/* Absolute positioned message to avoid layout shift */}
-            {message && (
-                <div className={`
-                    absolute top-full left-1/2 transform -translate-x-1/2 mt-4 z-50
-                    text-sm px-4 py-2 rounded-md transition-all duration-300 whitespace-nowrap
-                    ${message.includes('Thank you') || message.includes('removed successfully')
-                        ? 'bg-green-100 text-green-700 border border-green-200'
-                        : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
-                    }
-                `}>
-                    {message}
-                </div>
-            )}
+            {/* NPM Package Links */}
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a
+                    href="https://www.npmjs.com/package/qortex-core"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-50 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 border border-gray-200"
+                >
+                    <Package className="h-5 w-5 text-primary-600" />
+                    <span className="font-semibold">qortex-core</span>
+                    <ExternalLink className="h-4 w-4 text-gray-500" />
+                </a>
+                <a
+                    href="https://www.npmjs.com/package/qortex-react"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-50 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 border border-gray-200"
+                >
+                    <Package className="h-5 w-5 text-primary-600" />
+                    <span className="font-semibold">qortex-react</span>
+                    <ExternalLink className="h-4 w-4 text-gray-500" />
+                </a>
+            </div>
         </div>
     )
 }
