@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { StarProvider } from "@/contexts/StarContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -132,9 +131,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <StarProvider>
-          <div className="min-h-screen">{children}</div>
-        </StarProvider>
+        <div className="min-h-screen">{children}</div>
       </body>
     </html>
   );
