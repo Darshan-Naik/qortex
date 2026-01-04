@@ -1,9 +1,17 @@
 import { useSyncExternalStore, useCallback } from "react";
-import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, subscribeQuery, getQueryState, serializeKey } from "qortex-core";
+import {
+  QueryKey,
+  Fetcher,
+  InferFetcherResult,
+  QueryOptions,
+  QueryState,
+  queryManager,
+  serializeKey,
+} from "qortex-core";
 
 /**
  * React hook for reactive data fetching with automatic re-renders on state changes
- * 
+ *
  * @param key - Unique identifier for the query (string or array of primitives)
  * @param opts - Query configuration options
  * @param opts.fetcher - Async function that fetches data for this query
@@ -16,7 +24,7 @@ import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, subscr
  * @param opts.usePreviousDataOnError - Keep previous data when error occurs
  * @param opts.usePlaceholderOnError - Use placeholder data when error occurs
  * @returns QueryState object with data, error, status, and computed flags
- * 
+ *
  * Returns an object containing:
  * - data: The current data value
  * - error: Any error that occurred during fetching
@@ -27,7 +35,7 @@ import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, subscr
  * - isError: Whether the query is in an error state
  * - isSuccess: Whether the query completed successfully
  * - refetch: Function to manually trigger a refetch
- * 
+ *
  * Automatically subscribes to query state changes and triggers re-renders when the state updates.
  * Enhanced with automatic type inference from fetcher functions. Handles mount logic to potentially start fetching.
  */
@@ -49,23 +57,22 @@ export function useQuery<T = any>(
   key: QueryKey,
   opts?: QueryOptions<T>
 ): QueryState<T> {
-
   const serializedKey = serializeKey(key);
 
   // Memoize the getSnapshot function
   const getSnapshot = useCallback((): QueryState<T> => {
-    return getQueryState<T>(key, opts);
+    return queryManager.getQueryState<T>(key, opts);
   }, [serializedKey]);
 
   // Memoize the subscribe function
-  const subscribe = useCallback((callback: () => void) => {
-    return subscribeQuery(key, callback, opts);
-  }, [serializedKey]);
-
-  const state = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
+  const subscribe = useCallback(
+    (callback: () => void) => {
+      return queryManager.subscribeQuery(key, callback, opts);
+    },
+    [serializedKey]
   );
+
+  const state = useSyncExternalStore(subscribe, getSnapshot);
 
   return state;
 }

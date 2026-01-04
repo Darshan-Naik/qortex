@@ -1,8 +1,7 @@
-import {
-    getQueryState,
-    subscribeQuery,
-    dangerClearCache
-} from '../src/queryManager';
+import { queryManager } from '../src/queryManager';
+
+// Destructuring works because all public methods are arrow functions
+const { getQueryState, subscribeQuery, dangerClearCache } = queryManager;
 
 describe('Enabled State Subscription Tests', () => {
     beforeEach(() => {

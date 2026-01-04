@@ -1,7 +1,10 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { useQuerySelect } from '../src/useQuerySelect';
-import { registerFetcher, setQueryData, dangerClearCache, invalidateQuery } from 'qortex-core';
+import { queryManager } from 'qortex-core';
+
+// Destructuring works because all public methods are arrow functions
+const { registerFetcher, setQueryData, dangerClearCache, invalidateQuery } = queryManager;
 
 // Mock console.log to track render calls
 const originalConsoleLog = console.log;

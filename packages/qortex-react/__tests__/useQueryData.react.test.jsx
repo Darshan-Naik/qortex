@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { useQueryData, useQuery, dangerClearCache, registerFetcher, getQueryState} from '../src/index';
+import { useQueryData, useQuery, queryManager } from '../src/index';
+
+// Destructuring works because all public methods are arrow functions
+const { dangerClearCache, registerFetcher, getQueryState } = queryManager;
 
 // Test component that uses useQueryData
 function TestComponent({ queryKey, options = {} }) {

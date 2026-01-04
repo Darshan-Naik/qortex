@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { dangerClearCache ,useQuery ,registerFetcher} from '../src/index';
+import { useQuery, queryManager } from '../src/index';
+
+// Destructuring works because all public methods are arrow functions
+const { dangerClearCache, registerFetcher } = queryManager;
 
 // Test component that uses useQuery
 function TestComponent({ queryKey, options = {} }) {
@@ -294,8 +297,8 @@ registerFetcher(['test-key'], {
       // Unmount first component
       unmount();
 
-      // Wait for throttle period to pass (100ms + buffer)
-      await new Promise(resolve => setTimeout(resolve, 150));
+      // Wait for throttle period to pass (500ms default + buffer)
+      await new Promise(resolve => setTimeout(resolve, 600));
 
       // Second component subscription (new subscription should trigger refetch)
       render(

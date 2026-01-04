@@ -1,9 +1,17 @@
 import { useSyncExternalStore, useCallback, useRef, useMemo } from "react";
-import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, subscribeQuery, getQueryState, serializeKey } from "qortex-core";
+import {
+  QueryKey,
+  Fetcher,
+  InferFetcherResult,
+  QueryOptions,
+  QueryState,
+  queryManager,
+  serializeKey,
+} from "qortex-core";
 
 /**
  * React hook for reactive data fetching with smart subscription optimization
- * 
+ *
  * @param key - Unique identifier for the query (string or array of primitives)
  * @param opts - Query configuration options
  * @param opts.fetcher - Async function that fetches data for this query
@@ -16,7 +24,7 @@ import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, subscr
  * @param opts.usePreviousDataOnError - Keep previous data when error occurs
  * @param opts.usePlaceholderOnError - Use placeholder data when error occurs
  * @returns QueryState object with data, error, status, and computed flags
- * 
+ *
  * Returns an object containing:
  * - data: The current data value
  * - error: Any error that occurred during fetching
@@ -27,7 +35,7 @@ import { QueryKey, Fetcher, InferFetcherResult, QueryOptions, QueryState, subscr
  * - isError: Whether the query is in an error state
  * - isSuccess: Whether the query completed successfully
  * - refetch: Function to manually trigger a refetch
- * 
+ *
  * Features smart subscription optimization: automatically detects which properties are accessed
  * during render and only triggers re-renders when those specific properties change, not the entire state.
  * This prevents unnecessary re-renders when unrelated properties change, improving performance.
@@ -51,49 +59,55 @@ export function useQuerySelect<T = any>(
   key: QueryKey,
   opts?: QueryOptions<T>
 ): QueryState<T> {
-
   const serializedKey = serializeKey(key);
   const lastStateRef = useRef<QueryState<T>>();
   const accessedPropertiesRef = useRef<Set<string>>(new Set());
 
   // Create a smart subscription that only triggers when accessed properties change
-  const subscribe = useCallback((callback: () => void) => {
-    return subscribeQuery(key, (newState: QueryState<T>) => {
-      const lastState = lastStateRef.current;
-      const accessedProps = accessedPropertiesRef.current;
+  const subscribe = useCallback(
+    (callback: () => void) => {
+      return queryManager.subscribeQuery(
+        key,
+        (newState: QueryState<T>) => {
+          const lastState = lastStateRef.current;
+          const accessedProps = accessedPropertiesRef.current;
 
-      // If no properties have been accessed yet, subscribe to everything
-      if (accessedProps.size === 0) {
-        lastStateRef.current = newState;
-        callback();
-        return;
-      }
+          // If no properties have been accessed yet, subscribe to everything
+          if (accessedProps.size === 0) {
+            lastStateRef.current = newState;
+            callback();
+            return;
+          }
 
-      // Check if any accessed properties have changed
-      let hasChanged = false;
-      for (const prop of accessedProps) {
-        if (lastState?.[prop as keyof QueryState<T>] !== newState[prop as keyof QueryState<T>]) {
-          hasChanged = true;
-          break;
-        }
-      }
+          // Check if any accessed properties have changed
+          let hasChanged = false;
+          for (const prop of accessedProps) {
+            if (
+              lastState?.[prop as keyof QueryState<T>] !==
+              newState[prop as keyof QueryState<T>]
+            ) {
+              hasChanged = true;
+              break;
+            }
+          }
 
-      if (hasChanged) {
-        lastStateRef.current = newState;
-        callback();
-      }
-    }, opts);
-  }, [serializedKey]);
+          if (hasChanged) {
+            lastStateRef.current = newState;
+            callback();
+          }
+        },
+        opts
+      );
+    },
+    [serializedKey]
+  );
 
   // Memoize the getSnapshot function
   const getSnapshot = useCallback((): QueryState<T> => {
-    return getQueryState<T>(key, opts);
+    return queryManager.getQueryState<T>(key, opts);
   }, [serializedKey]);
 
-  const state = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-  );
+  const state = useSyncExternalStore(subscribe, getSnapshot);
 
   // Create a proxy that tracks property access during render
   const smartState = useMemo(() => {
@@ -102,7 +116,7 @@ export function useQuerySelect<T = any>(
         // Track which properties are accessed during render
         accessedPropertiesRef.current.add(prop);
         return target[prop];
-      }
+      },
     });
   }, [state]);
 

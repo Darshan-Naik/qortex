@@ -1,9 +1,12 @@
-import {
-    registerFetcher,
-    fetchQuery,
-    getQueryState,
-    setDefaultConfig
-} from '../src/queryManager';
+import { queryManager } from '../src/queryManager';
+
+// Destructuring works because all public methods are arrow functions
+const {
+  registerFetcher,
+  fetchQuery,
+  getQueryState,
+  setDefaultConfig,
+} = queryManager;
 
 describe('setDefaultConfig', () => {
     beforeEach(() => {

@@ -1,5 +1,15 @@
-import { registerFetcher, fetchQuery, getQueryData, setQueryData, getQueryState, dangerClearCache } from '../src/queryManager';
+import { queryManager } from '../src/queryManager';
 import { equal, getEqualityFunction } from '../src/queryManager/utils';
+
+// Destructuring works because all public methods are arrow functions
+const {
+  registerFetcher,
+  fetchQuery,
+  getQueryData,
+  setQueryData,
+  getQueryState,
+  dangerClearCache,
+} = queryManager;
 
 describe('EqualityStrategy', () => {
     beforeEach(() => {
