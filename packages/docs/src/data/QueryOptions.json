@@ -13,7 +13,7 @@
     "status": "stable",
     "signature": {
         "language": "typescript",
-        "code": "interface QueryOptions<TData, TError = Error> {\n  fetcher?: () => Promise<TData>;\n  staleTime?: number;\n  refetchOnSubscribe?: 'always' | 'stale' | false;\n}"
+        "code": "interface QueryOptions<TData, TError = Error> {\n  fetcher?: () => Promise<TData>;\n  staleTime?: number;\n  refetchOnSubscribe?: 'always' | 'stale' | false;\n  persist?: boolean;\n}"
     },
     "parameters": {
         "columns": [
@@ -44,6 +44,13 @@
                 "required": false,
                 "default": "'stale'",
                 "description": "When to refetch data when component subscribes."
+            },
+            {
+                "name": "persist",
+                "type": "boolean",
+                "required": false,
+                "default": "true",
+                "description": "Whether to persist this query's data when using a persister. Set to false for sensitive or temporary data."
             }
         ]
     },

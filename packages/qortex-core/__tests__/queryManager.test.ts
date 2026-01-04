@@ -97,6 +97,113 @@ describe("QueryManager Core Tests", () => {
       expect(state.status).toBe("success");
     });
 
+    test("should handle setQueryData with updater function", () => {
+      const key = ["updater-test"];
+      const initialData = { id: 1, name: "initial", count: 0 };
+
+      // Set initial data
+      setQueryData(key, initialData);
+
+      // Use updater function to modify data
+      setQueryData(key, (prev) => ({
+        ...prev!,
+        name: "updated",
+        count: prev!.count + 1,
+      }));
+
+      // Verify the data was updated correctly
+      const data = getQueryData(key, { enabled: false });
+      expect(data).toEqual({ id: 1, name: "updated", count: 1 });
+    });
+
+    test("should handle setQueryData updater when no previous data exists", () => {
+      const key = ["updater-no-prev"];
+
+      // Use updater function when no previous data
+      setQueryData(key, (prev) => prev ?? { id: 1, name: "default" });
+
+      // Verify the data was set correctly
+      const data = getQueryData(key, { enabled: false });
+      expect(data).toEqual({ id: 1, name: "default" });
+    });
+
+    test("should handle setQueryData updater for incrementing counter", () => {
+      const key = ["counter"];
+
+      // Set initial counter
+      setQueryData(key, 0);
+
+      // Increment counter multiple times
+      setQueryData(key, (prev: number | undefined) => (prev ?? 0) + 1);
+      setQueryData(key, (prev: number | undefined) => (prev ?? 0) + 1);
+      setQueryData(key, (prev: number | undefined) => (prev ?? 0) + 1);
+
+      // Verify the counter was incremented correctly
+      const data = getQueryData(key, { enabled: false });
+      expect(data).toBe(3);
+    });
+
+    test("should handle setQueryData updater for array operations", () => {
+      const key = ["todos"];
+
+      // Set initial todos
+      setQueryData(key, [{ id: 1, text: "First todo" }]);
+
+      // Add a new todo using updater
+      setQueryData(
+        key,
+        (prev: Array<{ id: number; text: string }> | undefined) => [
+          ...(prev ?? []),
+          { id: 2, text: "Second todo" },
+        ]
+      );
+
+      // Verify the array was updated correctly
+      const data = getQueryData(key, { enabled: false });
+      expect(data).toEqual([
+        { id: 1, text: "First todo" },
+        { id: 2, text: "Second todo" },
+      ]);
+    });
+
+    test("should handle setQueryData updater for toggle boolean", () => {
+      const key = ["isOpen"];
+
+      // Set initial state
+      setQueryData(key, false);
+
+      // Toggle using updater
+      setQueryData(key, (prev: boolean | undefined) => !prev);
+
+      // Verify toggled
+      expect(getQueryData(key, { enabled: false })).toBe(true);
+
+      // Toggle again
+      setQueryData(key, (prev: boolean | undefined) => !prev);
+
+      // Verify toggled back
+      expect(getQueryData(key, { enabled: false })).toBe(false);
+    });
+
+    test("should skip update when updater returns exact same reference", () => {
+      const key = ["skip-equal"];
+      const initialData = { id: 1, name: "test" };
+
+      // Set initial data
+      setQueryData(key, initialData);
+
+      // Get initial state
+      const initialState = getQueryState(key, { enabled: false });
+      const initialUpdatedAt = initialState.updatedAt;
+
+      // Use updater that returns the exact same reference
+      setQueryData(key, (prev) => prev!);
+
+      // updatedAt should be the same since we returned the same reference
+      const state = getQueryState(key, { enabled: false });
+      expect(state.updatedAt).toBe(initialUpdatedAt);
+    });
+
     test("should handle refetch function", async () => {
       const key = ["test-key"];
 

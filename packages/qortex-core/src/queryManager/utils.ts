@@ -86,6 +86,7 @@ export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<
     isSuccess: false,
     isError: false,
     lastReturnedState: undefined,
+    persist: opts?.persist !== false, // Default to true
   };
 }
 

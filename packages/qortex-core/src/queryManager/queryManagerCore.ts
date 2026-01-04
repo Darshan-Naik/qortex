@@ -6,6 +6,7 @@ import {
   QueryState,
   InferFetcherResult,
   DefaultConfig,
+  SetDataUpdater,
 } from "./types";
 import type { QueryStateInternal } from "./internal-types";
 import {
@@ -135,6 +136,7 @@ export class QueryManagerCore {
 
       Object.assign(state, mergedOpts);
       state.enabled = mergedOpts.enabled === false ? false : true;
+      state.persist = mergedOpts.persist !== false; // Preserve persist flag
       state.fromPersisterCache = false;
       this.cache.set(serializedKey, state);
     } else {
@@ -145,7 +147,7 @@ export class QueryManagerCore {
       this.cache.set(serializedKey, newState);
     }
 
-    // Sync to persister
+    // Sync to persister (persister handles filtering non-persistable queries)
     this.persister?.sync(this.cache);
 
     return this.cache.get(serializedKey)!;
@@ -158,7 +160,7 @@ export class QueryManagerCore {
     const stateKey = serializeKey(key);
     this.cache.set(stateKey, state);
 
-    // Sync to persister - persister handles all serialization internally
+    // Sync to persister (persister handles filtering non-persistable queries)
     this.persister?.sync(this.cache);
 
     const set = this.subs.get(stateKey);
@@ -289,7 +291,7 @@ export class QueryManagerCore {
    * Manually sets query data without triggering a fetch operation
    *
    * @param key - Unique identifier for the query
-   * @param data - Data to set for the query
+   * @param dataOrUpdater - Data to set, or an updater function that receives previous data
    *
    * Marks the query as successful and updates the cache.
    * Useful for optimistic updates or setting initial data.
@@ -298,19 +300,35 @@ export class QueryManagerCore {
    *
    * @example
    * ```typescript
-   * // Optimistic update
-   * queryManager.setQueryData('user', { ...currentUser, name: 'New Name' });
+   * // Direct update
+   * setQueryData('user', { id: 1, name: 'John' });
+   *
+   * // Functional update - access previous data
+   * setQueryData('user', (prev) => ({ ...prev, name: 'Jane' }));
+   *
+   * // Increment counter example
+   * setQueryData('counter', (prev) => (prev ?? 0) + 1);
    * ```
    */
-  setQueryData = <T = any>(key: QueryKey, data: T): void => {
+  setQueryData = <T = any>(
+    key: QueryKey,
+    dataOrUpdater: T | SetDataUpdater<T>
+  ): void => {
     const state = this.ensureState(key);
-    const old = state.data;
+    const old = state.data as T | undefined;
+
+    // Resolve the new data - either direct value or from updater function
+    const newData =
+      typeof dataOrUpdater === "function"
+        ? (dataOrUpdater as SetDataUpdater<T>)(old)
+        : dataOrUpdater;
+
     const equalityFn = getEqualityFunction(
       state.equalityStrategy,
       state.equalityFn
     );
-    if (equalityFn(old, data)) return;
-    state.data = data;
+    if (equalityFn(old, newData)) return;
+    state.data = newData;
     state.updatedAt = Date.now();
     state.error = undefined;
     state.status = "success";

@@ -27,4 +27,5 @@ export type QueryStateInternal<T = any, E = unknown> = {
   isError: boolean;
   lastReturnedState?: QueryState<T>;
   fromPersisterCache?: boolean; // Flag to indicate state was loaded from persistence
+  persist: boolean; // Whether to persist this query's data (default: true)
 };

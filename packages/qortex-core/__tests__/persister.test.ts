@@ -290,6 +290,151 @@ describe('Persister Integration', () => {
         });
     });
 
+    describe('Per-Query Persist Flag', () => {
+        it('should not persist queries with persist: false', async () => {
+            const store: Record<string, string> = {};
+            const mockStorage = {
+                getItem: jest.fn((key: string) => store[key] || null),
+                setItem: jest.fn((key: string, value: string) => { store[key] = value; }),
+                removeItem: jest.fn((key: string) => { delete store[key]; }),
+                clear: jest.fn(() => { Object.keys(store).forEach(key => delete store[key]); }),
+                length: 0,
+                key: () => null
+            } as Storage;
+
+            const persister = new BasePersister(mockStorage, {
+                burstKey: 'v1.0.0',
+                prefix: 'persist-flag-test'
+            });
+
+            const queryManager = new QueryManagerCore();
+            queryManager.setDefaultConfig({ persister });
+
+            // Register a query that should be persisted (default)
+            queryManager.registerFetcher('persist-query', {
+                fetcher: async () => ({ id: 1, name: 'Persisted' })
+            });
+
+            // Register a query that should NOT be persisted
+            queryManager.registerFetcher('no-persist-query', {
+                fetcher: async () => ({ id: 2, name: 'NotPersisted' }),
+                persist: false
+            });
+
+            // Fetch both queries
+            await queryManager.fetchQuery('persist-query');
+            await queryManager.fetchQuery('no-persist-query');
+
+            // Wait for debounced sync
+            await new Promise(resolve => setTimeout(resolve, 150));
+
+            // Check what was persisted
+            const storedData = store['persist-flag-test'];
+            expect(storedData).toBeTruthy();
+
+            const parsedData = JSON.parse(storedData);
+
+            // persist-query should be in storage
+            expect(parsedData.queries['persist-query']).toBeDefined();
+            expect(parsedData.queries['persist-query'].data).toEqual({ id: 1, name: 'Persisted' });
+
+            // no-persist-query should NOT be in storage
+            expect(parsedData.queries['no-persist-query']).toBeUndefined();
+        });
+
+        it('should skip specific queries from persistence while persisting others', async () => {
+            const store: Record<string, string> = {};
+            const mockStorage = {
+                getItem: jest.fn((key: string) => store[key] || null),
+                setItem: jest.fn((key: string, value: string) => { store[key] = value; }),
+                removeItem: jest.fn((key: string) => { delete store[key]; }),
+                clear: jest.fn(() => { Object.keys(store).forEach(key => delete store[key]); }),
+                length: 0,
+                key: () => null
+            } as Storage;
+
+            const persister = new BasePersister(mockStorage, {
+                burstKey: 'v1.0.0',
+                prefix: 'selective-persist'
+            });
+
+            const queryManager = new QueryManagerCore();
+            queryManager.setDefaultConfig({ persister });
+
+            // Persisted queries
+            queryManager.registerFetcher('user-profile', {
+                fetcher: async () => ({ id: 1, name: 'John' })
+            });
+            queryManager.registerFetcher('settings', {
+                fetcher: async () => ({ theme: 'dark' })
+            });
+
+            // Non-persisted queries (sensitive or temporary data)
+            queryManager.registerFetcher('auth-token', {
+                fetcher: async () => ({ token: 'secret123' }),
+                persist: false
+            });
+            queryManager.registerFetcher('temp-data', {
+                fetcher: async () => ({ temp: true }),
+                persist: false
+            });
+
+            // Fetch all queries
+            await Promise.all([
+                queryManager.fetchQuery('user-profile'),
+                queryManager.fetchQuery('settings'),
+                queryManager.fetchQuery('auth-token'),
+                queryManager.fetchQuery('temp-data')
+            ]);
+
+            // Wait for debounced sync
+            await new Promise(resolve => setTimeout(resolve, 150));
+
+            const parsedData = JSON.parse(store['selective-persist']);
+
+            // Persisted queries should be stored
+            expect(Object.keys(parsedData.queries)).toHaveLength(2);
+            expect(parsedData.queries['user-profile']).toBeDefined();
+            expect(parsedData.queries['settings']).toBeDefined();
+
+            // Non-persisted queries should not be stored
+            expect(parsedData.queries['auth-token']).toBeUndefined();
+            expect(parsedData.queries['temp-data']).toBeUndefined();
+        });
+
+        it('should default persist to true when not specified', async () => {
+            const store: Record<string, string> = {};
+            const mockStorage = {
+                getItem: jest.fn((key: string) => store[key] || null),
+                setItem: jest.fn((key: string, value: string) => { store[key] = value; }),
+                removeItem: jest.fn((key: string) => { delete store[key]; }),
+                clear: jest.fn(() => { Object.keys(store).forEach(key => delete store[key]); }),
+                length: 0,
+                key: () => null
+            } as Storage;
+
+            const persister = new BasePersister(mockStorage, {
+                burstKey: 'v1.0.0',
+                prefix: 'default-persist'
+            });
+
+            const queryManager = new QueryManagerCore();
+            queryManager.setDefaultConfig({ persister });
+
+            // Register without persist option (should default to true)
+            queryManager.registerFetcher('default-query', {
+                fetcher: async () => ({ data: 'test' })
+            });
+
+            await queryManager.fetchQuery('default-query');
+            await new Promise(resolve => setTimeout(resolve, 150));
+
+            const parsedData = JSON.parse(store['default-persist']);
+            expect(parsedData.queries['default-query']).toBeDefined();
+            expect(parsedData.queries['default-query'].data).toEqual({ data: 'test' });
+        });
+    });
+
     describe('Config Value Handling', () => {
         it('should load data from persistence but use current default config', async () => {
             const store: Record<string, string> = {};

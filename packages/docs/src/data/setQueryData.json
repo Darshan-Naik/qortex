@@ -2,18 +2,19 @@
     "id": "setQueryData",
     "title": "setQueryData",
     "subtitle": "Manually set query data",
-    "description": "Manually set or update the cached data for a query. Useful for optimistic updates, cache invalidation, and programmatic data management.",
+    "description": "Manually set or update the cached data for a query. Supports both direct values and updater functions for accessing previous data. Useful for optimistic updates, cache invalidation, and programmatic data management.",
     "category": "Core APIs",
     "tags": [
         "core",
         "cache",
         "data",
-        "optimistic-updates"
+        "optimistic-updates",
+        "functional-updates"
     ],
     "status": "stable",
     "signature": {
         "language": "typescript",
-        "code": "function setQueryData<TData>(\n  queryKey: QueryKey,\n  data: TData\n): void"
+        "code": "function setQueryData<TData>(\n  queryKey: QueryKey,\n  dataOrUpdater: TData | ((prev: TData | undefined) => TData)\n): void"
     },
     "parameters": {
         "columns": [
@@ -29,14 +30,14 @@
                 "type": "QueryKey",
                 "required": true,
                 "default": "-",
-                "description": "Unique identifier for the query. Can be a string, array, or object."
+                "description": "Unique identifier for the query. Can be a string or array of strings/numbers."
             },
             {
-                "name": "data",
-                "type": "TData",
+                "name": "dataOrUpdater",
+                "type": "TData | SetDataUpdater<TData>",
                 "required": true,
                 "default": "-",
-                "description": "New data to set for the query."
+                "description": "New data to set directly, or an updater function that receives the previous data and returns the new data."
             }
         ]
     },
@@ -46,16 +47,28 @@
     },
     "examples": [
         {
-            "title": "Basic Usage",
-            "description": "Set query data directly",
+            "title": "Direct Update",
+            "description": "Set query data directly with a value",
             "language": "tsx",
             "code": "import { setQueryData } from 'qortex-react';\n\nfunction handleUserUpdate() {\n  // Set user data directly\n  setQueryData(['user', 'current'], {\n    id: '123',\n    name: 'John Doe',\n    email: 'john@example.com'\n  });\n  \n  // All components using this query will re-render with new data\n  console.log('User data updated');\n}"
+        },
+        {
+            "title": "Functional Update",
+            "description": "Use an updater function to access previous data",
+            "language": "tsx",
+            "code": "import { setQueryData } from 'qortex-react';\n\n// Update user name while preserving other fields\nsetQueryData('user', (prev) => ({\n  ...prev,\n  name: 'Jane Doe'\n}));\n\n// Increment a counter\nsetQueryData('counter', (prev) => (prev ?? 0) + 1);\n\n// Toggle a boolean\nsetQueryData('isOpen', (prev) => !prev);\n\n// Add item to array\nsetQueryData('todos', (prev) => [\n  ...(prev ?? []),\n  { id: Date.now(), text: 'New todo' }\n]);"
         },
         {
             "title": "Optimistic Updates",
             "description": "Update data optimistically before server response",
             "language": "tsx",
-            "code": "import { setQueryData, getQueryData } from 'qortex-react';\n\nfunction handleLikePost(postId: string) {\n  // Get current post data\n  const currentPost = getQueryData(['post', postId]);\n  \n  if (currentPost) {\n    // Optimistically update the post data\n    setQueryData(['post', postId], {\n      ...currentPost,\n      likes: currentPost.likes + 1,\n      liked: true\n    });\n  }\n  \n  // Send the actual like request\n  fetch(`/api/posts/${postId}/like`, { method: 'POST' })\n    .then(() => {\n      // Server confirmed, data is already updated\n      console.log('Like successful');\n    })\n    .catch(() => {\n      // Revert the optimistic update on error\n      if (currentPost) {\n        setQueryData(['post', postId], {\n          ...currentPost,\n          likes: currentPost.likes - 1,\n          liked: false\n        });\n      }\n    });\n}"
+            "code": "import { setQueryData, getQueryData } from 'qortex-react';\n\nasync function handleLikePost(postId: string) {\n  // Get current post data for rollback\n  const currentPost = getQueryData(['post', postId]);\n  \n  // Optimistically update using functional update\n  setQueryData(['post', postId], (prev) => ({\n    ...prev,\n    likes: (prev?.likes ?? 0) + 1,\n    liked: true\n  }));\n  \n  try {\n    await fetch(`/api/posts/${postId}/like`, { method: 'POST' });\n    console.log('Like successful');\n  } catch {\n    // Revert the optimistic update on error\n    if (currentPost) {\n      setQueryData(['post', postId], currentPost);\n    }\n  }\n}"
+        },
+        {
+            "title": "Array Operations",
+            "description": "Add, remove, or update items in array data",
+            "language": "tsx",
+            "code": "import { setQueryData } from 'qortex-react';\n\n// Add a new item\nsetQueryData('todos', (prev) => [\n  ...(prev ?? []),\n  { id: Date.now(), text: 'New todo', completed: false }\n]);\n\n// Remove an item by id\nsetQueryData('todos', (prev) =>\n  (prev ?? []).filter((todo) => todo.id !== targetId)\n);\n\n// Update an item\nsetQueryData('todos', (prev) =>\n  (prev ?? []).map((todo) =>\n    todo.id === targetId ? { ...todo, completed: true } : todo\n  )\n);"
         },
         {
             "title": "Cache Invalidation",
@@ -71,47 +84,58 @@
             "icon": "zap"
         },
         {
+            "title": "Functional Updates",
+            "description": "Pass a function to access previous data: (prev) => newData",
+            "icon": "refresh-cw"
+        },
+        {
             "title": "Optimistic Updates",
             "description": "Perfect for optimistic UI updates before server confirmation",
             "icon": "activity"
         },
         {
-            "title": "Cache Management",
-            "description": "Allows manual cache manipulation and invalidation",
-            "icon": "database"
-        },
-        {
-            "title": "Function Updates",
-            "description": "Supports functional updates for complex state changes",
-            "icon": "refresh-cw"
+            "title": "Equality Check",
+            "description": "Skips update if new data equals previous (configurable via equalityStrategy)",
+            "icon": "equals"
         }
     ],
     "bestPractices": {
         "dos": [
+            "Use functional updates when you need access to previous data",
             "Use for optimistic updates in user interactions",
-            "Use functional updates for complex state changes",
+            "Handle null/undefined in updater functions: (prev ?? defaultValue)",
             "Handle error cases by reverting optimistic updates",
             "Use for cache invalidation and cleanup"
         ],
         "donts": [
             "Don't use for initial data loading (use fetchQuery instead)",
             "Don't forget to handle error cases in optimistic updates",
-            "Don't mutate the data object directly",
+            "Don't mutate the previous data object directly in updater",
             "Don't use without understanding the impact on components"
         ]
     },
     "callouts": [
         {
             "type": "info",
-            "title": "Optimistic Updates",
-            "content": "setQueryData is perfect for optimistic updates. Update the UI immediately, then revert if the server request fails.",
-            "icon": "zap"
+            "title": "Functional Updates",
+            "content": "Use the updater function pattern when you need to base the new state on the previous value. This is safer than reading and then writing, as it avoids race conditions.",
+            "icon": "code"
+        },
+        {
+            "type": "tip",
+            "title": "Handle Undefined",
+            "content": "The previous value in updater functions can be undefined. Always handle this case: (prev) => (prev ?? defaultValue) + 1",
+            "icon": "alert-circle"
         }
     ],
     "badges": [
         {
             "text": "Core API",
             "variant": "info"
+        },
+        {
+            "text": "Functional Updates",
+            "variant": "success"
         },
         {
             "text": "Optimistic Updates",

@@ -1,6 +1,6 @@
 {
   "name": "qortex-core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Framework-agnostic query cache & fetch registry (MFE friendly).",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

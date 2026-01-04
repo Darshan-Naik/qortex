@@ -51,11 +51,18 @@ export const fetchQuery = queryManager.fetchQuery;
  * Useful for optimistic updates or setting initial data.
  *
  * @param key - Unique identifier for the query
- * @param data - Data to set for the query
+ * @param dataOrUpdater - Data to set, or an updater function that receives previous data
  *
  * @example
  * ```typescript
- * setQueryData('user', { ...currentUser, name: 'New Name' });
+ * // Direct update
+ * setQueryData('user', { id: 1, name: 'John' });
+ *
+ * // Functional update - access previous data
+ * setQueryData('user', (prev) => ({ ...prev, name: 'Jane' }));
+ *
+ * // Increment counter example
+ * setQueryData('counter', (prev) => (prev ?? 0) + 1);
  * ```
  */
 export const setQueryData = queryManager.setQueryData;

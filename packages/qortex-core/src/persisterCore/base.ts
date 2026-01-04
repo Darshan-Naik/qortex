@@ -15,7 +15,7 @@ export class BasePersister {
   protected readonly storage: Storage;
   private syncTimeout: ReturnType<typeof setTimeout> | null = null;
   private debounceTime = 100;
-  private burstKey = "0.3.1";
+  private burstKey = "0.3.2";
   private storageKey = "qortex";
 
   constructor(storage: Storage, config?: PersisterConfig) {
@@ -108,6 +108,7 @@ export class BasePersister {
   /**
    * Sync with debounced save (100ms delay)
    * Handles serialization internally
+   * Filters out queries with persist: false
    */
   sync(cache: Map<string, QueryStateInternal>): void {
     if (this.syncTimeout) {
@@ -115,10 +116,13 @@ export class BasePersister {
     }
 
     this.syncTimeout = setTimeout(() => {
-      // Serialize cache to serializable state
+      // Serialize cache to serializable state, filtering out non-persistable queries
       const serializableStates: Record<string, SerializedQueryState> = {};
 
       for (const [key, state] of cache.entries()) {
+        // Skip queries with persist: false
+        if (state.persist === false) continue;
+
         // Key is already serialized by the query manager, so we use it directly
         serializableStates[key] = toSerializableState(state);
       }
