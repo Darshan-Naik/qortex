@@ -1,0 +1,206 @@
+{
+    "id": "useMutate",
+    "title": "useMutate",
+    "subtitle": "React hook for handling mutations with automatic state management",
+    "description": "A powerful hook for handling asynchronous mutations (create, update, delete operations) with built-in loading, error, and success states. Features automatic type inference, query invalidation, and lifecycle callbacks.",
+    "category": "React Hooks",
+    "tags": [
+        "react",
+        "hook",
+        "mutation",
+        "state-management",
+        "async"
+    ],
+    "status": "stable",
+    "signature": {
+        "language": "typescript",
+        "code": "function useMutate<Fn extends MutationFn, Err = Error>(\n  mutationFn: Fn,\n  options?: UseMutateOptions\n): UseMutateResult"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "mutationFn",
+                "type": "(...args) => Promise<Data>",
+                "required": true,
+                "default": "-",
+                "description": "The async function that performs the mutation. Types are automatically inferred from this function."
+            },
+            {
+                "name": "options",
+                "type": "UseMutateOptions",
+                "required": false,
+                "default": "{}",
+                "description": "Optional configuration object for callbacks and query invalidation."
+            },
+            {
+                "name": "options.onSuccess",
+                "type": "(data, args) => void",
+                "required": false,
+                "default": "-",
+                "description": "Callback fired when the mutation succeeds. Receives the returned data and the arguments passed to mutate."
+            },
+            {
+                "name": "options.onError",
+                "type": "(error, args) => void",
+                "required": false,
+                "default": "-",
+                "description": "Callback fired when the mutation fails. Receives the error and the arguments passed to mutate."
+            },
+            {
+                "name": "options.onSettled",
+                "type": "(data, error, args) => void",
+                "required": false,
+                "default": "-",
+                "description": "Callback fired when the mutation completes (success or error). Receives data (or undefined), error (or undefined), and args."
+            },
+            {
+                "name": "options.queryKey",
+                "type": "QueryKey",
+                "required": false,
+                "default": "-",
+                "description": "Query key to invalidate after mutation completes. Useful for refetching related data."
+            }
+        ]
+    },
+    "returns": {
+        "type": "UseMutateResult<Data, Err, Args>",
+        "description": "Object containing mutation state and trigger functions",
+        "properties": [
+            {
+                "name": "mutate",
+                "type": "(...args) => void",
+                "description": "Function to trigger the mutation. Errors are caught and stored in state."
+            },
+            {
+                "name": "mutateAsync",
+                "type": "(...args) => Promise<Data>",
+                "description": "Function to trigger the mutation and return a promise. Throws on error."
+            },
+            {
+                "name": "isPending",
+                "type": "boolean",
+                "description": "True while the mutation is in progress."
+            },
+            {
+                "name": "data",
+                "type": "Data | undefined",
+                "description": "The data returned from the last successful mutation."
+            },
+            {
+                "name": "error",
+                "type": "Err | undefined",
+                "description": "The error from the last failed mutation, undefined otherwise."
+            },
+            {
+                "name": "reset",
+                "type": "() => void",
+                "description": "Resets the mutation state (isPending, data, error) to initial values."
+            }
+        ]
+    },
+    "examples": [
+        {
+            "title": "Simple Mutation",
+            "description": "Basic usage with just a mutation function",
+            "language": "tsx",
+            "code": "import { useMutate } from 'qortex-react';\n\nfunction CreateTodo() {\n  const { mutate, isPending } = useMutate(\n    async (title: string) => {\n      const res = await fetch('/api/todos', {\n        method: 'POST',\n        body: JSON.stringify({ title }),\n      });\n      return res.json();\n    }\n  );\n\n  return (\n    <button \n      onClick={() => mutate('New Todo')}\n      disabled={isPending}\n    >\n      {isPending ? 'Creating...' : 'Create Todo'}\n    </button>\n  );\n}"
+        },
+        {
+            "title": "With Callbacks & Query Invalidation",
+            "description": "Using callbacks and automatic query invalidation",
+            "language": "tsx",
+            "code": "import { useMutate } from 'qortex-react';\nimport { toast } from 'sonner';\n\nfunction DeleteTodo({ todoId }: { todoId: string }) {\n  const { mutate, isPending } = useMutate(\n    async (id: string) => {\n      await fetch(`/api/todos/${id}`, { method: 'DELETE' });\n    },\n    {\n      onSuccess: () => toast.success('Todo deleted!'),\n      onError: (error) => toast.error(error.message),\n      queryKey: ['todos'], // Refetch todos list after deletion\n    }\n  );\n\n  return (\n    <button \n      onClick={() => mutate(todoId)}\n      disabled={isPending}\n    >\n      {isPending ? 'Deleting...' : 'Delete'}\n    </button>\n  );\n}"
+        },
+        {
+            "title": "Multiple Arguments",
+            "description": "Mutation function with multiple arguments - all types are inferred",
+            "language": "tsx",
+            "code": "import { useMutate } from 'qortex-react';\n\nfunction UpdateTodo({ todoId }: { todoId: string }) {\n  const { mutate, isPending, error } = useMutate(\n    async (id: string, title: string, completed: boolean) => {\n      const res = await fetch(`/api/todos/${id}`, {\n        method: 'PATCH',\n        body: JSON.stringify({ title, completed }),\n      });\n      return res.json();\n    },\n    {\n      onSuccess: (data, [id, title]) => {\n        console.log(`Updated todo ${id}: ${title}`);\n      },\n    }\n  );\n\n  return (\n    <div>\n      <button onClick={() => mutate(todoId, 'Updated', true)}>\n        Mark Complete\n      </button>\n      {error && <p>Error: {error.message}</p>}\n    </div>\n  );\n}"
+        },
+        {
+            "title": "Using mutateAsync",
+            "description": "Using the promise-based mutateAsync for sequential operations",
+            "language": "tsx",
+            "code": "import { useMutate } from 'qortex-react';\n\nfunction CreateAndNavigate() {\n  const { mutateAsync, isPending } = useMutate(\n    async (data: { title: string }) => {\n      const res = await fetch('/api/todos', {\n        method: 'POST',\n        body: JSON.stringify(data),\n      });\n      return res.json() as Promise<{ id: string }>;\n    }\n  );\n\n  const handleCreate = async () => {\n    try {\n      const newTodo = await mutateAsync({ title: 'New Todo' });\n      // Navigate to the new todo\n      window.location.href = `/todos/${newTodo.id}`;\n    } catch (error) {\n      // Error is also stored in state\n      console.error('Failed to create:', error);\n    }\n  };\n\n  return (\n    <button onClick={handleCreate} disabled={isPending}>\n      Create & View\n    </button>\n  );\n}"
+        },
+        {
+            "title": "Form Submission",
+            "description": "Complete form example with reset functionality",
+            "language": "tsx",
+            "code": "import { useMutate } from 'qortex-react';\nimport { useState } from 'react';\n\ninterface FormData {\n  name: string;\n  email: string;\n}\n\nfunction ContactForm() {\n  const [form, setForm] = useState<FormData>({ name: '', email: '' });\n  \n  const { mutate, isPending, error, data, reset } = useMutate(\n    async (formData: FormData) => {\n      const res = await fetch('/api/contact', {\n        method: 'POST',\n        body: JSON.stringify(formData),\n      });\n      if (!res.ok) throw new Error('Failed to submit');\n      return res.json();\n    },\n    {\n      onSuccess: () => {\n        setForm({ name: '', email: '' }); // Clear form\n      },\n    }\n  );\n\n  if (data) {\n    return (\n      <div>\n        <p>Thanks for your message!</p>\n        <button onClick={reset}>Send Another</button>\n      </div>\n    );\n  }\n\n  return (\n    <form onSubmit={(e) => { e.preventDefault(); mutate(form); }}>\n      <input\n        value={form.name}\n        onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}\n        placeholder=\"Name\"\n      />\n      <input\n        value={form.email}\n        onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}\n        placeholder=\"Email\"\n      />\n      {error && <p className=\"error\">{error.message}</p>}\n      <button type=\"submit\" disabled={isPending}>\n        {isPending ? 'Sending...' : 'Send'}\n      </button>\n    </form>\n  );\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Automatic Type Inference",
+            "description": "Data and argument types are automatically inferred from the mutation function",
+            "icon": "code"
+        },
+        {
+            "title": "Query Invalidation",
+            "description": "Optionally invalidate and refetch queries after mutation completes",
+            "icon": "refresh-cw"
+        },
+        {
+            "title": "Lifecycle Callbacks",
+            "description": "onSuccess, onError, and onSettled callbacks for handling mutation results",
+            "icon": "git-branch"
+        },
+        {
+            "title": "State Management",
+            "description": "Built-in isPending, data, and error state with reset functionality",
+            "icon": "database"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use mutate() for fire-and-forget mutations, mutateAsync() when you need the result",
+            "Invalidate related queries using the queryKey option to keep data in sync",
+            "Handle errors in callbacks or by checking the error state",
+            "Use reset() to clear state before showing a form again",
+            "Leverage TypeScript - types are automatically inferred from mutationFn"
+        ],
+        "donts": [
+            "Don't forget to handle loading states in your UI",
+            "Don't use useMutate for data fetching (use useQuery instead)",
+            "Don't ignore errors - always provide user feedback",
+            "Don't create new mutation functions on every render (define outside component or use useCallback)"
+        ]
+    },
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Type Inference",
+            "content": "useMutate automatically infers Data and Args types from your mutation function. No need to specify generics in most cases!",
+            "icon": "zap"
+        },
+        {
+            "type": "tip",
+            "title": "Query Invalidation",
+            "content": "Use the queryKey option to automatically refetch related queries after mutation. This keeps your UI in sync without manual refetching.",
+            "icon": "refresh-cw"
+        }
+    ],
+    "badges": [
+        {
+            "text": "React Hook",
+            "variant": "info"
+        },
+        {
+            "text": "TypeScript",
+            "variant": "success"
+        }
+    ],
+    "relatedPages": [
+        "useQuery",
+        "invalidateQuery",
+        "QueryKey"
+    ]
+}

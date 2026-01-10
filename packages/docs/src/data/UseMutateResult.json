@@ -1,0 +1,110 @@
+{
+    "id": "UseMutateResult",
+    "title": "UseMutateResult",
+    "subtitle": "Return type of the useMutate hook",
+    "description": "Type definition for the object returned by useMutate. Contains the mutation state (isPending, data, error) and functions to trigger the mutation (mutate, mutateAsync) or reset state.",
+    "category": "Types",
+    "tags": [
+        "typescript",
+        "type",
+        "mutation",
+        "result"
+    ],
+    "status": "stable",
+    "signature": {
+        "language": "typescript",
+        "code": "type UseMutateResult<Data, Err, Args extends any[]> = {\n  isPending: boolean;\n  error: Err | undefined;\n  data: Data | undefined;\n  mutate: (...args: Args) => void;\n  mutateAsync: (...args: Args) => Promise<Data>;\n  reset: () => void;\n}"
+    },
+    "parameters": {
+        "columns": [
+            "Property",
+            "Type",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "isPending",
+                "type": "boolean",
+                "description": "True while the mutation is in progress, false otherwise."
+            },
+            {
+                "name": "data",
+                "type": "Data | undefined",
+                "description": "The data returned from the last successful mutation. Undefined if no mutation has succeeded yet."
+            },
+            {
+                "name": "error",
+                "type": "Err | undefined",
+                "description": "The error from the last failed mutation. Undefined if the last mutation succeeded or no mutation has run."
+            },
+            {
+                "name": "mutate",
+                "type": "(...args: Args) => void",
+                "description": "Function to trigger the mutation. Errors are caught internally and stored in the error state."
+            },
+            {
+                "name": "mutateAsync",
+                "type": "(...args: Args) => Promise<Data>",
+                "description": "Function to trigger the mutation and return a promise. Throws on error, useful for sequential operations."
+            },
+            {
+                "name": "reset",
+                "type": "() => void",
+                "description": "Resets the mutation state to initial values (isPending: false, data: undefined, error: undefined)."
+            }
+        ]
+    },
+    "examples": [
+        {
+            "title": "Using State Properties",
+            "description": "Accessing mutation state for UI rendering",
+            "language": "tsx",
+            "code": "function CreateButton() {\n  const { mutate, isPending, error, data }: UseMutateResult<Todo, Error, [string]> = \n    useMutate(createTodo);\n\n  return (\n    <div>\n      <button onClick={() => mutate('New')} disabled={isPending}>\n        {isPending ? 'Creating...' : 'Create'}\n      </button>\n      {error && <p className=\"error\">{error.message}</p>}\n      {data && <p>Created: {data.id}</p>}\n    </div>\n  );\n}"
+        },
+        {
+            "title": "Using mutate vs mutateAsync",
+            "description": "Choosing between mutate and mutateAsync",
+            "language": "tsx",
+            "code": "function MutationExample() {\n  const { mutate, mutateAsync, reset } = useMutate(updateTodo);\n\n  // Fire and forget - errors stored in state\n  const handleClick = () => {\n    mutate('123', { completed: true });\n  };\n\n  // Await result - errors thrown\n  const handleSubmit = async () => {\n    try {\n      const result = await mutateAsync('123', { completed: true });\n      // Navigate or perform next action\n      router.push(`/todos/${result.id}`);\n    } catch (err) {\n      // Handle error\n    }\n  };\n\n  // Reset for showing form again\n  const handleReset = () => {\n    reset();\n  };\n}"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "mutate vs mutateAsync",
+            "description": "mutate catches errors internally, mutateAsync throws them",
+            "icon": "git-branch"
+        },
+        {
+            "title": "State Updates",
+            "description": "State updates trigger React re-renders automatically",
+            "icon": "refresh-cw"
+        },
+        {
+            "title": "Reset Behavior",
+            "description": "reset() clears all state without triggering a new mutation",
+            "icon": "rotate-ccw"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use isPending to disable buttons and show loading states",
+            "Use mutate() for simple mutations, mutateAsync() when you need the result",
+            "Use reset() before showing a form again after success",
+            "Check error state to show error messages to users"
+        ],
+        "donts": [
+            "Don't ignore isPending - always provide loading feedback",
+            "Don't use mutateAsync without try/catch if you don't want unhandled rejections"
+        ]
+    },
+    "badges": [
+        {
+            "text": "TypeScript",
+            "variant": "info"
+        }
+    ],
+    "relatedPages": [
+        "useMutate",
+        "UseMutateOptions"
+    ]
+}

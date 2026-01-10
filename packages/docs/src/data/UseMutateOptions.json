@@ -1,0 +1,100 @@
+{
+    "id": "UseMutateOptions",
+    "title": "UseMutateOptions",
+    "subtitle": "Configuration options for the useMutate hook",
+    "description": "Type definition for the optional configuration object passed as the second argument to useMutate. Contains callbacks for mutation lifecycle events and query invalidation settings.",
+    "category": "Types",
+    "tags": [
+        "typescript",
+        "type",
+        "mutation",
+        "options"
+    ],
+    "status": "stable",
+    "signature": {
+        "language": "typescript",
+        "code": "type UseMutateOptions<\n  Data = any,\n  Err = Error,\n  Args extends any[] = []\n> = {\n  onSuccess?: (data: Data, args: Args) => void;\n  onError?: (error: Err, args: Args) => void;\n  onSettled?: (data: Data | undefined, error: Err | undefined, args: Args) => void;\n  queryKey?: QueryKey;\n}"
+    },
+    "parameters": {
+        "columns": [
+            "Property",
+            "Type",
+            "Required",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "onSuccess",
+                "type": "(data: Data, args: Args) => void",
+                "required": false,
+                "description": "Callback fired when the mutation succeeds. Receives the returned data and the arguments that were passed to mutate."
+            },
+            {
+                "name": "onError",
+                "type": "(error: Err, args: Args) => void",
+                "required": false,
+                "description": "Callback fired when the mutation fails. Receives the error and the arguments that were passed to mutate."
+            },
+            {
+                "name": "onSettled",
+                "type": "(data, error, args) => void",
+                "required": false,
+                "description": "Callback fired when the mutation completes, regardless of success or failure. Receives data (or undefined), error (or undefined), and args."
+            },
+            {
+                "name": "queryKey",
+                "type": "QueryKey",
+                "required": false,
+                "description": "Query key to invalidate after the mutation completes. Triggers a refetch of the associated query."
+            }
+        ]
+    },
+    "examples": [
+        {
+            "title": "Basic Options",
+            "description": "Simple options with success callback",
+            "language": "typescript",
+            "code": "const options: UseMutateOptions<Todo, Error, [CreateTodoInput]> = {\n  onSuccess: (data) => {\n    console.log('Created todo:', data.id);\n  },\n};"
+        },
+        {
+            "title": "Full Options",
+            "description": "All options with query invalidation",
+            "language": "typescript",
+            "code": "const options: UseMutateOptions<Todo, Error, [string, UpdateInput]> = {\n  onSuccess: (data, [id, input]) => {\n    console.log(`Updated ${id}:`, data);\n  },\n  onError: (error, [id]) => {\n    console.error(`Failed to update ${id}:`, error.message);\n  },\n  onSettled: (data, error, [id]) => {\n    console.log(`Mutation for ${id} completed`);\n  },\n  queryKey: ['todos'], // Invalidate todos query\n};"
+        }
+    ],
+    "behavior": [
+        {
+            "title": "Type Parameters",
+            "description": "Generic types are usually inferred from the mutation function",
+            "icon": "code"
+        },
+        {
+            "title": "Callback Order",
+            "description": "onSuccess/onError fires first, then onSettled always fires",
+            "icon": "list"
+        }
+    ],
+    "bestPractices": {
+        "dos": [
+            "Use onSuccess for success-only side effects like notifications",
+            "Use onSettled for cleanup that should happen regardless of outcome",
+            "Use queryKey to keep related queries in sync after mutations"
+        ],
+        "donts": [
+            "Don't perform heavy operations in callbacks - they block the UI",
+            "Don't forget to handle errors if not using onError"
+        ]
+    },
+    "badges": [
+        {
+            "text": "TypeScript",
+            "variant": "info"
+        }
+    ],
+    "relatedPages": [
+        "useMutate",
+        "UseMutateResult",
+        "QueryKey"
+    ]
+}

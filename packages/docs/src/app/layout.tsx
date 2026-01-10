@@ -118,7 +118,7 @@ export default function RootLayout({
       "data fetching, react, typescript, cache, query, performance, qortex",
     programmingLanguage: ["TypeScript", "JavaScript"],
     runtimePlatform: "Node.js",
-    softwareVersion: "0.3.2",
+    softwareVersion: "0.3.3",
     license: "https://opensource.org/licenses/LGPL-3.0",
   };
 
