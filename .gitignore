@@ -2,6 +2,7 @@ node_modules/
 dist/
 .pnpm-store/
 .DS_Store
+.npmrc
 
 .pre-commit-config.yaml
 trufflehog/

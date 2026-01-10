@@ -118,6 +118,7 @@
         }
     ],
     "relatedPages": [
+        "useMutate",
         "fetchQuery",
         "setQueryData",
         "getQueryData",
