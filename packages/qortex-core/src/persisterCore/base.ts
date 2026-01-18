@@ -15,7 +15,7 @@ export class BasePersister {
   protected readonly storage: Storage;
   private syncTimeout: ReturnType<typeof setTimeout> | null = null;
   private debounceTime = 100;
-  private burstKey = "0.3.3";
+  private burstKey = "0.3.4";
   private storageKey = "qortex";
 
   constructor(storage: Storage, config?: PersisterConfig) {

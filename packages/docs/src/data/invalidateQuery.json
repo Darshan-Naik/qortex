@@ -29,7 +29,7 @@
                 "type": "QueryKey",
                 "required": true,
                 "default": "-",
-                "description": "Unique identifier for the query. Can be a string, array, or object."
+                "description": "Unique identifier for the query. Can be a string, array, or object. Or a partial key to invalidate all queries that start with the given key."
             }
         ]
     },

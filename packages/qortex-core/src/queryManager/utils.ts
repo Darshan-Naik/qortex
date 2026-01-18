@@ -6,10 +6,13 @@ import { DEFAULT_STALE_TIME } from "./constants";
 
 /**
  * Normalizes query keys to a consistent string format for internal storage
- * Arrays are joined with commas, primitives are converted to strings
+ * Arrays are joined with #, primitives are converted to strings
  */
 export function serializeKey(key: QueryKey): string {
-  return Array.isArray(key) ? key.join("-") : String(key);
+  if (Array.isArray(key)) {
+    return key.map(String).join("#");
+  }
+  return String(key);
 }
 
 export function equal<T = unknown>(a: T | undefined, b: T | undefined, strategy: EqualityStrategy = 'shallow'): boolean {
@@ -68,8 +71,9 @@ export function getEqualityFunction<T = any>(
   return ((a: T | undefined, b: T | undefined) => equal(a, b, strategy || 'shallow')) as EqualityFn<T>;
 }
 
-export function createDefaultState(opts?: QueryOptions, refetch?: () => Promise<any>) {
+export function createDefaultState(key:string, opts?: QueryOptions, refetch?: () => Promise<any>) {
   return {
+    key,
     status: "idle" as const,
     updatedAt: undefined,
     staleTime: opts?.staleTime ?? DEFAULT_STALE_TIME,

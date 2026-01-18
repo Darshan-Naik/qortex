@@ -4,7 +4,8 @@ import type { Persister } from "../persister";
  * Query key can be a string or readonly array of strings/numbers
  * Using readonly to prevent accidental mutations
  */
-export type QueryKey = string | readonly (string | number)[];
+type Key = string | number | boolean | null | undefined;
+export type QueryKey = Key | readonly Key[];
 
 /** Function that fetches data, must be async */
 export type Fetcher<T = any> = () => Promise<T>;

@@ -141,7 +141,7 @@ export class QueryManagerCore {
       this.cache.set(serializedKey, state);
     } else {
       const mergedOpts = { ...this.defaultConfig, ...opts };
-      const newState = createDefaultState(mergedOpts, () =>
+      const newState = createDefaultState(serializedKey, mergedOpts, () =>
         this.fetchQuery(key)
       );
       this.cache.set(serializedKey, newState);
@@ -421,9 +421,20 @@ export class QueryManagerCore {
   };
 
   /**
+   * Finds all states that match the given key
+   * @param key - Unique identifier for the query 
+   * @returns An array of matching states
+   */
+  private findMatchingStates(key: QueryKey ): QueryStateInternal[] {
+    const serializedKey = serializeKey(key);
+    // return all states that start with the serialized key with "#" segmentation
+    return [...this.cache.values()].filter((state) => state.key.startsWith(serializedKey + "#") || state.key === serializedKey);
+  }
+
+  /**
    * Invalidates a query, marking it as stale and triggering a refetch
    *
-   * @param key - Unique identifier for the query
+   * @param key - Unique identifier for the query or partial key
    *
    * Marks the query as invalidated and immediately triggers a refetch operation.
    * Useful for forcing data refresh after mutations or when you know data is outdated.
@@ -437,10 +448,12 @@ export class QueryManagerCore {
    * ```
    */
   invalidateQuery = (key: QueryKey): void => {
-    const state = this.ensureState(key);
-    state.isInvalidated = true;
-    this.emit(key, state);
-    this.fetchQuery(key);
+    const states = this.findMatchingStates(key);
+    for (const state of states) {
+      state.isInvalidated = true;
+      this.emit(state.key, state);
+      this.fetchQuery(state.key);
+    }
   };
 
   /**

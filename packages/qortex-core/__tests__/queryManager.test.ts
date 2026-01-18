@@ -7,7 +7,6 @@ import {
   getQueryState,
   invalidateQuery,
   subscribeQuery,
-  setDefaultConfig,
   dangerClearCache,
 } from "../src/queryManager";
 
@@ -1055,6 +1054,178 @@ describe("QueryManager Core Tests", () => {
       expect(result).toEqual(testData);
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe("Invalidation", () => {
+    test("should handle invalidateQuery", () => {
+      const key = ["test-key"];
+      const callback = jest.fn();
+
+      // Register fetcher
+      registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false,
+      });
+
+      // Subscribe
+      const unsubscribe = subscribeQuery(key, callback, { enabled: true });
+
+      // Invalidate query
+      invalidateQuery(key);
+
+      // Should trigger refetch
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+
+      // Cleanup
+      unsubscribe();
+    });
+
+    test("should handle invalidateQuery with multiple keys", () => {
+      const key1 = ["test-key1"];
+      const key2 = ["test-key2"];
+      const callback = jest.fn();
+
+      // Register fetcher
+      registerFetcher(key1, {
+        fetcher: mockFetcher,
+        enabled: false,
+      });
+
+      // Register fetcher
+      registerFetcher(key2, {
+        fetcher: mockFetcher,
+        enabled: false,
+      });
+
+      // Subscribe
+      const unsubscribe = subscribeQuery(key1, callback, { enabled: true });
+      const unsubscribe2 = subscribeQuery(key2, callback, { enabled: true });
+
+      // Invalidate query
+      invalidateQuery(key1);
+      invalidateQuery(key2);
+
+      // Should trigger refetch
+      expect(mockFetcher).toHaveBeenCalledTimes(2);
+
+      // Cleanup
+      unsubscribe();
+      unsubscribe2();
+    });
+    test("should handle invalidateQuery with nested keys", () => {
+      const key = ["test-key", "nested-key"];
+      const callback = jest.fn();
+
+      // Register fetcher
+      registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false,
+      });
+
+      // Subscribe
+      const unsubscribe = subscribeQuery(key, callback, { enabled: true });
+
+      // Invalidate query
+      invalidateQuery(["test-key"]);
+
+      // Should trigger refetch
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+
+      // Cleanup
+      unsubscribe();
+    });
+    test("should handle invalidateQuery with nested keys and multiple subscribers", () => {
+      const key = ["test-key", "nested-key"];
+      const callback = jest.fn();
+      const callback2 = jest.fn();
+
+      // Register fetcher
+      registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false,
+      });
+
+      // Subscribe
+      const unsubscribe = subscribeQuery(key, callback, { enabled: true });
+      const unsubscribe2 = subscribeQuery(key, callback2, { enabled: true });
+
+      // Invalidate query
+      invalidateQuery(["test-key"]);
+
+      // Should trigger refetch
+      expect(mockFetcher).toHaveBeenCalledTimes(1);
+
+      // Cleanup
+      unsubscribe();
+      unsubscribe2();
+    });
+    test("should not invalidate query if key is not found and no subscribers", () => {
+      const key = ["test-key"];
+      const callback = jest.fn();
+
+      // Register fetcher
+      registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false,
+      });
+
+      // Invalidate query
+      invalidateQuery(["test-key-not-found"]);
+
+      // Should not trigger refetch
+      expect(mockFetcher).not.toHaveBeenCalled();
+    });
+    test("should not invalidate query if key is not found and multiple keys", () => {
+      const key1 = ["test-key1"];
+      const key2 = ["test-key2"];
+      const callback = jest.fn();
+      const callback2 = jest.fn();
+
+      // Register fetcher
+      registerFetcher(key1, {
+        fetcher: mockFetcher,
+        enabled: false,
+      });
+
+      // Register fetcher
+      registerFetcher(key2, {
+        fetcher: mockFetcher,
+        enabled: false,
+      });
+
+      // Subscribe
+      const unsubscribe = subscribeQuery(key1, callback, { enabled: false });
+      const unsubscribe2 = subscribeQuery(key2, callback2, { enabled: false });
+
+      // Invalidate query
+      invalidateQuery(["test-key-not-found"]);
+
+      // Should not trigger refetch
+      expect(mockFetcher).not.toHaveBeenCalled();
+
+      // Cleanup
+      unsubscribe();
+      unsubscribe2();
+    });
+    test("should not invalidate query if key segments are not found", () => {
+      const key = ["test-key", "nested-key"];
+      const callback = jest.fn();
+
+      // Register fetcher
+      registerFetcher(key, {
+        fetcher: mockFetcher,
+        enabled: false,
+      });
+
+      // Subscribe
+      const unsubscribe = subscribeQuery(key, callback, { enabled: false });
+
+      // Invalidate query
+      invalidateQuery(["test"]);
+
+      // Should not trigger refetch
+      expect(mockFetcher).not.toHaveBeenCalled();
     });
   });
 });

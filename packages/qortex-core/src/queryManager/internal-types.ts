@@ -6,6 +6,7 @@ import type { QueryStatus, Fetcher, EqualityFn, EqualityStrategy, QueryState } f
  * NOT EXPORTED - internal implementation detail
  */
 export type QueryStateInternal<T = any, E = unknown> = {
+  key: string;
   data?: T;
   error?: E;
   status: QueryStatus;
