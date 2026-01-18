@@ -2,4 +2,4 @@
 export const DEFAULT_STALE_TIME = 0;
 
 /** Default throttle time (ms) to prevent multiple fetch calls on rapid mounts */
-export const THROTTLE_TIME = 500;
+export const THROTTLE_TIME = 100;

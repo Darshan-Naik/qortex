@@ -77,7 +77,7 @@ export class QueryManagerCore {
    * @param config.equalityFn - Default equality function. Default: `Object.is`
    * @param config.usePreviousDataOnError - Default behavior for previous data on error. Default: `false`
    * @param config.usePlaceholderOnError - Default behavior for placeholder data on error. Default: `false`
-   * @param config.throttleTime - Time in ms to throttle fetch requests. Default: `500`
+   * @param config.throttleTime - Time in ms to throttle fetch requests. Default: `100`
    * @param config.persister - Persister instance for data persistence
    *
    * These defaults will be merged with individual query options. Useful for setting global behavior
@@ -169,8 +169,11 @@ export class QueryManagerCore {
     // Create public QueryState object for callbacks
     const publicState = createPublicState(state);
 
-    // Call all callbacks with the new state
-    for (const cb of Array.from(set)) cb(publicState);
+    // Push to microtask queue to avoid sync thread blocking
+    queueMicrotask(() => {
+      // Call all callbacks with the new state
+      for (const cb of Array.from(set)) cb(publicState);
+    });
   }
 
   /**
@@ -251,7 +254,6 @@ export class QueryManagerCore {
     const promise = fetcher();
     state.fetchPromise = promise;
     state.status = "fetching";
-    state.lastFetchTime = Date.now();
     this.emit(key, state);
 
     // Attach callbacks to the promise with atomic state updates
@@ -518,9 +520,10 @@ export class QueryManagerCore {
     key: QueryKey,
     state: QueryStateInternal<T>
   ): void {
+    const now = Date.now();
+    // Throttle based on fetch completion time (updatedAt)
     const isThrottled =
-      state.lastFetchTime &&
-      Date.now() - state.lastFetchTime < this.throttleTime;
+      state.updatedAt && now - state.updatedAt < this.throttleTime;
 
     if (
       state.status === "fetching" ||
@@ -530,7 +533,6 @@ export class QueryManagerCore {
     )
       return;
 
-    const now = Date.now();
     // For mount logic, we need to fetch if:
     // 1. Never fetched (updatedAt is null), OR
     // 2. Time has crossed staleTime, OR

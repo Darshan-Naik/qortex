@@ -21,7 +21,6 @@ export type QueryStateInternal<T = any, E = unknown> = {
   usePlaceholderOnError?: boolean;
   refetchOnSubscribe: "always" | "stale" | false;
   enabled: boolean;
-  lastFetchTime?: number;
   fetchPromise?: Promise<T> | T;
   refetch?: () => Promise<T>;
   isSuccess: boolean;
