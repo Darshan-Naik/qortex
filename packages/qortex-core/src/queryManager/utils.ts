@@ -21,40 +21,24 @@ export function equal<T = unknown>(a: T | undefined, b: T | undefined, strategy:
   if (typeof a !== "object" || typeof b !== "object") return false;
 
   try {
-    const aAny = a as any;
-    const bAny = b as any;
+    const isDeep = strategy === 'deep';
+    const aArr = Array.isArray(a), bArr = Array.isArray(b);
+    
+    // Both must be same type (both arrays or both objects)
+    if (aArr !== bArr) return false;
 
-    // Handle arrays
-    if (Array.isArray(aAny) && Array.isArray(bAny)) {
-      if (aAny.length !== bAny.length) return false;
-      for (let i = 0; i < aAny.length; i++) {
-        if (strategy === 'deep') {
-          if (!equal(aAny[i], bAny[i], strategy)) return false;
-        } else {
-          if (aAny[i] !== bAny[i]) return false;
-        }
-      }
-      return true;
+    if (aArr) {
+      // Array comparison
+      const aList = a as unknown[], bList = b as unknown[];
+      if (aList.length !== bList.length) return false;
+      return aList.every((val, i) => isDeep ? equal(val, bList[i], strategy) : val === bList[i]);
     }
 
-    // Handle objects
-    if (Array.isArray(aAny) || Array.isArray(bAny)) return false;
-
-    const aKeys = Object.keys(aAny);
-    const bKeys = Object.keys(bAny);
-
-    if (aKeys.length !== bKeys.length) return false;
-
-    for (let i = 0; i < aKeys.length; i++) {
-      const k = aKeys[i];
-      if (strategy === 'deep') {
-        if (!equal(aAny[k], bAny[k], strategy)) return false;
-      } else {
-        if (aAny[k] !== bAny[k]) return false;
-      }
-    }
-
-    return true;
+    // Object comparison
+    const aObj = a as Record<string, unknown>, bObj = b as Record<string, unknown>;
+    const keys = Object.keys(aObj);
+    if (keys.length !== Object.keys(bObj).length) return false;
+    return keys.every(k => isDeep ? equal(aObj[k], bObj[k], strategy) : aObj[k] === bObj[k]);
   } catch {
     return false;
   }
@@ -95,54 +79,44 @@ export function createDefaultState(key:string, opts?: QueryOptions, refetch?: ()
 }
 
 export function createPublicState<T = any, E = unknown>(state: QueryStateInternal<T, E>): QueryState<T, E> {
-  const now = Date.now();
-  // isStale is true only when:
-  // 1. updatedAt exists and time has crossed staleTime, OR
-  // 2. it's invalidated
-  // In all other cases (including never fetched), it's false
-  const isStale = state.updatedAt !== undefined
-    ? (now - state.updatedAt > state.staleTime) || state.isInvalidated
-    : state.isInvalidated;
+  const { status, data, placeholderData, updatedAt, staleTime, isInvalidated } = state;
+  
+  // isStale: true when updatedAt exists and time crossed staleTime, or invalidated
+  const isStale = updatedAt !== undefined
+    ? (Date.now() - updatedAt > staleTime) || isInvalidated
+    : isInvalidated;
 
-  let returnedData = undefined;
+  // Determine returned data based on status
+  let returnedData: T | undefined;
   let isPlaceholderData = false;
 
-  switch (state.status) {
-    case "error":
-      if (state.usePreviousDataOnError && state.data !== undefined) {
-        returnedData = state.data;
-      } else if (state.usePlaceholderOnError && state.placeholderData !== undefined) {
-        returnedData = state.placeholderData;
-        isPlaceholderData = true;
-      }
-      break;
-    case "fetching":
-      if (state.data !== undefined) {
-        // During refetch, return existing data
-        returnedData = state.data;
-        isPlaceholderData = false;
-      } else if (state.placeholderData) {
-        // During initial fetch, return placeholder data if available
-        returnedData = state.placeholderData;
-        isPlaceholderData = true;
-      }
-      break;
-    case "success":
-    case "idle":
-      returnedData = state.data ?? state.placeholderData;
-      isPlaceholderData = state.data ? false : Boolean(state.placeholderData);
-      break;
+  if (status === "error") {
+    // On error: use previous data or placeholder based on config
+    if (state.usePreviousDataOnError && data !== undefined) {
+      returnedData = data;
+    } else if (state.usePlaceholderOnError && placeholderData !== undefined) {
+      returnedData = placeholderData;
+      isPlaceholderData = true;
+    }
+  } else if (status === "fetching") {
+    // During fetch: return existing data or placeholder
+    returnedData = data ?? placeholderData;
+    isPlaceholderData = data === undefined && placeholderData !== undefined;
+  } else {
+    // success/idle: return data or placeholder
+    returnedData = data ?? placeholderData;
+    isPlaceholderData = data === undefined && placeholderData !== undefined;
   }
 
   return {
     data: returnedData,
     error: state.error,
-    status: state.status,
-    updatedAt: state.updatedAt,
+    status,
+    updatedAt,
     isStale,
     isPlaceholderData,
-    isLoading: state.status === "fetching" && !state.updatedAt,
-    isFetching: state.status === "fetching",
+    isLoading: status === "fetching" && !updatedAt,
+    isFetching: status === "fetching",
     isError: state.isError,
     isSuccess: state.isSuccess,
     refetch: state.refetch!,

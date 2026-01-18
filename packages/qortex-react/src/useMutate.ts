@@ -194,33 +194,27 @@ export function useMutate<Data = any, Err = Error, Args extends any[] = any[]>(
   };
 
   const mutateAsync = async (...args: Args): Promise<Data> => {
-    reset();
+    // Clear previous state and start pending
+    setError(undefined);
+    setData(undefined);
     setIsPending(true);
 
     try {
       const result = await mutationFn(...args);
       setData(result);
-      setIsPending(false);
       onSuccess?.(result, args);
       onSettled?.(result, undefined, args);
-
-      if (queryKey) {
-        invalidateQuery(queryKey);
-      }
-
       return result;
     } catch (err) {
       const caughtError = err as Err;
       setError(caughtError);
-      setIsPending(false);
       onError?.(caughtError, args);
       onSettled?.(undefined, caughtError, args);
-
-      if (queryKey) {
-        invalidateQuery(queryKey);
-      }
-
       throw caughtError;
+    } finally {
+      setIsPending(false);
+      // Invalidate query after mutation completes (success or error)
+      if (queryKey) invalidateQuery(queryKey);
     }
   };
 
