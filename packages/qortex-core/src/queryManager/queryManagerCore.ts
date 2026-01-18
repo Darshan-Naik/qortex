@@ -124,33 +124,29 @@ export class QueryManagerCore {
   ): QueryStateInternal<T> {
     this.hasQueriesBeenUsed = true;
     const serializedKey = serializeKey(key);
-    const state = this.cache.get(serializedKey);
-
-    // Merge with default config
+    let state = this.cache.get(serializedKey);
 
     if (state) {
       // Build merged options based on whether state was loaded from persistence
+      // Persisted config takes priority, then defaults, then new opts
       const mergedOpts = state.fromPersisterCache
-        ? { ...state, ...this.defaultConfig, ...opts } // Respect persisted config first
-        : { ...this.defaultConfig, ...state, ...opts }; // Normal behavior
-
-      Object.assign(state, mergedOpts);
-      state.enabled = mergedOpts.enabled === false ? false : true;
-      state.persist = mergedOpts.persist !== false; // Preserve persist flag
-      state.fromPersisterCache = false;
-      this.cache.set(serializedKey, state);
+        ? { ...state, ...this.defaultConfig, ...opts }
+        : { ...this.defaultConfig, ...state, ...opts };
+      Object.assign(state, mergedOpts, {
+        enabled: mergedOpts.enabled !== false,
+        persist: mergedOpts.persist !== false,
+        fromPersisterCache: false,
+      });
     } else {
-      const mergedOpts = { ...this.defaultConfig, ...opts };
-      const newState = createDefaultState(serializedKey, mergedOpts, () =>
+      state = createDefaultState(serializedKey, { ...this.defaultConfig, ...opts }, () =>
         this.fetchQuery(key)
       );
-      this.cache.set(serializedKey, newState);
+      this.cache.set(serializedKey, state);
     }
 
     // Sync to persister (persister handles filtering non-persistable queries)
     this.persister?.sync(this.cache);
-
-    return this.cache.get(serializedKey)!;
+    return state;
   }
 
   /**
@@ -238,54 +234,40 @@ export class QueryManagerCore {
     ): Promise<InferFetcherResult<F>>;
   } = <T = any>(key: QueryKey, opts?: QueryOptions<T>): Promise<T> => {
     const state = this.ensureState(key, opts);
+    // Prevent duplicate fetches by returning existing promise
     if (state.fetchPromise) return state.fetchPromise as Promise<T>;
 
-    const fetcher = state.fetcher;
+    const { fetcher } = state;
     if (!fetcher) {
-      // If no fetcher is registered, return existing data (if any)
-      // This handles cases where data was set via setQueryData() without a fetcher
-      if (state.updatedAt === undefined) {
-        warnNoFetcherOrData(key);
-      }
+      // No fetcher registered - return existing data or warn
+      if (state.updatedAt === undefined) warnNoFetcherOrData(key);
       return Promise.resolve(state.data as T);
     }
 
     // Create promise and set it immediately to prevent race conditions
     const promise = fetcher();
-    state.fetchPromise = promise;
-    state.status = "fetching";
+    Object.assign(state, { fetchPromise: promise, status: "fetching" });
     this.emit(key, state);
 
-    // Attach callbacks to the promise with atomic state updates
-    promise
-      .then((result: T) => {
-        // Atomic update: set all success state properties together
-        const equalityFn = getEqualityFunction(
-          state.equalityStrategy,
-          state.equalityFn
-        );
-        state.data = equalityFn(state.data, result) ? state.data : result;
-        state.status = "success";
-        state.isError = false;
-        state.isSuccess = true;
-        state.updatedAt = Date.now();
-        state.fetchPromise = undefined;
-        state.error = undefined;
-        this.emit(key, state);
-      })
-      .catch((error: unknown) => {
-        // Atomic update: set all error state properties together
-        // not resetting data to undefined because we want to keep the previous data on error based on usePreviousDataOnError
-        // this is handled in createPublicState
-        state.error = error;
-        state.status = "error";
-        state.isError = true;
-        state.isSuccess = false;
-        state.updatedAt = Date.now();
-        state.fetchPromise = undefined;
-        this.emit(key, state);
+    // Shared handler for success/error - atomic state updates
+    const finalize = (isSuccess: boolean, result?: T, error?: unknown) => {
+      const equalityFn = getEqualityFunction(state.equalityStrategy, state.equalityFn);
+      Object.assign(state, {
+        // Keep existing data if equal (prevents unnecessary re-renders)
+        data: isSuccess && result !== undefined 
+          ? (equalityFn(state.data, result) ? state.data : result) 
+          : state.data, // Keep previous data on error (handled by createPublicState)
+        error: isSuccess ? undefined : error,
+        status: isSuccess ? "success" : "error",
+        isError: !isSuccess,
+        isSuccess,
+        updatedAt: Date.now(),
+        fetchPromise: undefined,
       });
+      this.emit(key, state);
+    };
 
+    promise.then((result: T) => finalize(true, result)).catch((error) => finalize(false, undefined, error));
     return promise;
   };
 
@@ -318,25 +300,25 @@ export class QueryManagerCore {
   ): void => {
     const state = this.ensureState(key);
     const old = state.data as T | undefined;
-
     // Resolve the new data - either direct value or from updater function
-    const newData =
-      typeof dataOrUpdater === "function"
-        ? (dataOrUpdater as SetDataUpdater<T>)(old)
-        : dataOrUpdater;
+    const newData = typeof dataOrUpdater === "function"
+      ? (dataOrUpdater as SetDataUpdater<T>)(old)
+      : dataOrUpdater;
 
-    const equalityFn = getEqualityFunction(
-      state.equalityStrategy,
-      state.equalityFn
-    );
+    // Skip update if data hasn't changed (prevents unnecessary re-renders)
+    const equalityFn = getEqualityFunction(state.equalityStrategy, state.equalityFn);
     if (equalityFn(old, newData)) return;
-    state.data = newData;
-    state.updatedAt = Date.now();
-    state.error = undefined;
-    state.status = "success";
-    state.isInvalidated = false;
-    state.isError = false;
-    state.isSuccess = true;
+
+    // Atomic update: mark as successful with new data
+    Object.assign(state, {
+      data: newData,
+      updatedAt: Date.now(),
+      error: undefined,
+      status: "success",
+      isInvalidated: false,
+      isError: false,
+      isSuccess: true,
+    });
     this.emit(key, state);
   };
 
@@ -402,24 +384,20 @@ export class QueryManagerCore {
       opts: QueryOptions<InferFetcherResult<F>> & { fetcher: F }
     ): QueryState<InferFetcherResult<F>>;
   } = <T = unknown>(key: QueryKey, opts?: QueryOptions<T>): QueryState<T> => {
-    let state = this.ensureState(key, opts);
+    const state = this.ensureState(key, opts);
     this.handleMountLogic(key, state);
 
     // Create public state using the shared utility function
     const currentState = createPublicState(state);
+    const { lastReturnedState } = state;
 
-    // Store the last returned state to detect changes
-    const lastState = state.lastReturnedState;
-
-    // Only return a new object if the state has actually changed
-    if (!lastState || !equal(lastState, currentState, "shallow")) {
-      // Store the new state in the internal state
-      state.lastReturnedState = currentState;
-      return currentState;
+    // Return same object reference if unchanged (important for React useSyncExternalStore)
+    // This prevents unnecessary re-renders when state hasn't actually changed
+    if (lastReturnedState && equal(lastReturnedState, currentState, "shallow")) {
+      return lastReturnedState as QueryState<T>;
     }
-
-    // Return the same object reference if nothing changed
-    return lastState as QueryState<T>;
+    state.lastReturnedState = currentState;
+    return currentState;
   };
 
   /**
@@ -500,16 +478,14 @@ export class QueryManagerCore {
   ): (() => void) => {
     const serializedKey = serializeKey(key);
     const state = this.ensureState(key, opts);
-
-    // Set up subscription
-    if (!this.subs.has(serializedKey)) this.subs.set(serializedKey, new Set());
-    this.subs.get(serializedKey)!.add(cb);
+    
+    // Get or create subscription set for this key
+    const subs = this.subs.get(serializedKey) ?? this.subs.set(serializedKey, new Set()).get(serializedKey)!;
+    subs.add(cb);
     this.handleMountLogic(key, state);
 
-    // Return unsubscribe function that handles cleanup
-    return () => {
-      this.subs.get(serializedKey)!.delete(cb);
-    };
+    // Return unsubscribe function for cleanup
+    return () => subs.delete(cb);
   };
 
   /**
@@ -520,47 +496,27 @@ export class QueryManagerCore {
     key: QueryKey,
     state: QueryStateInternal<T>
   ): void {
-    const now = Date.now();
-    // Throttle based on fetch completion time (updatedAt)
-    const isThrottled =
-      state.updatedAt && now - state.updatedAt < this.throttleTime;
+    // Early exits
+    if (state.status === "fetching" || !state.enabled || !state.fetcher) return;
 
-    if (
-      state.status === "fetching" ||
-      !state.enabled ||
-      isThrottled ||
-      !state.fetcher
-    )
+    // First fetch - always trigger
+    if (!state.updatedAt) {
+      this.fetchQuery<T>(key);
       return;
-
-    // For mount logic, we need to fetch if:
-    // 1. Never fetched (updatedAt is null), OR
-    // 2. Time has crossed staleTime, OR
-    // 3. It's invalidated
-    const isStale =
-      state.updatedAt == null ||
-      now - (state.updatedAt || 0) > state.staleTime ||
-      state.isInvalidated;
-
-    let shouldRefetch = false;
-
-    // Always fetch on first mount (never fetched)
-    if (state.updatedAt == null) {
-      shouldRefetch = true;
-    } else {
-      // Determine if we should fetch based on mount history and options
-      // Check refetchOnSubscribe setting
-      if (state.refetchOnSubscribe === "always") {
-        shouldRefetch = true;
-      }
-      if (state.refetchOnSubscribe === "stale") {
-        shouldRefetch = isStale;
-      }
     }
 
-    // Execute fetch if conditions are met
-    if (shouldRefetch) {
+    const timeSinceUpdate = Date.now() - state.updatedAt;
+
+    // Throttle check (only after first fetch)
+    if (timeSinceUpdate < this.throttleTime) return;
+
+    // Check refetchOnSubscribe setting
+    const { refetchOnSubscribe } = state;
+    if (refetchOnSubscribe === "always") {
       this.fetchQuery<T>(key);
+    } else if (refetchOnSubscribe === "stale") {
+      const isStale = timeSinceUpdate > state.staleTime || state.isInvalidated;
+      if (isStale) this.fetchQuery<T>(key);
     }
   }
 }
