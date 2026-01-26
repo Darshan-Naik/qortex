@@ -44,6 +44,6 @@ Need help? Have questions? Want to chat about data fetching strategies?
 ---
 
 <div align="center">
-  <p>Made with ❤️ by <a href="https://darshannaik.com">Darshan</a></p>
+  <p>Made with ❤️ by <a href="https://darshannaik.com">Darshan Naik</a></p>
   <p>⭐ Star this repo if you found it helpful!</p>
 </div>
