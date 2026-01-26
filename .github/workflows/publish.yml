@@ -1,0 +1,79 @@
+name: Publish Qortex Packages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/**/package.json"
+
+jobs:
+  publish:
+    name: Test, Tag & Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout (need full history for tags)
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2️⃣ Detect version change
+      - name: Detect version change
+        id: version_check
+        run: |
+          CHANGED=$(git diff HEAD~1 HEAD -- packages/**/package.json | grep '"version"' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "No version change detected."
+            echo "publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "Version change detected."
+            echo "publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      # 3️⃣ Setup Node 24 LTS
+      - name: Setup Node.js
+        if: steps.version_check.outputs.publish == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+
+      # 4️⃣ Setup pnpm
+      - name: Setup pnpm
+        if: steps.version_check.outputs.publish == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      # 5️⃣ Install deps
+      - name: Install dependencies
+        if: steps.version_check.outputs.publish == 'true'
+        run: pnpm install --frozen-lockfile
+
+      # 6️⃣ Run tests (FULL MONOREPO)
+      - name: Run tests
+        if: steps.version_check.outputs.publish == 'true'
+        run: pnpm run test:packages
+
+      # 7️⃣ Build & Publish
+      - name: Build & Publish packages
+        if: steps.version_check.outputs.publish == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm run publish:packages
+
+      # 8️⃣ Create Git tag (after successful publish)
+      - name: Create git tag
+        if: steps.version_check.outputs.publish == 'true'
+        run: |
+          VERSION=$(node -p "require('./packages/qortex-core/package.json').version")
+          TAG="v${VERSION}"
+
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists, skipping."
+          else
+            git tag $TAG
+            git push origin $TAG
+          fi
