@@ -92,6 +92,35 @@ module.exports = {
       moduleNameMapper: {
         '^qortex-core$': '<rootDir>/packages/qortex-core/dist/index.js',
       },
+    },
+    {
+      displayName: 'qortex-db',
+      testEnvironment: 'jsdom',
+      roots: ['<rootDir>/packages/qortex-db'],
+      testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+        '/coverage/'
+      ],
+      testMatch: [
+        '**/__tests__/**/*.test.js',
+        '**/__tests__/**/*.test.ts',
+        '**/?(*.)+(spec|test).js',
+        '**/?(*.)+(spec|test).ts'
+      ],
+      collectCoverageFrom: [
+        'packages/qortex-db/src/**/*.ts',
+        '!packages/qortex-db/src/**/*.d.ts',
+        '!packages/qortex-db/src/**/*.test.ts',
+        '!packages/qortex-db/src/**/*.spec.ts'
+      ],
+      coverageDirectory: 'coverage/qortex-db',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      transform: {
+        '^.+\\.(js|ts)$': 'babel-jest',
+      },
+      moduleFileExtensions: ['js', 'ts', 'json'],
     }
   ]
 };
