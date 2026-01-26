@@ -57,7 +57,10 @@ export const PackageSidebar = memo(function PackageSidebar({
         setExpandedSections(newExpanded);
     };
 
-    const isActive = (href: string) => pathname === href;
+    const isActive = (href: string) => {
+        const normalize = (p: string) => p.endsWith('/') ? p.slice(0, -1) : p;
+        return normalize(pathname || '') === normalize(href);
+    };
 
     return (
         <div className="h-full flex flex-col">
@@ -112,8 +115,8 @@ export const PackageSidebar = memo(function PackageSidebar({
                                                         }
                                                     }}
                                                     className={`block px-2 py-1.5 text-sm rounded-md transition-all duration-200 ${isActive(item.href)
-                                                            ? `${colors.active} font-semibold shadow-sm`
-                                                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                                        ? `${colors.active} font-semibold shadow-sm`
+                                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                                                         }`}
                                                 >
                                                     {item.title}

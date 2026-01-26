@@ -11,87 +11,85 @@
     ],
     "status": "stable",
     "content": "The `createDB` function creates a new database instance that provides a Redis-like async key-value API.",
-    "signature": "createDB(nameOrOptions: string | DBOptions): DB",
-    "parameters": [
-        {
-            "name": "nameOrOptions",
-            "type": "string | DBOptions",
-            "required": true,
-            "description": "Database name as a string, or an options object with name and driver"
-        }
-    ],
+    "signature": {
+        "language": "typescript",
+        "code": "createDB(nameOrOptions: string | DBOptions): DB"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "nameOrOptions",
+                "type": "string | DBOptions",
+                "required": true,
+                "default": "-",
+                "description": "Database name as a string, or an options object with name and driver"
+            }
+        ]
+    },
     "returns": {
         "type": "DB",
         "description": "Database instance with async key-value methods"
     },
-    "sections": [
+    "examples": [
         {
             "title": "Basic Usage",
-            "content": "Create a database with just a name (uses localStorage by default):",
-            "code": {
-                "language": "typescript",
-                "code": "import { createDB } from 'qortex-db';\n\n// Simple - uses localStorage\nconst db = createDB('myapp');\n\n// With options - use IndexedDB\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });"
-            }
+            "description": "Create a database with just a name (uses localStorage by default):",
+            "language": "typescript",
+            "code": "import { createDB } from 'qortex-db';\n\n// Simple - uses localStorage\nconst db = createDB('myapp');\n\n// With options - use IndexedDB\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });"
         },
         {
             "title": "DB Methods",
-            "content": "The returned database instance provides these async methods:\n\n| Method | Description |\n|--------|-------------|\n| `get<T>(key)` | Retrieve a value by key |\n| `set(key, value)` | Store a value |\n| `has(key)` | Check if key exists |\n| `del(key)` | Delete a key |\n| `scan(pattern)` | Find keys by pattern (`*` wildcard) |\n| `drop()` | Delete all data for this database |"
+            "description": "The returned database instance provides these async methods:\n\n• get<T>(key) - Retrieve a value by key\n• set(key, value) - Store a value\n• has(key) - Check if key exists\n• del(key) - Delete a key\n• scan(pattern) - Find keys by pattern (`*` wildcard)\n• drop() - Delete all data for this database",
+            "language": "text",
+            "code": ""
         },
         {
             "title": "get(key)",
-            "content": "Retrieve a value by key. Returns `undefined` if the key doesn't exist:",
-            "code": {
-                "language": "typescript",
-                "code": "// With type inference\nconst user = await db.get<User>('user:1');\n// user is User | undefined\n\nif (user) {\n  console.log(user.name);\n}"
-            }
+            "description": "Retrieve a value by key. Returns `undefined` if the key doesn't exist:",
+            "language": "typescript",
+            "code": "// With type inference\nconst user = await db.get<User>('user:1');\n// user is User | undefined\n\nif (user) {\n  console.log(user.name);\n}"
         },
         {
             "title": "set(key, value)",
-            "content": "Store a value with the given key. Values are JSON serialized:",
-            "code": {
-                "language": "typescript",
-                "code": "// Store any JSON-serializable value\nawait db.set('user:1', { name: 'John', age: 30 });\nawait db.set('settings', { theme: 'dark' });\nawait db.set('counter', 42);"
-            }
+            "description": "Store a value with the given key. Values are JSON serialized:",
+            "language": "typescript",
+            "code": "// Store any JSON-serializable value\nawait db.set('user:1', { name: 'John', age: 30 });\nawait db.set('settings', { theme: 'dark' });\nawait db.set('counter', 42);"
         },
         {
             "title": "has(key)",
-            "content": "Check if a key exists:",
-            "code": {
-                "language": "typescript",
-                "code": "if (await db.has('user:1')) {\n  console.log('User exists!');\n}"
-            }
+            "description": "Check if a key exists:",
+            "language": "typescript",
+            "code": "if (await db.has('user:1')) {\n  console.log('User exists!');\n}"
         },
         {
             "title": "del(key)",
-            "content": "Delete a key-value pair:",
-            "code": {
-                "language": "typescript",
-                "code": "await db.del('user:1');"
-            }
+            "description": "Delete a key-value pair:",
+            "language": "typescript",
+            "code": "await db.del('user:1');"
         },
         {
             "title": "scan(pattern)",
-            "content": "Find keys matching a pattern. Supports `*` wildcard for prefix matching:",
-            "code": {
-                "language": "typescript",
-                "code": "// Get all keys\nconst allKeys = await db.scan('*');\n\n// Get keys starting with 'user:'\nconst userKeys = await db.scan('user:*');\n// ['user:1', 'user:2', 'user:3']"
-            }
+            "description": "Find keys matching a pattern. Supports `*` wildcard for prefix matching:",
+            "language": "typescript",
+            "code": "// Get all keys\nconst allKeys = await db.scan('*');\n\n// Get keys starting with 'user:'\nconst userKeys = await db.scan('user:*');\n// ['user:1', 'user:2', 'user:3']"
         },
         {
             "title": "drop()",
-            "content": "Delete all data belonging to this database instance:",
-            "code": {
-                "language": "typescript",
-                "code": "// Clear everything for this database\nawait db.drop();"
-            }
+            "description": "Delete all data belonging to this database instance:",
+            "language": "typescript",
+            "code": "// Clear everything for this database\nawait db.drop();"
         },
         {
             "title": "DBOptions Type",
-            "content": "Options for creating a database:",
-            "code": {
-                "language": "typescript",
-                "code": "type DBOptions = {\n  name: string;           // Unique database name\n  driver?: DriverType;    // 'local' | 'session' | 'indexedDB'\n};\n\n// Examples\ncreateDB({ name: 'app', driver: 'local' });      // localStorage\ncreateDB({ name: 'app', driver: 'session' });    // sessionStorage\ncreateDB({ name: 'app', driver: 'indexedDB' });  // IndexedDB"
-            }
+            "description": "Options for creating a database:",
+            "language": "typescript",
+            "code": "type DBOptions = {\n  name: string;           // Unique database name\n  driver?: DriverType;    // 'local' | 'session' | 'indexedDB'\n};\n\n// Examples\ncreateDB({ name: 'app', driver: 'local' });      // localStorage\ncreateDB({ name: 'app', driver: 'session' });    // sessionStorage\ncreateDB({ name: 'app', driver: 'indexedDB' });  // IndexedDB"
         }
     ],
     "relatedPages": [

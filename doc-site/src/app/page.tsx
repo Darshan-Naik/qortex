@@ -86,13 +86,19 @@ export default function HomePage() {
                 <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">TypeScript</span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <code className="text-sm bg-gray-900 text-green-400 px-3 py-2 rounded-lg">
+              <div className="mt-8 pt-6 border-t border-purple-100/50">
+                <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
                   npm i qortex-core
                 </code>
-                <Link href="/qortex-core" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold">
-                  Learn more <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+                <div className="flex items-center justify-between">
+                  <a href="https://www.npmjs.com/package/qortex-core" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
+                    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current mr-2 group-hover:scale-110 transition-transform"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
+                    View on NPM
+                  </a>
+                  <Link href="/qortex-core" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-bold transition-colors">
+                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -118,13 +124,19 @@ export default function HomePage() {
                 <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">Suspense</span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <code className="text-sm bg-gray-900 text-green-400 px-3 py-2 rounded-lg">
+              <div className="mt-8 pt-6 border-t border-blue-100/50">
+                <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
                   npm i qortex-react
                 </code>
-                <Link href="/qortex-react" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold">
-                  Learn more <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+                <div className="flex items-center justify-between">
+                  <a href="https://www.npmjs.com/package/qortex-react" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
+                    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current mr-2 group-hover:scale-110 transition-transform"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
+                    View on NPM
+                  </a>
+                  <Link href="/qortex-react" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-bold transition-colors">
+                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -156,13 +168,19 @@ export default function HomePage() {
                 <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">Async API</span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <code className="text-sm bg-gray-900 text-green-400 px-3 py-2 rounded-lg">
+              <div className="mt-8 pt-6 border-t border-indigo-100/50">
+                <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
                   npm i qortex-db
                 </code>
-                <Link href="/qortex-db" className="inline-flex items-center text-indigo-600 hover:text-indigo-700 font-semibold">
-                  Learn more <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+                <div className="flex items-center justify-between">
+                  <a href="https://www.npmjs.com/package/qortex-db" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
+                    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current mr-2 group-hover:scale-110 transition-transform"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
+                    View on NPM
+                  </a>
+                  <Link href="/qortex-db" className="inline-flex items-center text-indigo-600 hover:text-indigo-700 font-bold transition-colors">
+                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

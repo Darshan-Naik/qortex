@@ -16,15 +16,17 @@ export function ExamplesList({ examples }: ExamplesListProps) {
         <div className="space-y-6">
             {examples.map((example, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                    <div className={`bg-gray-50 px-4 py-3 ${example.code && example.code.trim() !== '' ? 'border-b border-gray-200' : ''}`}>
                         <h4 className="font-semibold text-gray-900">{example.title}</h4>
                         {example.description && (
-                            <p className="text-sm text-gray-600 mt-1">{example.description}</p>
+                            <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{example.description}</p>
                         )}
                     </div>
-                    <div className="p-0">
-                        <CodeBlock language={example.language}>{example.code}</CodeBlock>
-                    </div>
+                    {example.code && example.code.trim() !== '' && (
+                        <div className="p-0">
+                            <CodeBlock language={example.language}>{example.code}</CodeBlock>
+                        </div>
+                    )}
                 </div>
             ))}
         </div>

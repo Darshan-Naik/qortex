@@ -11,7 +11,7 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    const documentation = await getDocumentation(params.slug);
+    const documentation = await getDocumentation(params.slug, 'qortex-db');
 
     if (!documentation) {
         return { title: 'Not Found' };
@@ -27,7 +27,7 @@ export default async function DbDocPage({ params }: PageProps) {
     const href = `/qortex-db/docs/${params.slug}`;
     const item = getDbNavItemByHref(href);
     const section = getDbSectionByHref(href);
-    const documentation = await getDocumentation(params.slug);
+    const documentation = await getDocumentation(params.slug, 'qortex-db');
 
     if (!documentation) {
         notFound();

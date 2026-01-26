@@ -1,0 +1,19 @@
+{
+    "id": "indexedDB",
+    "title": "IndexedDB Driver",
+    "subtitle": "Large-scale async storage",
+    "description": "Asynchronous storage using IndexedDB.",
+    "category": "Drivers",
+    "status": "stable",
+    "content": "Uses IndexedDB for storing large amounts of structured data.",
+    "sections": [
+        {
+            "title": "Usage",
+            "content": "Specify the driver in options:",
+            "code": {
+                "language": "typescript",
+                "code": "import { createDB } from 'qortex-db';\n\nconst db = createDB({ \n  name: 'my-big-data', \n  driver: 'indexedDB' \n});"
+            }
+        }
+    ]
+}

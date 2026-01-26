@@ -41,14 +41,19 @@ export default function QortexReactPage() {
                     <p className="mx-auto max-w-2xl text-xl text-gray-600 mb-8">
                         React hooks for data fetching with smart caching, background updates, and full TypeScript support.
                     </p>
-                    <div className="flex justify-center gap-4 flex-wrap">
-                        <code className="bg-gray-900 text-green-400 px-4 py-2 rounded-lg text-lg">
+                    <div className="flex flex-col items-center justify-center gap-6 mt-8">
+                        <code className="bg-gray-900 text-green-400 px-6 py-3 rounded-xl text-lg font-mono shadow-lg">
                             npm install qortex-react
                         </code>
-                        <Link href="/qortex-react/docs/installation" className="inline-flex items-center px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors">
-                            Documentation
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
+                        <div className="flex gap-4">
+                            <Link href="/qortex-react/docs/installation" className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg">
+                                Documentation
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                            <a href="https://www.npmjs.com/package/qortex-react" target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-700 font-semibold hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors shadow-sm" title="View on NPM">
+                                <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </section>
