@@ -57,6 +57,11 @@ jobs:
         if: steps.version_check.outputs.publish == 'true'
         run: pnpm run test:packages
 
+      - name: Configure npm auth
+        if: steps.version_check.outputs.publish == 'true'
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       # 7️⃣ Build & Publish
       - name: Build & Publish packages
         if: steps.version_check.outputs.publish == 'true'
