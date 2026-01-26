@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getNavigationItemByHref, getNavigationSectionByHref } from '@/lib/navigation';
+import { getReactNavItemByHref, getReactSectionByHref } from '@/lib/navigation-react';
 import { getDocumentation } from '@/lib/documentation';
 import { DocumentationRenderer } from '@/components/documentation';
 
@@ -14,43 +14,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const documentation = await getDocumentation(params.slug);
 
     if (!documentation) {
-        return {
-            title: 'Not Found',
-        };
+        return { title: 'Not Found' };
     }
 
     return {
-        title: documentation.title,
+        title: `${documentation.title} | qortex-react`,
         description: documentation.description || `Documentation for ${documentation.title}`,
     };
 }
 
-export default async function DocPage({ params }: PageProps) {
-    const href = `/docs/${params.slug}`;
-    const item = getNavigationItemByHref(href);
-    const section = getNavigationSectionByHref(href);
+export default async function ReactDocPage({ params }: PageProps) {
+    const href = `/qortex-react/docs/${params.slug}`;
+    const item = getReactNavItemByHref(href);
+    const section = getReactSectionByHref(href);
     const documentation = await getDocumentation(params.slug);
 
     if (!documentation) {
         notFound();
     }
 
-    // For standalone pages not in navigation, use documentation data for breadcrumb
     const breadcrumbSection = section?.title || documentation.category || 'Documentation';
     const breadcrumbTitle = item?.title || documentation.title;
 
     return (
         <div className="max-w-4xl">
-            {/* Breadcrumb */}
             <nav className="text-sm text-gray-500 mb-6">
                 <span className="hover:text-gray-700 transition-colors">{breadcrumbSection}</span>
                 <span className="mx-2">/</span>
                 <span className="text-gray-900 font-medium">{breadcrumbTitle}</span>
             </nav>
-
-            {/* Content */}
             <DocumentationRenderer data={documentation} />
         </div>
     );
 }
-

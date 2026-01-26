@@ -1,0 +1,54 @@
+{
+    "id": "qortex-db",
+    "title": "Qortex DB",
+    "subtitle": "Browser Key-Value Database",
+    "description": "A browser-only, Redis-like key-value database with localStorage, sessionStorage, and IndexedDB support.",
+    "category": "Qortex DB",
+    "tags": [
+        "database",
+        "storage",
+        "localStorage",
+        "sessionStorage",
+        "indexedDB"
+    ],
+    "status": "stable",
+    "content": "qortex-db provides a unified async API across browser storage backends. It's simple, fast, and consistent!",
+    "callouts": [
+        {
+            "type": "info",
+            "title": "Browser Only",
+            "content": "This package is designed for browser environments only. All storage backends (localStorage, sessionStorage, IndexedDB) are browser APIs.",
+            "icon": "info"
+        }
+    ],
+    "sections": [
+        {
+            "title": "Installation",
+            "content": "Install qortex-db using your preferred package manager:",
+            "code": {
+                "language": "bash",
+                "code": "# npm\nnpm install qortex-db\n\n# yarn\nyarn add qortex-db\n\n# pnpm\npnpm add qortex-db"
+            }
+        },
+        {
+            "title": "Quick Start",
+            "content": "Create a database and start storing data:",
+            "code": {
+                "language": "typescript",
+                "code": "import { createDB } from 'qortex-db';\n\n// Simple usage (uses localStorage)\nconst db = createDB('myapp');\n\n// With options\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });\n\n// Basic operations\nawait db.set('user:1', { name: 'John', age: 30 });\nconst user = await db.get<User>('user:1');\nconst exists = await db.has('user:1');\nawait db.del('user:1');\n\n// Find keys by pattern\nconst userKeys = await db.scan('user:*');\n\n// Clear all data for this database\nawait db.drop();"
+            }
+        },
+        {
+            "title": "Available Drivers",
+            "content": "Choose the right storage driver for your use case:\n\n| Driver | Persistence | Capacity | Use Case |\n|--------|-------------|----------|----------|\n| `local` | Permanent | ~5MB | Default, most common |\n| `session` | Tab session | ~5MB | Temporary data |\n| `indexedDB` | Permanent | Large | Large datasets |"
+        },
+        {
+            "title": "Key Features",
+            "content": "- 🚀 **Unified API** - Same async interface for all storage backends\n- 🔒 **Key Namespacing** - Data isolation between database instances\n- 🔍 **Pattern Matching** - Find keys with wildcard patterns\n- 📦 **TypeScript** - Full type inference support\n- ⚡ **Tiny** - Under 3KB minified"
+        }
+    ],
+    "relatedPages": [
+        "createDB",
+        "createPersister"
+    ]
+}
