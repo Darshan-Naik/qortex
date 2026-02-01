@@ -1,11 +1,12 @@
 # 🚀 qortex
 
-> **A minimal, performant data fetching library with React integration. Built for simplicity, efficiency, and developer happiness! 🎉**
+> **A minimal, performant data fetching library and browser database. Built for simplicity, efficiency, and developer happiness! 🎉**
 
 [![npm version](https://badge.fury.io/js/qortex-core.svg)](https://badge.fury.io/js/qortex-core)
 [![npm version](https://badge.fury.io/js/qortex-react.svg)](https://badge.fury.io/js/qortex-react)
+[![npm version](https://badge.fury.io/js/qortex-db.svg)](https://badge.fury.io/js/qortex-db)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
-[![Bundle Size](https://img.shields.io/badge/gzipped-<2KB-brightgreen)](https://bundlephobia.com/package/qortex-core)
+[![Bundle Size](https://img.shields.io/badge/tiny-bundle-brightgreen)](https://qortex.darshannaik.com)
 
 ## ✨ Why qortex?
 
@@ -14,16 +15,18 @@ Tired of complex data fetching libraries that make simple tasks complicated? **q
 - 🎯 **Dead simple** - Get started in 30 seconds
 - ⚡ **Lightning fast** - Minimal bundle size, maximum performance
 - 🧠 **Smart caching** - Automatic deduplication and background updates
+- 💾 **Browser Database** - Unified async key-value store (localStorage, IndexedDB)
 - 🎭 **Framework agnostic** - Works with React, Vue, Svelte, or vanilla JS
 - 🛡️ **TypeScript first** - Full type safety out of the box
 - 🎪 **Fun to use** - Because coding should be enjoyable!
 
 ## 📦 Packages
 
-| Package            | Description                        | Size         |
-| ------------------ | ---------------------------------- | ------------ |
-| **`qortex-core`**  | Core runtime with query management | <2KB gzipped |
-| **`qortex-react`** | React hooks and components         | <2KB gzipped |
+| Package            | Description                                      | Size (gzip) |
+| ------------------ | ------------------------------------------------ | ----------- |
+| **`qortex-core`**  | Framework Agnostic Query Cache & Fetch Registry  | ~1.9KB      |
+| **`qortex-react`** | React Hooks for Data Fetching (includes core)    | ~2.6KB      |
+| **`qortex-db`**    | Async Browser Key-Value Database                 | ~1.2KB      |
 
 ## 📥 Installation
 
@@ -31,8 +34,11 @@ Tired of complex data fetching libraries that make simple tasks complicated? **q
 # Core runtime (works everywhere!)
 npm install qortex-core
 
-# React integration (if you're using React)
+# React integration
 npm install qortex-react
+
+# Browser Database
+npm install qortex-db
 ```
 
 ## 📚 Documentation
@@ -43,14 +49,18 @@ npm install qortex-react
 
 ## 🎯 Features
 
+### Data Fetching (Core & React)
 - **🎪 Automatic caching** with configurable stale time
 - **🔄 Background refetching** with smart invalidation and throttling
-- **💾 Previous data preservation** during refetches (no loading states for cached data!)
+- **💾 Previous data preservation** during refetches
 - **⚡ Shallow equality** to prevent unnecessary re-renders
-- **🎭 TypeScript** support with full type safety
-- **🎨 Framework agnostic** - use anywhere!
 - **⚡ Smart throttling** - prevents duplicate fetches
-- **🎯 Inflight protection** - prevents race conditions
+
+### Database (DB)
+- **💾 Unified API** for localStorage, sessionStorage, and IndexedDB
+- **🔄 Async interface** for all drivers
+- **🔍 Pattern matching** for key scanning
+- **📦 Zero dependencies** and tiny footprint
 
 ## 📄 License
 
