@@ -155,8 +155,8 @@ invalidateQuery('users');`}</CodeBlock>
             {/* Bundle Size */}
             <BundleStats
                 packageName="qortex-core"
-                size="~2KB"
-                minifiedSize="~5KB"
+                size="~1.9KB"
+                minifiedSize="5.0KB"
                 dependencyCount={0}
                 highlightColor="purple"
             />

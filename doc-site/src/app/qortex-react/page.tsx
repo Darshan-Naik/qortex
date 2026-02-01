@@ -167,10 +167,11 @@ function UserList() {
             {/* Bundle Size */}
             <BundleStats
                 packageName="qortex-react"
-                size="~3KB"
-                minifiedSize="~8KB"
+                size="~2.6KB"
+                minifiedSize="~6.5KB"
                 dependencyCount={1}
                 highlightColor="blue"
+                sizeBreakdown="~0.7KB (React) + ~1.9KB (Core)"
             />
 
             {/* CTA */}

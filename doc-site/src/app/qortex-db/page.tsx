@@ -176,8 +176,8 @@ await db.drop();`}</CodeBlock>
             {/* Bundle Size */}
             <BundleStats
                 packageName="qortex-db"
-                size="~2.5KB"
-                minifiedSize="~6KB"
+                size="~1.2KB"
+                minifiedSize="2.7KB"
                 dependencyCount={0}
                 highlightColor="indigo"
             />

@@ -6,9 +6,10 @@ interface BundleStatsProps {
     minifiedSize: string;
     dependencyCount: number;
     highlightColor: string;
+    sizeBreakdown?: string;
 }
 
-export function BundleStats({ packageName, size, minifiedSize, dependencyCount, highlightColor }: BundleStatsProps) {
+export function BundleStats({ packageName, size, minifiedSize, dependencyCount, highlightColor, sizeBreakdown }: BundleStatsProps) {
     // Extract number from size string (e.g. "~2KB" -> 2) for progress bar
     const sizeNum = parseFloat(size.replace(/[^0-9.]/g, ''));
     // Assume a "budget" of 10KB for the progress bar
@@ -20,7 +21,7 @@ export function BundleStats({ packageName, size, minifiedSize, dependencyCount, 
                 <div className="text-center mb-10">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">Tiny Bundle Size</h2>
                     <p className="text-gray-600 max-w-2xl mx-auto">
-                        Lightweight and optimized for performance. Check the detailed stats on BundlePhobia.
+                        Lightweight and optimized for performance.
                     </p>
                 </div>
 
@@ -32,6 +33,11 @@ export function BundleStats({ packageName, size, minifiedSize, dependencyCount, 
                                 <span className={`text-5xl font-bold text-${highlightColor}-600`}>{size}</span>
                                 <span className="ml-2 text-gray-500 font-medium">min + gzip</span>
                             </div>
+                            {sizeBreakdown && (
+                                <p className="text-sm text-gray-500 mt-2 font-medium">
+                                    {sizeBreakdown}
+                                </p>
+                            )}
                             <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
                                 <div
                                     className={`bg-${highlightColor}-500 h-2 rounded-full`}
@@ -64,19 +70,7 @@ export function BundleStats({ packageName, size, minifiedSize, dependencyCount, 
 
                         {/* External Link */}
                         <div className="flex flex-col items-center justify-center space-y-4">
-                            <a
-                                href={`https://bundlephobia.com/package/${packageName}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`inline-flex items-center px-6 py-3 rounded-xl bg-white border border-gray-200 text-gray-700 hover:text-${highlightColor}-600 hover:border-${highlightColor}-200 hover:bg-${highlightColor}-50/50 transition-all shadow-sm hover:shadow`}
-                            >
-                                <span>Check BundlePhobia</span>
-                                <ExternalLink className="ml-2 h-4 w-4" />
-                            </a>
-                            <div className="flex items-center text-xs text-gray-400">
-                                <Info className="h-3 w-3 mr-1" />
-                                <span>Redirects to bundlephobia.com</span>
-                            </div>
+
                         </div>
                     </div>
                 </div>
