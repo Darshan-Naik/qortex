@@ -96,7 +96,7 @@ export default function HomePage() {
                     View on NPM
                   </a>
                   <Link href="/qortex-core" className="inline-flex items-center text-purple-600 hover:text-purple-700 font-bold transition-colors">
-                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                    Documentation <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function HomePage() {
                     View on NPM
                   </a>
                   <Link href="/qortex-react" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-bold transition-colors">
-                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                    Documentation <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </div>
               </div>
@@ -178,7 +178,7 @@ export default function HomePage() {
                     View on NPM
                   </a>
                   <Link href="/qortex-db" className="inline-flex items-center text-indigo-600 hover:text-indigo-700 font-bold transition-colors">
-                    Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                    Documentation <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </div>
               </div>

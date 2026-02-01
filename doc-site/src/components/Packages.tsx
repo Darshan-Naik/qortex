@@ -53,7 +53,7 @@ export function Packages() {
                                 href="/qortex-db"
                                 className="inline-flex items-center text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
                             >
-                                Learn more
+                                Documentation
                                 <ArrowRight className="ml-1 h-4 w-4" />
                             </Link>
                         </div>
