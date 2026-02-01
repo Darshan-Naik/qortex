@@ -1,14 +1,18 @@
 import Link from 'next/link'
 import { Zap, Code, Shield, ArrowRight, BrainCircuit, Layers, RefreshCw, Globe, Github, Database } from 'lucide-react'
 import { CoreIcon, ReactIcon, DbIcon } from '@/components/icons/PackageIcons'
+import { NeuralBackground } from '@/components/ui/NeuralBackground'
 import { Footer } from '@/components/layout'
 
 export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen flex items-center">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gray-900 min-h-screen flex items-center">
+        <NeuralBackground />
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-purple-900/20 to-gray-900/90 pointer-events-none z-0"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 pointer-events-none z-0"></div>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 lg:py-32 relative z-10">
           <div className="text-center">
             <div className="inline-flex items-center rounded-full bg-white/10 backdrop-blur px-4 py-2 text-sm font-medium text-gray-200 mb-8 border border-white/20">
