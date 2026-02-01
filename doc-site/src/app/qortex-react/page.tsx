@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { RefreshCw, ArrowLeft, ArrowRight, Zap, Code, Shield, Database, Layers, Clock } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Zap, Code, Shield, Database, Layers, Clock, RefreshCw } from 'lucide-react'
+import { ReactIcon } from '@/components/icons/PackageIcons'
 import { Footer } from '@/components/layout'
 import { BundleStats } from '@/components/BundleStats'
 import { CodeBlock } from '@/components/ui/CodeBlock'
@@ -21,7 +22,7 @@ export default function QortexReactPage() {
                             <span>Back to Home</span>
                         </Link>
                         <div className="flex items-center space-x-2">
-                            <RefreshCw className="h-6 w-6 text-blue-600" />
+                            <ReactIcon className="h-6 w-6 text-blue-600" />
                             <span className="font-bold text-gray-900">qortex-react</span>
                         </div>
                     </div>
@@ -32,7 +33,7 @@ export default function QortexReactPage() {
             <section className="bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50 py-20">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
                     <div className="inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 mb-6">
-                        <RefreshCw className="h-4 w-4 mr-2" />
+                        <ReactIcon className="h-4 w-4 mr-2" />
                         React Integration
                     </div>
                     <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl mb-6">

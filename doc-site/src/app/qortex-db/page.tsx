@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Database, ArrowLeft, ArrowRight, Zap, Shield, Code, HardDrive, Clock, FileSearch } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Zap, Shield, Code, HardDrive, Clock, FileSearch, Database } from 'lucide-react'
+import { DbIcon } from '@/components/icons/PackageIcons'
 import { Footer } from '@/components/layout'
 import { BundleStats } from '@/components/BundleStats'
 import { CodeBlock } from '@/components/ui/CodeBlock'
@@ -21,7 +22,7 @@ export default function QortexDBPage() {
                             <span>Back to Home</span>
                         </Link>
                         <div className="flex items-center space-x-2">
-                            <Database className="h-6 w-6 text-indigo-600" />
+                            <DbIcon className="h-6 w-6 text-indigo-600" />
                             <span className="font-bold text-gray-900">qortex-db</span>
                         </div>
                     </div>
@@ -32,7 +33,7 @@ export default function QortexDBPage() {
             <section className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
                     <div className="inline-flex items-center rounded-full bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 mb-6">
-                        <Database className="h-4 w-4 mr-2" />
+                        <DbIcon className="h-4 w-4 mr-2" />
                         Browser Key-Value Database
                     </div>
                     <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl mb-6">

@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Layers, ArrowLeft, ArrowRight, Zap, RefreshCw, Globe, Code, Shield, Database } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Zap, RefreshCw, Globe, Code, Shield, Database } from 'lucide-react'
+import { CoreIcon } from '@/components/icons/PackageIcons'
 import { Footer } from '@/components/layout'
 import { BundleStats } from '@/components/BundleStats'
 import { CodeBlock } from '@/components/ui/CodeBlock'
@@ -21,7 +22,7 @@ export default function QortexCorePage() {
                             <span>Back to Home</span>
                         </Link>
                         <div className="flex items-center space-x-2">
-                            <Layers className="h-6 w-6 text-purple-600" />
+                            <CoreIcon className="h-6 w-6 text-purple-600" />
                             <span className="font-bold text-gray-900">qortex-core</span>
                         </div>
                     </div>
@@ -32,7 +33,7 @@ export default function QortexCorePage() {
             <section className="bg-gradient-to-br from-purple-50 via-violet-50 to-fuchsia-50 py-20">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
                     <div className="inline-flex items-center rounded-full bg-purple-100 px-4 py-2 text-sm font-medium text-purple-700 mb-6">
-                        <Globe className="h-4 w-4 mr-2" />
+                        <CoreIcon className="h-4 w-4 mr-2" />
                         Framework Agnostic
                     </div>
                     <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl mb-6">

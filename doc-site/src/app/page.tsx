@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Database, Zap, Code, Shield, ArrowRight, BrainCircuit, Layers, RefreshCw, Globe, Github } from 'lucide-react'
+import { Zap, Code, Shield, ArrowRight, BrainCircuit, Layers, RefreshCw, Globe, Github, Database } from 'lucide-react'
+import { CoreIcon, ReactIcon, DbIcon } from '@/components/icons/PackageIcons'
 import { Footer } from '@/components/layout'
 
 export default function HomePage() {
@@ -68,7 +69,7 @@ export default function HomePage() {
             <div className="relative bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
               <div className="flex items-center mb-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-purple-600 text-white">
-                  <Layers className="h-7 w-7" />
+                  <CoreIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-2xl font-bold text-gray-900">qortex-core</h3>
@@ -106,7 +107,7 @@ export default function HomePage() {
             <div className="relative bg-gradient-to-br from-blue-50 to-cyan-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
               <div className="flex items-center mb-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-white">
-                  <RefreshCw className="h-7 w-7" />
+                  <ReactIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-2xl font-bold text-gray-900">qortex-react</h3>
@@ -150,7 +151,7 @@ export default function HomePage() {
 
               <div className="flex items-center mb-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-600 text-white">
-                  <Database className="h-7 w-7" />
+                  <DbIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
                   <h3 className="text-2xl font-bold text-gray-900">qortex-db</h3>
