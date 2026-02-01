@@ -25,6 +25,12 @@ const packages = [
     dependencyTransforms: {
       'qortex-core': 'qortex-core' // workspace:* -> qortex-core (same version)
     }
+  },
+  {
+    name: 'qortex-db',
+    path: 'packages/qortex-db',
+    publishName: 'qortex-db',
+    description: 'Browser-only Redis-like key-value database with localStorage, sessionStorage, and IndexedDB support'
   }
 ];
 

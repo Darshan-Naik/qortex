@@ -1,0 +1,35 @@
+{
+    "id": "quick-start",
+    "title": "Quick Start",
+    "subtitle": "Core API Usage",
+    "description": "Learn how to use qortex-core in any JavaScript environment.",
+    "category": "Getting Started",
+    "status": "stable",
+    "content": "Using qortex-core is simple. Register a fetcher, then fetch data anywhere.",
+    "sections": [
+        {
+            "title": "1. Register a Fetcher",
+            "content": "Define how to fetch your data:",
+            "code": {
+                "language": "typescript",
+                "code": "import { registerFetcher } from 'qortex-core';\n\nregisterFetcher('users', async () => {\n  const res = await fetch('/api/users');\n  return res.json();\n});"
+            }
+        },
+        {
+            "title": "2. Fetch Data",
+            "content": "Fetch data anywhere in your app. It will be cached automatically.",
+            "code": {
+                "language": "typescript",
+                "code": "import { fetchQuery } from 'qortex-core';\n\n// Fetches and caches\nconst users = await fetchQuery('users');\n\n// Subsequent calls return cached data instantly\nconst cachedUsers = await fetchQuery('users');"
+            }
+        },
+        {
+            "title": "3. Subscribe to Changes",
+            "content": "Listen for data updates:",
+            "code": {
+                "language": "typescript",
+                "code": "import { subscribeQuery } from 'qortex-core';\n\nconst unsubscribe = subscribeQuery('users', (data) => {\n  console.log('Users updated:', data);\n});"
+            }
+        }
+    ]
+}

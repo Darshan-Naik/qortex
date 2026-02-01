@@ -4,13 +4,24 @@ import { navigationData } from './navigation';
 /**
  * Load documentation data from JSON file by slug
  */
-export async function getDocumentation(slug: string): Promise<DocumentationData | null> {
+export async function getDocumentation(slug: string, packageName?: string): Promise<DocumentationData | null> {
     try {
-        // Import the JSON file dynamically
+        if (packageName) {
+            try {
+                // Try package specific path first
+                const data = await import(`@/data/${packageName}/${slug}.json`);
+                return data.default as DocumentationData;
+            } catch (e) {
+                // Fallback to shared folder if not found (optional, depending on strictness)
+                // console.warn(`Documentation not found in ${packageName} for ${slug}, trying root...`);
+            }
+        }
+
+        // Fallback or default path
         const data = await import(`@/data/${slug}.json`);
         return data.default as DocumentationData;
     } catch (error) {
-        console.error(`Failed to load documentation for slug: ${slug}`, error);
+        console.error(`Failed to load documentation for slug: ${slug} (package: ${packageName})`, error);
         return null;
     }
 }

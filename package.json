@@ -51,6 +51,7 @@
     "prepare:publish": "node scripts/prepare-publish.js",
     "publish:qortex-core": "cd packages/qortex-core/dist && npm publish --access public",
     "publish:qortex-react": "cd packages/qortex-react/dist && npm publish --access public",
+    "publish:qortex-db": "cd packages/qortex-db/dist && npm publish --access public",
     "publish:packages": "pnpm run build:packages && pnpm run prepare:publish && pnpm run publish:qortex-core && pnpm run publish:qortex-react",
     "test": "jest",
     "test:watch": "jest --watch",

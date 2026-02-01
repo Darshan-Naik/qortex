@@ -1,0 +1,19 @@
+{
+    "id": "installation",
+    "title": "Installation",
+    "subtitle": "Get started with qortex-react",
+    "description": "Install qortex-react for your React application.",
+    "category": "Getting Started",
+    "status": "stable",
+    "content": "Install qortex-react using your preferred package manager. Note that qortex-react includes all qortex-core functionalities.",
+    "sections": [
+        {
+            "title": "Install Package",
+            "content": "Add the package to your React project:",
+            "code": {
+                "language": "bash",
+                "code": "# npm\nnpm install qortex-react\n\n# yarn\nyarn add qortex-react\n\n# pnpm\npnpm add qortex-react"
+            }
+        }
+    ]
+}

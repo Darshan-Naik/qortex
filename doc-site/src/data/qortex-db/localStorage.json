@@ -1,0 +1,19 @@
+{
+    "id": "localStorage",
+    "title": "localStorage Driver",
+    "subtitle": "Persistent synchronous storage",
+    "description": "Standard browser localStorage wrapper.",
+    "category": "Drivers",
+    "status": "stable",
+    "content": "Uses the browser's localStorage API to persist data across sessions.",
+    "sections": [
+        {
+            "title": "Usage",
+            "content": "This is the default driver.",
+            "code": {
+                "language": "typescript",
+                "code": "import { createDB } from 'qortex-db';\n\nconst db = createDB('my-app'); // defaults to localStorage"
+            }
+        }
+    ]
+}

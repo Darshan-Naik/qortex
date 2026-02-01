@@ -7,7 +7,7 @@ export function Footer() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 border-t border-gray-800">
                 <div className="flex flex-col sm:flex-row justify-between items-center">
                     <p className="text-gray-400 text-sm">
-                        © 2025 Darshan Naik. All rights reserved.
+                        © 2026 Darshan Naik. All rights reserved.
                     </p>
                     <p className="text-gray-400 text-sm mt-2 sm:mt-0">
                         <a
