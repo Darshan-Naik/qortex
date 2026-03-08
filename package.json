@@ -55,7 +55,6 @@
     "publish:store": "cd packages/store && pnpm run build && cd dist && npm publish --access public",
     "publish:store-react": "cd packages/store-react && pnpm run build && cd dist && npm publish --access public",
     "publish:packages": "npm run publish:query && npm run publish:query-react && npm run publish:db && npm run publish:store && npm run publish:store-react",
-    "deprecate:all": "npm deprecate qortex-core \"Package has moved to qortex-query\" && npm deprecate qortex-react \"Package has moved to qortex-query-react\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
