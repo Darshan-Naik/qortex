@@ -28,19 +28,19 @@ const packages = [
   },
   {
     name: '@qortex/db',
-    path: 'packages/@qortex/db',
+    path: 'packages/db',
     publishName: '@qortex/db',
     description: 'Browser-only Redis-like key-value database with localStorage, sessionStorage, and IndexedDB support'
   },
   {
     name: '@qortex/store',
-    path: 'packages/@qortex/store',
+    path: 'packages/store',
     publishName: '@qortex/store',
     description: 'Framework-agnostic lightweight state management library'
   },
   {
     name: '@qortex/store-react',
-    path: 'packages/@qortex/store-react',
+    path: 'packages/store-react',
     publishName: '@qortex/store-react',
     description: 'React bindings for @qortex/store state management',
     dependencyTransforms: {
