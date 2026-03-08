@@ -37,8 +37,8 @@ export function useStore<T, U = T>(
 ): U {
     return useSyncExternalStoreWithSelector(
         store.subscribe,
-        store.getState,
-        store.getState, // server snapshot — same as client for client-only stores
+        store.get,
+        store.get, // server snapshot — same as client for client-only stores
         selector,
         equalityFn,
     );

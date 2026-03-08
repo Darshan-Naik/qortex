@@ -74,11 +74,11 @@ const counterStore = createStore((set, get) => ({
 }));
 
 // Read state
-counterStore.getState().count; // 0
+counterStore.get().count; // 0
 
 // Update state
-counterStore.getState().increment();
-counterStore.getState().count; // 1
+counterStore.get().increment();
+counterStore.get().count; // 1
 
 // Subscribe to changes
 const unsub = counterStore.subscribe((state, prev) => {
@@ -98,7 +98,7 @@ const unsub = counterStore.subscribe((state, prev) => {
                             { icon: Zap, title: 'Tiny Bundle', desc: 'Zero runtime dependencies, minimal overhead', color: 'text-yellow-600', bg: 'bg-yellow-100' },
                             { icon: Shield, title: 'Type-Safe', desc: 'Full TypeScript generics and inference', color: 'text-emerald-600', bg: 'bg-emerald-100' },
                             { icon: Code, title: 'Framework-Agnostic', desc: 'Works anywhere — Node, browser, vanilla JS', color: 'text-blue-600', bg: 'bg-blue-100' },
-                            { icon: Layers, title: 'Shallow Merge', desc: 'setState shallow-merges by default, or replace entirely', color: 'text-purple-600', bg: 'bg-purple-100' },
+                            { icon: Layers, title: 'Shallow Merge', desc: 'set shallow-merges by default, or replace entirely', color: 'text-purple-600', bg: 'bg-purple-100' },
                             { icon: RefreshCw, title: 'Subscribe / Unsubscribe', desc: 'Listen for state changes with cleanup', color: 'text-pink-600', bg: 'bg-pink-100' },
                             { icon: Clock, title: 'Actions Pattern', desc: 'Define actions alongside state in the initializer', color: 'text-indigo-600', bg: 'bg-indigo-100' },
                         ].map((f) => (
@@ -129,8 +129,8 @@ const unsub = counterStore.subscribe((state, prev) => {
                             <tbody className="divide-y divide-gray-100">
                                 {[
                                     { method: 'createStore(init)', desc: 'Create a new store with initial state and actions' },
-                                    { method: 'getState()', desc: 'Read the current state snapshot' },
-                                    { method: 'setState(partial, replace?)', desc: 'Update state (merge or replace)' },
+                                    { method: 'get()', desc: 'Read the current state snapshot' },
+                                    { method: 'set(partial, replace?)', desc: 'Update state (merge or replace)' },
                                     { method: 'subscribe(listener)', desc: 'Listen for changes, returns unsubscribe fn' },
                                     { method: 'destroy()', desc: 'Clear listeners and reset to initial state' },
                                 ].map((row) => (

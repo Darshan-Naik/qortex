@@ -34,7 +34,7 @@
     },
     "returns": {
         "type": "Store<T>",
-        "description": "A store instance with getState, setState, subscribe, and destroy methods"
+        "description": "A store instance with get, set, subscribe, and destroy methods"
     },
     "examples": [
         {
@@ -50,10 +50,10 @@
             "code": "import { createStore } from 'qortex-store-react';\n\nconst counterStore = createStore((set, get) => ({\n  count: 0,\n  // Use get() to read current state\n  increment: () => set({ count: get().count + 1 }),\n  // Use functional updates for atomic changes\n  decrement: () => set((s) => ({ count: s.count - 1 })),\n  // Access other state properties within actions\n  resetIfHigh: () => {\n    if (get().count > 10) set({ count: 0 });\n  }\n}));"
         },
         {
-            "title": "setState() — All Variants",
-            "description": "setState supports partial merging, functional updates, and full replacement:",
+            "title": "set() — All Variants",
+            "description": "set supports partial merging, functional updates, and full replacement:",
             "language": "typescript",
-            "code": "const store = createStore({ a: 1, b: 2 });\n\n// 1. Partial Merge (default)\nstore.setState({ a: 10 }); // { a: 10, b: 2 }\n\n// 2. Functional Update\nstore.setState((s) => ({ a: s.a + 1 })); // { a: 11, b: 2 }\n\n// 3. Full Replacement\nstore.setState({ a: 0 }, true); // { a: 0 }"
+            "code": "const store = createStore({ a: 1, b: 2 });\n\n// 1. Partial Merge (default)\nstore.set({ a: 10 }); // { a: 10, b: 2 }\n\n// 2. Functional Update\nstore.set((s) => ({ a: s.a + 1 })); // { a: 11, b: 2 }\n\n// 3. Full Replacement\nstore.set({ a: 0 }, true); // { a: 0 }"
         }
     ],
     "behaviors": [

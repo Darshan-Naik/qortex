@@ -36,6 +36,12 @@ function Counter() {
 }
 ```
 
+## 📖 Documentation
+
+**Complete documentation, examples, and API reference available at:**
+
+### 🌐 [qortex.darshannaik.com](https://qortex.darshannaik.com)
+
 ## 📖 API
 
 ### `useStore(store, selector?, equalityFn?)`
@@ -51,6 +57,16 @@ function Counter() {
 ## 📄 License
 
 LGPL-3.0 — see [LICENSE](../../LICENSE).
+
+## 🎯 Support
+
+Need help? Have questions? Want to chat about state management strategies?
+
+- 📚 **Documentation**: [qortex.darshannaik.com](https://qortex.darshannaik.com)
+- 📧 **Email**: [darshannaik.com](https://darshannaik.com)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/qortex/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Darshan-Naik/qortex/discussions)
+- 🌟 **Repository**: [https://github.com/Darshan-Naik/qortex](https://github.com/Darshan-Naik/qortex)
 
 ---
 

@@ -25,10 +25,10 @@ export type Store<T> = {
      * @returns The current state
      *
      * @example
-     * const state = store.getState();
+     * const state = store.get();
      * console.log(state.count);
      */
-    getState: () => T;
+    get: () => T;
 
     /**
      * Update the state.
@@ -42,17 +42,17 @@ export type Store<T> = {
      *
      * @example
      * // Partial merge
-     * store.setState({ count: 1 });
+     * store.set({ count: 1 });
      *
      * @example
      * // Updater function
-     * store.setState((state) => ({ count: state.count + 1 }));
+     * store.set((state) => ({ count: state.count + 1 }));
      *
      * @example
      * // Full replacement
-     * store.setState({ count: 0, name: "reset" }, true);
+     * store.set({ count: 0, name: "reset" }, true);
      */
-    setState: (
+    set: (
         partial: T | Partial<T> | ((state: T) => T | Partial<T>),
         replace?: boolean,
     ) => void;
@@ -60,7 +60,7 @@ export type Store<T> = {
     /**
      * Subscribe to state changes.
      *
-     * The listener is called after every `setState` that produces a new state reference.
+     * The listener is called after every `set` that produces a new state reference.
      *
      * @param listener - Callback invoked with `(newState, prevState)`
      * @returns An unsubscribe function
@@ -90,8 +90,8 @@ export type Store<T> = {
  * that reference store methods.
  *
  * @template T - The state type
- * @param set - Alias for `store.setState`
- * @param get - Alias for `store.getState`
+ * @param set - Alias for `store.set`
+ * @param get - Alias for `store.get`
  *
  * @example
  * const creator: StateCreator<CounterState> = (set, get) => ({
@@ -100,6 +100,6 @@ export type Store<T> = {
  * });
  */
 export type StateCreator<T> = (
-    set: Store<T>["setState"],
-    get: Store<T>["getState"],
+    set: Store<T>["set"],
+    get: Store<T>["get"],
 ) => T;

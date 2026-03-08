@@ -17,10 +17,10 @@
         },
         {
             "title": "2. Read and Update State",
-            "content": "Use `getState` and `setState` from anywhere:",
+            "content": "Use `get` and `set` from anywhere:",
             "code": {
                 "language": "typescript",
-                "code": "// Read state\ncounterStore.getState().count; // 0\n\n// Update via actions\ncounterStore.getState().increment();\ncounterStore.getState().count; // 1\n\n// Or use setState directly\ncounterStore.setState({ count: 42 });"
+                "code": "// Read state\ncounterStore.get().count; // 0\n\n// Update via actions\ncounterStore.get().increment();\ncounterStore.get().count; // 1\n\n// Or use set directly\ncounterStore.set({ count: 42 });"
             }
         },
         {

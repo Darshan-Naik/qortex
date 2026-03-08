@@ -43,7 +43,7 @@ describe("useStore", () => {
         expect(screen.getByTestId("count").textContent).toBe("0");
 
         act(() => {
-            counterStore.getState().increment();
+            counterStore.get().increment();
         });
 
         expect(screen.getByTestId("count").textContent).toBe("1");
@@ -61,7 +61,7 @@ describe("useStore", () => {
         expect(screen.getByTestId("count").textContent).toBe("0");
 
         act(() => {
-            counterStore.getState().increment();
+            counterStore.get().increment();
         });
 
         expect(screen.getByTestId("count").textContent).toBe("1");
@@ -87,7 +87,7 @@ describe("useStore", () => {
 
         // Change count (name stays the same) → should NOT re-render
         act(() => {
-            counterStore.getState().increment();
+            counterStore.get().increment();
         });
 
         // useSyncExternalStoreWithSelector + Object.is on name means no extra render
@@ -107,7 +107,7 @@ describe("useStore", () => {
 
         // This should not throw or cause issues
         act(() => {
-            counterStore.setState({ count: 999 });
+            counterStore.set({ count: 999 });
         });
     });
 
@@ -135,7 +135,7 @@ describe("useStore", () => {
         expect(screen.getByTestId("name").textContent).toBe("test");
 
         act(() => {
-            counterStore.getState().increment();
+            counterStore.get().increment();
         });
 
         expect(screen.getByTestId("count").textContent).toBe("1");

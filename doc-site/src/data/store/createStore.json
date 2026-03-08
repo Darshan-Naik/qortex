@@ -2,7 +2,7 @@
     "id": "createStore",
     "title": "createStore",
     "subtitle": "Create a state store",
-    "description": "Creates a new store instance with getState, setState, subscribe, and destroy methods.",
+    "description": "Creates a new store instance with get, set, subscribe, and destroy methods.",
     "category": "Core API",
     "tags": [
         "store",
@@ -34,14 +34,14 @@
     },
     "returns": {
         "type": "Store<T>",
-        "description": "A store instance with getState, setState, subscribe, and destroy methods"
+        "description": "A store instance with get, set, subscribe, and destroy methods"
     },
     "examples": [
         {
             "title": "Raw Object",
             "description": "The simplest way to create a store for data-only state:",
             "language": "typescript",
-            "code": "import { createStore } from 'qortex-store';\n\nconst userStore = createStore({ \n  name: 'John', \n  loggedIn: false \n});\n\n// Update via external setState\nuserStore.setState({ loggedIn: true });"
+            "code": "import { createStore } from 'qortex-store';\n\nconst userStore = createStore({ \n  name: 'John', \n  loggedIn: false \n});\n\n// Update via external set\nuserStore.set({ loggedIn: true });"
         },
         {
             "title": "Initializer Function (Set/Get)",
@@ -50,16 +50,16 @@
             "code": "const counterStore = createStore((set, get) => ({\n  count: 0,\n  // Use get() to read current state\n  increment: () => set({ count: get().count + 1 }),\n  // Use functional updates for atomic changes\n  decrement: () => set((s) => ({ count: s.count - 1 })),\n  // Access other state properties within actions\n  resetIfHigh: () => {\n    if (get().count > 10) set({ count: 0 });\n  }\n}));"
         },
         {
-            "title": "getState()",
+            "title": "get()",
             "description": "Read the current state snapshot at any time:",
             "language": "typescript",
-            "code": "const state = counterStore.getState();\nconsole.log(state.count); // 0\n\nstate.increment();\nconsole.log(counterStore.getState().count); // 1"
+            "code": "const state = counterStore.get();\nconsole.log(state.count); // 0\n\nstate.increment();\nconsole.log(counterStore.get().count); // 1"
         },
         {
-            "title": "setState() — All Variants",
-            "description": "setState supports partial merging, functional updates, and full replacement:",
+            "title": "set() — All Variants",
+            "description": "set supports partial merging, functional updates, and full replacement:",
             "language": "typescript",
-            "code": "const store = createStore({ a: 1, b: 2 });\n\n// 1. Partial Merge (default)\nstore.setState({ a: 10 }); // { a: 10, b: 2 }\n\n// 2. Functional Update\nstore.setState((s) => ({ a: s.a + 1 })); // { a: 11, b: 2 }\n\n// 3. Full Replacement\nstore.setState({ a: 0 }, true); // { a: 0 } (b is gone!)"
+            "code": "const store = createStore({ a: 1, b: 2 });\n\n// 1. Partial Merge (default)\nstore.set({ a: 10 }); // { a: 10, b: 2 }\n\n// 2. Functional Update\nstore.set((s) => ({ a: s.a + 1 })); // { a: 11, b: 2 }\n\n// 3. Full Replacement\nstore.set({ a: 0 }, true); // { a: 0 } (b is gone!)"
         },
         {
             "title": "subscribe()",

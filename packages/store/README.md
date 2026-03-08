@@ -29,11 +29,11 @@ const counterStore = createStore((set, get) => ({
 }));
 
 // Read state
-counterStore.getState().count; // 0
+counterStore.get().count; // 0
 
 // Update state
-counterStore.getState().increment();
-counterStore.getState().count; // 1
+counterStore.get().increment();
+counterStore.get().count; // 1
 
 // Subscribe to changes
 const unsub = counterStore.subscribe((state, prev) => {
@@ -44,6 +44,12 @@ const unsub = counterStore.subscribe((state, prev) => {
 unsub();
 counterStore.destroy();
 ```
+
+## 📖 Documentation
+
+**Complete documentation, examples, and API reference available at:**
+
+### 🌐 [qortex.darshannaik.com](https://qortex.darshannaik.com)
 
 ## 📖 API
 
@@ -59,14 +65,24 @@ Create a new store. The `initializer` receives `set` and `get`:
 
 | Method      | Signature                                   | Description                           |
 |-------------|---------------------------------------------|---------------------------------------|
-| `getState`  | `() => T`                                   | Current state snapshot                |
-| `setState`  | `(partial \| updater, replace?) => void`     | Merge (default) or replace state      |
+| `get`       | `() => T`                                   | Current state snapshot                |
+| `set`       | `(partial \| updater, replace?) => void`     | Merge (default) or replace state      |
 | `subscribe` | `(listener) => unsubscribe`                  | Listen for changes                    |
 | `destroy`   | `() => void`                                | Clear listeners, reset to initial     |
 
 ## 📄 License
 
 LGPL-3.0 — see [LICENSE](../../LICENSE).
+
+## 🎯 Support
+
+Need help? Have questions? Want to chat about state management strategies?
+
+- 📚 **Documentation**: [qortex.darshannaik.com](https://qortex.darshannaik.com)
+- 📧 **Email**: [darshannaik.com](https://darshannaik.com)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Darshan-Naik/qortex/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Darshan-Naik/qortex/discussions)
+- 🌟 **Repository**: [https://github.com/Darshan-Naik/qortex](https://github.com/Darshan-Naik/qortex)
 
 ---
 

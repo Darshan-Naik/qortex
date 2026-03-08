@@ -7,7 +7,7 @@ import { QortexStoreError } from "./errors";
  * @template T - The state type
  * @param initializer - A `StateCreator` function that receives `set` and `get`
  *                       and returns the initial state (can include action methods).
- * @returns A `Store<T>` instance with `getState`, `setState`, `subscribe`, and `destroy`.
+ * @returns A `Store<T>` instance with `get`, `set`, `subscribe`, and `destroy`.
  *
  * @throws {QortexStoreError} If `initializer` is not a function.
  *
@@ -20,9 +20,9 @@ import { QortexStoreError } from "./errors";
  *   reset: () => set({ count: 0 }),
  * }));
  *
- * counterStore.getState().count;       // 0
- * counterStore.getState().increment();
- * counterStore.getState().count;       // 1
+ * counterStore.get().count;       // 0
+ * counterStore.get().increment();
+ * counterStore.get().count;       // 1
  */
 export const createStore = <T>(initializer: T | StateCreator<T>): Store<T> => {
     let listeners = new Set<Listener<T>>();
@@ -31,9 +31,9 @@ export const createStore = <T>(initializer: T | StateCreator<T>): Store<T> => {
 
     // ── Internal helpers ────────────────────────────────────────────────
 
-    const getState: Store<T>["getState"] = () => state;
+    const get: Store<T>["get"] = () => state;
 
-    const setState: Store<T>["setState"] = (partial, replace) => {
+    const set: Store<T>["set"] = (partial, replace) => {
         const prevState = state;
 
         // Resolve next state
@@ -73,11 +73,11 @@ export const createStore = <T>(initializer: T | StateCreator<T>): Store<T> => {
     // ── Initialise state ────────────────────────────────────────────────
 
     if (typeof initializer === "function") {
-        state = (initializer as StateCreator<T>)(setState, getState);
+        state = (initializer as StateCreator<T>)(set, get);
     } else {
         state = initializer;
     }
     initialState = state;
 
-    return { getState, setState, subscribe, destroy };
+    return { get, set, subscribe, destroy };
 };
