@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Menu } from 'lucide-react';
 import { PackageSidebar } from '@/components/sidebar/PackageSidebar';
-import { NavigationSection } from '@/lib/navigation-core';
+import { NavigationSection } from '@/lib/navigation-query';
 
 interface PackageDocsLayoutProps {
     children: React.ReactNode;
@@ -11,7 +11,7 @@ interface PackageDocsLayoutProps {
     packageName: string;
     packageIcon: React.ReactNode;
     packageHref: string;
-    themeColor: 'purple' | 'blue' | 'indigo';
+    themeColor: 'purple' | 'blue' | 'indigo' | 'emerald';
 }
 
 export function PackageDocsLayout({

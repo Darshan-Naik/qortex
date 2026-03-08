@@ -1,0 +1,19 @@
+{
+    "id": "installation",
+    "title": "Installation",
+    "subtitle": "Get started with qortex-query-react",
+    "description": "Install qortex-query-react for your React application.",
+    "category": "Getting Started",
+    "status": "stable",
+    "content": "Install qortex-query-react using your preferred package manager. Note that qortex-query-react includes all qortex-query functionalities.",
+    "sections": [
+        {
+            "title": "Install Package",
+            "content": "Add the package to your React project:",
+            "code": {
+                "language": "bash",
+                "code": "# npm\nnpm install qortex-query-react\n\n# yarn\nyarn add qortex-query-react\n\n# pnpm\npnpm add qortex-query-react"
+            }
+        }
+    ]
+}

@@ -59,25 +59,25 @@
       "title": "Basic Usage",
       "description": "Create a localStorage persister",
       "language": "tsx",
-      "code": "import { createPersister } from 'qortex-core/persister';\nimport { setDefaultConfig } from 'qortex-react';\n\n// Create a localStorage persister\nconst persister = createPersister('local');\n\n// Use with setDefaultConfig\nsetDefaultConfig({ persister });"
+      "code": "import { createPersister } from 'qortex-query/persister';\nimport { setDefaultConfig } from 'qortex-query-react';\n\n// Create a localStorage persister\nconst persister = createPersister('local');\n\n// Use with setDefaultConfig\nsetDefaultConfig({ persister });"
     },
     {
       "title": "Session Storage",
       "description": "Create a sessionStorage persister",
       "language": "tsx",
-      "code": "import { createPersister } from 'qortex-core/persister';\nimport { setDefaultConfig } from 'qortex-react';\n\n// Create a sessionStorage persister\nconst sessionPersister = createPersister('session');\n\n// Use for session-based caching\nsetDefaultConfig({ persister: sessionPersister });"
+      "code": "import { createPersister } from 'qortex-query/persister';\nimport { setDefaultConfig } from 'qortex-query-react';\n\n// Create a sessionStorage persister\nconst sessionPersister = createPersister('session');\n\n// Use for session-based caching\nsetDefaultConfig({ persister: sessionPersister });"
     },
     {
       "title": "With Configuration",
       "description": "Create a persister with custom configuration",
       "language": "tsx",
-      "code": "import { createPersister } from 'qortex-core/persister';\nimport { setDefaultConfig } from 'qortex-react';\n\n// Create a persister with custom configuration\nconst persister = createPersister('local', {\n  burstKey: 'v1.0.0',\n  prefix: 'my_app_cache',\n  debounceTime: 50\n});\n\nsetDefaultConfig({ persister });"
+      "code": "import { createPersister } from 'qortex-query/persister';\nimport { setDefaultConfig } from 'qortex-query-react';\n\n// Create a persister with custom configuration\nconst persister = createPersister('local', {\n  burstKey: 'v1.0.0',\n  prefix: 'my_app_cache',\n  debounceTime: 50\n});\n\nsetDefaultConfig({ persister });"
     },
     {
       "title": "Selective Persistence",
       "description": "Exclude specific queries from persistence",
       "language": "tsx",
-      "code": "import { createPersister } from 'qortex-core/persister';\nimport { setDefaultConfig, registerFetcher } from 'qortex-react';\n\n// Enable persistence globally\nconst persister = createPersister('local', { burstKey: 'v1' });\nsetDefaultConfig({ persister });\n\n// This query will be persisted (default)\nregisterFetcher('user-profile', {\n  fetcher: () => fetch('/api/profile').then(r => r.json())\n});\n\n// This query will NOT be persisted (sensitive data)\nregisterFetcher('auth-token', {\n  fetcher: () => fetch('/api/token').then(r => r.json()),\n  persist: false // Exclude from persistence\n});"
+      "code": "import { createPersister } from 'qortex-query/persister';\nimport { setDefaultConfig, registerFetcher } from 'qortex-query-react';\n\n// Enable persistence globally\nconst persister = createPersister('local', { burstKey: 'v1' });\nsetDefaultConfig({ persister });\n\n// This query will be persisted (default)\nregisterFetcher('user-profile', {\n  fetcher: () => fetch('/api/profile').then(r => r.json())\n});\n\n// This query will NOT be persisted (sensitive data)\nregisterFetcher('auth-token', {\n  fetcher: () => fetch('/api/token').then(r => r.json()),\n  persist: false // Exclude from persistence\n});"
     }
   ],
   "behavior": [

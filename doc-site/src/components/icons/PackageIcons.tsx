@@ -1,16 +1,16 @@
 import React from 'react';
-import { Brain, BrainCircuit, Database } from 'lucide-react';
+import { Brain, BrainCircuit, Database, Layers } from 'lucide-react';
 
 interface IconProps extends React.ComponentProps<typeof Brain> {
     className?: string;
 }
 
-// "The Core Mind" - Represents qortex-core
+// "The Core Mind" - Represents qortex-query
 export function CoreIcon({ className, ...props }: IconProps) {
     return <Brain className={className} {...props} />;
 }
 
-// "The Synapse" - Represents qortex-react
+// "The Synapse" - Represents qortex-query-react
 export function ReactIcon({ className, ...props }: IconProps) {
     return <BrainCircuit className={className} {...props} />;
 }
@@ -43,3 +43,20 @@ export function DbIcon({ className, strokeWidth, ...props }: IconProps) {
         </div>
     );
 }
+
+// "The Vault" - Represents qortex-store
+export function StoreIcon({ className, strokeWidth, ...props }: IconProps) {
+    const sw = strokeWidth ? Number(strokeWidth) : 2;
+
+    return (
+        <div className={`relative inline-flex items-center justify-center ${className || ''}`} {...props as any}>
+            <Brain className="w-full h-full" strokeWidth={strokeWidth} />
+            <div className="absolute -bottom-[5%] -right-[5%] w-[60%] h-[60%] flex items-center justify-center">
+                <div className="relative w-full h-full bg-white rounded-full flex items-center justify-center shadow-sm ring-2 ring-white">
+                    <Layers className="w-[60%] h-[60%] text-emerald-600" strokeWidth={sw + 0.5} />
+                </div>
+            </div>
+        </div>
+    );
+}
+

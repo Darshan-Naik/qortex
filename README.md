@@ -2,8 +2,8 @@
 
 > **A minimal, performant data fetching library and browser database. Built for simplicity, efficiency, and developer happiness! 🎉**
 
-[![npm version](https://badge.fury.io/js/qortex-core.svg)](https://badge.fury.io/js/qortex-core)
-[![npm version](https://badge.fury.io/js/qortex-react.svg)](https://badge.fury.io/js/qortex-react)
+[![npm version](https://badge.fury.io/js/qortex-query.svg)](https://badge.fury.io/js/qortex-query)
+[![npm version](https://badge.fury.io/js/qortex-query-react.svg)](https://badge.fury.io/js/qortex-query-react)
 [![npm version](https://badge.fury.io/js/qortex-db.svg)](https://badge.fury.io/js/qortex-db)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![Bundle Size](https://img.shields.io/badge/tiny-bundle-brightgreen)](https://qortex.darshannaik.com)
@@ -24,21 +24,24 @@ Tired of complex data fetching libraries that make simple tasks complicated? **q
 
 | Package            | Description                                      | Size (gzip) |
 | ------------------ | ------------------------------------------------ | ----------- |
-| **`qortex-core`**  | Framework Agnostic Query Cache & Fetch Registry  | ~1.9KB      |
-| **`qortex-react`** | React Hooks for Data Fetching (includes core)    | ~2.6KB      |
-| **`qortex-db`**    | Async Browser Key-Value Database                 | ~1.2KB      |
+| **`qortex-query`**  | Framework Agnostic Query Cache & Fetch Registry  | ~1.9KB      |
+| **`qortex-query-react`** | React Hooks for Data Fetching (includes core)    | ~2.6KB      |
+| **`qortex-db`**     | Browser-only Redis-like Key-Value Database       | ~1.5KB      |
+| **`qortex-store`**  | Lightweight Framework-agnostic State Management  | ~0.8KB      |
+| **`qortex-store-react`** | React Bindings for qortex-store with Selectors | ~1.2KB      |
 
-## 📥 Installation
+## 🚀 Quick Start
+
+### For React Applications (Recommended)
 
 ```bash
-# Core runtime (works everywhere!)
-npm install qortex-core
+npm install qortex-query-react
+```
 
-# React integration
-npm install qortex-react
+### For Framework Agnostic / Vanilla JS
 
-# Browser Database
-npm install qortex-db
+```bash
+npm install qortex-query
 ```
 
 ## 📚 Documentation

@@ -12,22 +12,22 @@ export const dbNavigation: NavigationSection[] = [
     {
         title: "Getting Started",
         items: [
-            { title: "Installation", href: "/qortex-db/docs/installation" },
-            { title: "Quick Start", href: "/qortex-db/docs/quick-start" },
+            { title: "Installation", href: "/db/docs/installation" },
+            { title: "Quick Start", href: "/db/docs/quick-start" },
         ],
     },
     {
         title: "API",
         items: [
-            { title: "createDB", href: "/qortex-db/docs/createDB" },
+            { title: "createDB", href: "/db/docs/createDB" },
         ],
     },
     {
         title: "Drivers",
         items: [
-            { title: "localStorage", href: "/qortex-db/docs/localStorage" },
-            { title: "sessionStorage", href: "/qortex-db/docs/sessionStorage" },
-            { title: "IndexedDB", href: "/qortex-db/docs/indexedDB" },
+            { title: "localStorage", href: "/db/docs/localStorage" },
+            { title: "sessionStorage", href: "/db/docs/sessionStorage" },
+            { title: "IndexedDB", href: "/db/docs/indexedDB" },
         ],
     },
 ];

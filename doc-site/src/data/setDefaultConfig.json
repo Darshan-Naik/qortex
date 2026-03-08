@@ -42,19 +42,19 @@
             "title": "Basic Usage",
             "description": "Set global default configuration",
             "language": "tsx",
-            "code": "import { setDefaultConfig } from 'qortex-react';\n\n// Set global defaults\nsetDefaultConfig({\n  staleTime: 5 * 60 * 1000, // 5 minutes\n  refetchOnSubscribe: 'stale'\n});\n\n// Now all queries will use these defaults\nfunction UserProfile() {\n  const { data } = useQuery(['user', 'current'], {\n    fetcher: fetchUser\n    // Will use staleTime: 5 minutes, refetchOnSubscribe: 'stale'\n  });\n  \n  return <div>{data?.name}</div>;\n}"
+            "code": "import { setDefaultConfig } from 'qortex-query-react';\n\n// Set global defaults\nsetDefaultConfig({\n  staleTime: 5 * 60 * 1000, // 5 minutes\n  refetchOnSubscribe: 'stale'\n});\n\n// Now all queries will use these defaults\nfunction UserProfile() {\n  const { data } = useQuery(['user', 'current'], {\n    fetcher: fetchUser\n    // Will use staleTime: 5 minutes, refetchOnSubscribe: 'stale'\n  });\n  \n  return <div>{data?.name}</div>;\n}"
         },
         {
             "title": "Environment-specific Config",
             "description": "Set different defaults for different environments",
             "language": "tsx",
-            "code": "import { setDefaultConfig } from 'qortex-react';\n\n// Set environment-specific defaults\nif (process.env.NODE_ENV === 'development') {\n  setDefaultConfig({\n    staleTime: 0, // Always fresh in development\n    refetchOnSubscribe: 'always'\n  });\n} else {\n  setDefaultConfig({\n    staleTime: 10 * 60 * 1000, // 10 minutes in production\n    refetchOnSubscribe: 'stale'\n  });\n}\n\n// All queries will use environment-appropriate defaults"
+            "code": "import { setDefaultConfig } from 'qortex-query-react';\n\n// Set environment-specific defaults\nif (process.env.NODE_ENV === 'development') {\n  setDefaultConfig({\n    staleTime: 0, // Always fresh in development\n    refetchOnSubscribe: 'always'\n  });\n} else {\n  setDefaultConfig({\n    staleTime: 10 * 60 * 1000, // 10 minutes in production\n    refetchOnSubscribe: 'stale'\n  });\n}\n\n// All queries will use environment-appropriate defaults"
         },
         {
             "title": "Override Defaults",
             "description": "Override defaults for specific queries",
             "language": "tsx",
-            "code": "import { setDefaultConfig } from 'qortex-react';\n\n// Set global defaults\nsetDefaultConfig({\n  staleTime: 5 * 60 * 1000, // 5 minutes\n  refetchOnSubscribe: 'stale'\n});\n\nfunction RealTimeData() {\n  // Override defaults for real-time data\n  const { data } = useQuery('real-time-data', {\n    fetcher: fetchRealTimeData,\n    staleTime: 0, // Always fresh\n    refetchOnSubscribe: 'always' // Always refetch\n  });\n  \n  return <div>{data?.value}</div>;\n}\n\nfunction CachedData() {\n  // Uses global defaults (5 minutes stale time)\n  const { data } = useQuery('cached-data', {\n    fetcher: fetchCachedData\n  });\n  \n  return <div>{data?.value}</div>;\n}"
+            "code": "import { setDefaultConfig } from 'qortex-query-react';\n\n// Set global defaults\nsetDefaultConfig({\n  staleTime: 5 * 60 * 1000, // 5 minutes\n  refetchOnSubscribe: 'stale'\n});\n\nfunction RealTimeData() {\n  // Override defaults for real-time data\n  const { data } = useQuery('real-time-data', {\n    fetcher: fetchRealTimeData,\n    staleTime: 0, // Always fresh\n    refetchOnSubscribe: 'always' // Always refetch\n  });\n  \n  return <div>{data?.value}</div>;\n}\n\nfunction CachedData() {\n  // Uses global defaults (5 minutes stale time)\n  const { data } = useQuery('cached-data', {\n    fetcher: fetchCachedData\n  });\n  \n  return <div>{data?.value}</div>;\n}"
         }
     ],
     "behavior": [

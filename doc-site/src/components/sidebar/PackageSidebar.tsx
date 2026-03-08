@@ -4,14 +4,14 @@ import { useState, memo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, ChevronRight, X, Layers } from 'lucide-react';
-import { NavigationSection } from '@/lib/navigation-core';
+import { NavigationSection } from '@/lib/navigation-query';
 
 interface PackageSidebarProps {
     navigation: NavigationSection[];
     packageName: string;
     packageIcon: React.ReactNode;
     packageHref: string;
-    themeColor: 'purple' | 'blue' | 'indigo';
+    themeColor: 'purple' | 'blue' | 'indigo' | 'emerald';
     onClose?: () => void;
 }
 
@@ -30,6 +30,11 @@ const colorClasses = {
         bg: 'from-indigo-50 to-blue-50',
         icon: 'from-indigo-600 to-blue-600',
         active: 'bg-indigo-100 text-indigo-900',
+    },
+    emerald: {
+        bg: 'from-emerald-50 to-teal-50',
+        icon: 'from-emerald-600 to-teal-600',
+        active: 'bg-emerald-100 text-emerald-900',
     },
 };
 

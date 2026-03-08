@@ -1,0 +1,55 @@
+{
+  "name": "qortex-query",
+  "version": "1.0.0",
+  "description": "Framework-agnostic query cache & fetch registry (MFE friendly).",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./persister": {
+      "types": "./dist/persister-export.d.ts",
+      "import": "./dist/persister-export.mjs",
+      "require": "./dist/persister-export.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Darshan-Naik/qortex.git"
+  },
+  "homepage": "https://qortex.darshannaik.com",
+  "bugs": {
+    "url": "https://github.com/Darshan-Naik/qortex/issues"
+  },
+  "keywords": [
+    "qortex",
+    "query",
+    "cache",
+    "runtime",
+    "mfe",
+    "data-fetching",
+    "typescript"
+  ],
+  "author": "Darshan Naik",
+  "license": "LGPL-3.0",
+  "devDependencies": {
+    "tsup": "^6.0.0",
+    "typescript": "^5.0.0"
+  }
+}

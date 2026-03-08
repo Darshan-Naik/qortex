@@ -63,13 +63,13 @@
             "title": "With Fetcher",
             "description": "Execute a one-time fetch operation with inline fetcher",
             "language": "tsx",
-            "code": "import { fetchQuery } from 'qortex-react';\n\nasync function handleSubmit() {\n  try {\n    const result = await fetchQuery(\n      'submit-form',\n      {\n        fetcher: async () => {\n          const response = await fetch('/api/submit', {\n            method: 'POST',\n            body: JSON.stringify(formData)\n          });\n          return response.json();\n        }\n      }\n    );\n    \n    console.log('Form submitted:', result);\n  } catch (error) {\n    console.error('Submission failed:', error);\n  }\n}"
+            "code": "import { fetchQuery } from 'qortex-query-react';\n\nasync function handleSubmit() {\n  try {\n    const result = await fetchQuery(\n      'submit-form',\n      {\n        fetcher: async () => {\n          const response = await fetch('/api/submit', {\n            method: 'POST',\n            body: JSON.stringify(formData)\n          });\n          return response.json();\n        }\n      }\n    );\n    \n    console.log('Form submitted:', result);\n  } catch (error) {\n    console.error('Submission failed:', error);\n  }\n}"
         },
         {
             "title": "Using Registered Fetcher",
             "description": "Use fetchQuery with a previously registered fetcher",
             "language": "tsx",
-            "code": "import { fetchQuery, registerFetcher } from 'qortex-react';\n\n// First, register a fetcher\nregisterFetcher('user-data', {\n  fetcher: async () => {\n    const response = await fetch('/api/user');\n    return response.json();\n  }\n});\n\nfunction RefreshButton() {\n  const handleRefresh = async () => {\n    try {\n      // No need to provide fetcher - uses registered one\n      await fetchQuery('user-data');\n      \n      // Data is now cached and will update all components using this query\n      console.log('Data refreshed!');\n    } catch (error) {\n      console.error('Refresh failed:', error);\n    }\n  };\n\n  return (\n    <button onClick={handleRefresh}>\n      Refresh Data\n    </button>\n  );\n}"
+            "code": "import { fetchQuery, registerFetcher } from 'qortex-query-react';\n\n// First, register a fetcher\nregisterFetcher('user-data', {\n  fetcher: async () => {\n    const response = await fetch('/api/user');\n    return response.json();\n  }\n});\n\nfunction RefreshButton() {\n  const handleRefresh = async () => {\n    try {\n      // No need to provide fetcher - uses registered one\n      await fetchQuery('user-data');\n      \n      // Data is now cached and will update all components using this query\n      console.log('Data refreshed!');\n    } catch (error) {\n      console.error('Refresh failed:', error);\n    }\n  };\n\n  return (\n    <button onClick={handleRefresh}>\n      Refresh Data\n    </button>\n  );\n}"
         }
     ],
     "behavior": [

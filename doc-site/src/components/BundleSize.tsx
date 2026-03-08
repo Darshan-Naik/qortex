@@ -15,7 +15,7 @@ export function BundleSize() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                    {/* qortex-react bundle info */}
+                    {/* qortex-query-react bundle info */}
                     <div className="card">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center">
@@ -23,12 +23,12 @@ export function BundleSize() {
                                     <Package className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-gray-900">qortex-react</h3>
+                                    <h3 className="text-lg font-semibold text-gray-900">qortex-query-react</h3>
                                     <p className="text-sm text-gray-600">Complete React solution</p>
                                 </div>
                             </div>
                             <a
-                                href="https://bundlephobia.com/package/qortex-react"
+                                href="https://bundlephobia.com/package/qortex-query-react"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-primary-600 hover:text-primary-700 transition-colors"
@@ -39,33 +39,33 @@ export function BundleSize() {
 
                         <div className="flex flex-wrap gap-3 justify-center">
                             <a
-                                href="https://bundlephobia.com/package/qortex-react"
+                                href="https://bundlephobia.com/package/qortex-query-react"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:opacity-80 transition-opacity"
                             >
                                 <img
-                                    src="https://img.shields.io/bundlephobia/minzip/qortex-react"
-                                    alt="qortex-react bundle size"
+                                    src="https://img.shields.io/bundlephobia/minzip/qortex-query-react"
+                                    alt="qortex-query-react bundle size"
                                     className="h-6"
                                 />
                             </a>
                             <a
-                                href="https://bundlephobia.com/package/qortex-react"
+                                href="https://bundlephobia.com/package/qortex-query-react"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:opacity-80 transition-opacity"
                             >
                                 <img
-                                    src="https://img.shields.io/bundlephobia/min/qortex-react"
-                                    alt="qortex-react minified size"
+                                    src="https://img.shields.io/bundlephobia/min/qortex-query-react"
+                                    alt="qortex-query-react minified size"
                                     className="h-6"
                                 />
                             </a>
                         </div>
                     </div>
 
-                    {/* qortex-core bundle info */}
+                    {/* qortex-query bundle info */}
                     <div className="card">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center">
@@ -73,12 +73,12 @@ export function BundleSize() {
                                     <Zap className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-gray-900">qortex-core</h3>
+                                    <h3 className="text-lg font-semibold text-gray-900">qortex-query</h3>
                                     <p className="text-sm text-gray-600">Framework-agnostic core</p>
                                 </div>
                             </div>
                             <a
-                                href="https://bundlephobia.com/package/qortex-core"
+                                href="https://bundlephobia.com/package/qortex-query"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-primary-600 hover:text-primary-700 transition-colors"
@@ -89,26 +89,26 @@ export function BundleSize() {
 
                         <div className="flex flex-wrap gap-3 justify-center">
                             <a
-                                href="https://bundlephobia.com/package/qortex-core"
+                                href="https://bundlephobia.com/package/qortex-query"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:opacity-80 transition-opacity"
                             >
                                 <img
-                                    src="https://img.shields.io/bundlephobia/minzip/qortex-core"
-                                    alt="qortex-core bundle size"
+                                    src="https://img.shields.io/bundlephobia/minzip/qortex-query"
+                                    alt="qortex-query bundle size"
                                     className="h-6"
                                 />
                             </a>
                             <a
-                                href="https://bundlephobia.com/package/qortex-core"
+                                href="https://bundlephobia.com/package/qortex-query"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:opacity-80 transition-opacity"
                             >
                                 <img
-                                    src="https://img.shields.io/bundlephobia/min/qortex-core"
-                                    alt="qortex-core minified size"
+                                    src="https://img.shields.io/bundlephobia/min/qortex-query"
+                                    alt="qortex-query minified size"
                                     className="h-6"
                                 />
                             </a>

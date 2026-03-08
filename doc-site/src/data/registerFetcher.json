@@ -77,19 +77,19 @@
             "title": "Basic Registration",
             "description": "Register a fetcher for a query key",
             "language": "tsx",
-            "code": "import { registerFetcher } from 'qortex-react';\n\n// Register a fetcher for user data\nregisterFetcher(\n  'user-data',\n  {\n    fetcher: async () => {\n      const response = await fetch('/api/user');\n      return response.json();\n    }\n  }\n);\n\n// Now you can use it without specifying a fetcher\nfunction UserProfile() {\n  const { data, isLoading } = useQuery('user-data', {});\n  \n  if (isLoading) return <div>Loading...</div>;\n  return <div>Hello, {data.name}!</div>;\n}"
+            "code": "import { registerFetcher } from 'qortex-query-react';\n\n// Register a fetcher for user data\nregisterFetcher(\n  'user-data',\n  {\n    fetcher: async () => {\n      const response = await fetch('/api/user');\n      return response.json();\n    }\n  }\n);\n\n// Now you can use it without specifying a fetcher\nfunction UserProfile() {\n  const { data, isLoading } = useQuery('user-data', {});\n  \n  if (isLoading) return <div>Loading...</div>;\n  return <div>Hello, {data.name}!</div>;\n}"
         },
         {
             "title": "With Options",
             "description": "Register a fetcher with default options",
             "language": "tsx",
-            "code": "import { registerFetcher } from 'qortex-react';\n\n// Register with default options\nregisterFetcher(\n  'products',\n  {\n    fetcher: async () => {\n      const response = await fetch('/api/products');\n      return response.json();\n    },\n    staleTime: 5 * 60 * 1000, // 5 minutes\n    refetchOnSubscribe: 'stale'\n  }\n);\n\n// Use with minimal configuration\nfunction ProductList() {\n  const { data } = useQuery('products', {});\n  \n  return (\n    <div>\n      {data?.map(product => (\n        <div key={product.id}>{product.name}</div>\n      ))}\n    </div>\n  );\n}"
+            "code": "import { registerFetcher } from 'qortex-query-react';\n\n// Register with default options\nregisterFetcher(\n  'products',\n  {\n    fetcher: async () => {\n      const response = await fetch('/api/products');\n      return response.json();\n    },\n    staleTime: 5 * 60 * 1000, // 5 minutes\n    refetchOnSubscribe: 'stale'\n  }\n);\n\n// Use with minimal configuration\nfunction ProductList() {\n  const { data } = useQuery('products', {});\n  \n  return (\n    <div>\n      {data?.map(product => (\n        <div key={product.id}>{product.name}</div>\n      ))}\n    </div>\n  );\n}"
         },
         {
             "title": "Skip Persistence",
             "description": "Exclude sensitive data from persistence",
             "language": "tsx",
-            "code": "import { registerFetcher } from 'qortex-react';\n\n// User profile - persisted (default)\nregisterFetcher('user-profile', {\n  fetcher: async () => fetch('/api/profile').then(r => r.json())\n});\n\n// Auth tokens - NOT persisted (sensitive data)\nregisterFetcher('auth-session', {\n  fetcher: async () => fetch('/api/session').then(r => r.json()),\n  persist: false // Won't be saved to localStorage/sessionStorage\n});\n\n// Temporary UI state - NOT persisted\nregisterFetcher('temp-filters', {\n  fetcher: async () => ({ category: 'all', sort: 'newest' }),\n  persist: false\n});"
+            "code": "import { registerFetcher } from 'qortex-query-react';\n\n// User profile - persisted (default)\nregisterFetcher('user-profile', {\n  fetcher: async () => fetch('/api/profile').then(r => r.json())\n});\n\n// Auth tokens - NOT persisted (sensitive data)\nregisterFetcher('auth-session', {\n  fetcher: async () => fetch('/api/session').then(r => r.json()),\n  persist: false // Won't be saved to localStorage/sessionStorage\n});\n\n// Temporary UI state - NOT persisted\nregisterFetcher('temp-filters', {\n  fetcher: async () => ({ category: 'all', sort: 'newest' }),\n  persist: false\n});"
         }
     ],
     "behavior": [
