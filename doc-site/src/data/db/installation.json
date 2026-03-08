@@ -1,0 +1,19 @@
+{
+    "id": "installation",
+    "title": "Installation",
+    "subtitle": "Get started with @qortex/db",
+    "description": "Install @qortex/db for browser-based key-value storage.",
+    "category": "Getting Started",
+    "status": "stable",
+    "content": "Install @qortex/db using your preferred package manager.",
+    "sections": [
+        {
+            "title": "Install Package",
+            "content": "Add the package to your project:",
+            "code": {
+                "language": "bash",
+                "code": "# npm\nnpm install @qortex/db\n\n# yarn\nyarn add @qortex/db\n\n# pnpm\npnpm add @qortex/db"
+            }
+        }
+    ]
+}

@@ -12,27 +12,27 @@ export const coreNavigation: NavigationSection[] = [
     {
         title: "Getting Started",
         items: [
-            { title: "Installation", href: "/qortex-core/docs/installation" },
-            { title: "Quick Start", href: "/qortex-core/docs/quick-start" },
+            { title: "Installation", href: "/query/docs/installation" },
+            { title: "Quick Start", href: "/query/docs/quick-start" },
         ],
     },
     {
         title: "Core APIs",
         items: [
-            { title: "registerFetcher", href: "/qortex-core/docs/registerFetcher" },
-            { title: "fetchQuery", href: "/qortex-core/docs/fetchQuery" },
-            { title: "getQueryData", href: "/qortex-core/docs/getQueryData" },
-            { title: "setQueryData", href: "/qortex-core/docs/setQueryData" },
-            { title: "getQueryState", href: "/qortex-core/docs/getQueryState" },
-            { title: "invalidateQuery", href: "/qortex-core/docs/invalidateQuery" },
-            { title: "subscribeQuery", href: "/qortex-core/docs/subscribeQuery" },
+            { title: "registerFetcher", href: "/query/docs/registerFetcher" },
+            { title: "fetchQuery", href: "/query/docs/fetchQuery" },
+            { title: "getQueryData", href: "/query/docs/getQueryData" },
+            { title: "setQueryData", href: "/query/docs/setQueryData" },
+            { title: "getQueryState", href: "/query/docs/getQueryState" },
+            { title: "invalidateQuery", href: "/query/docs/invalidateQuery" },
+            { title: "subscribeQuery", href: "/query/docs/subscribeQuery" },
         ],
     },
     {
         title: "Advanced",
         items: [
-            { title: "setDefaultConfig", href: "/qortex-core/docs/setDefaultConfig" },
-            { title: "createPersister", href: "/qortex-core/docs/createPersister" },
+            { title: "setDefaultConfig", href: "/query/docs/setDefaultConfig" },
+            { title: "createPersister", href: "/query/docs/createPersister" },
         ],
     },
 ];

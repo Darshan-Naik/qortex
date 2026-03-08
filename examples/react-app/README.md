@@ -1,6 +1,6 @@
 # 🚀 qortex React Example
 
-This comprehensive example demonstrates the full power of `qortex-react` using real API data from [JSONPlaceholder](https://jsonplaceholder.typicode.com/). It showcases various data fetching patterns, caching strategies, and error handling techniques with actual network requests.
+This comprehensive example demonstrates the full power of `@qortex/query-react` using real API data from [JSONPlaceholder](https://jsonplaceholder.typicode.com/). It showcases various data fetching patterns, caching strategies, and error handling techniques with actual network requests.
 
 ## 🌟 Features Demonstrated
 
@@ -50,7 +50,7 @@ pnpm install
 pnpm run build:packages
 
 # Run the example dev server
-pnpm --filter qortex-react-example run dev
+pnpm --filter @qortex/query-react-example run dev
 ```
 
 Open http://localhost:5173
@@ -126,7 +126,7 @@ const { data: users, isLoading, isSuccess, isError, error, refetch } = useQuery(
 
 ## 🔧 Development Notes
 
-- The example depends on `qortex-react` via the workspace protocol
+- The example depends on `@qortex/query-react` via the workspace protocol
 - Local packages are automatically linked by pnpm
 - Changes to packages require rebuilding: `pnpm -w -r run build`
 - Vite + workspace linking works during development

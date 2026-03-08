@@ -1,0 +1,19 @@
+{
+    "id": "sessionStorage",
+    "title": "sessionStorage Driver",
+    "subtitle": "Session-only synchronous storage",
+    "description": "Standard browser sessionStorage wrapper.",
+    "category": "Drivers",
+    "status": "stable",
+    "content": "Uses the browser's sessionStorage API. Data is cleared when the tab is closed.",
+    "sections": [
+        {
+            "title": "Usage",
+            "content": "Specify the driver in options:",
+            "code": {
+                "language": "typescript",
+                "code": "import { createDB } from '@qortex/db';\n\nconst db = createDB({ \n  name: 'my-session', \n  driver: 'sessionStorage' \n});"
+            }
+        }
+    ]
+}

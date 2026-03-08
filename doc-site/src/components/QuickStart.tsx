@@ -6,25 +6,25 @@ import { Copy, Check, Terminal, Package } from 'lucide-react'
 const codeExamples = [
     {
         name: 'Installation (React)',
-        code: `npm install qortex-react
+        code: `npm install @qortex/query-react
 # or
-pnpm add qortex-react
+pnpm add @qortex/query-react
 # or
-yarn add qortex-react`,
+yarn add @qortex/query-react`,
         language: 'bash',
     },
     {
         name: 'Installation (Core)',
-        code: `npm install qortex-core
+        code: `npm install @qortex/query
 # or
-pnpm add qortex-core
+pnpm add @qortex/query
 # or
-yarn add qortex-core`,
+yarn add @qortex/query`,
         language: 'bash',
     },
     {
         name: 'Basic Usage',
-        code: `import { useQuery, registerFetcher } from "qortex-react";
+        code: `import { useQuery, registerFetcher } from "@qortex/query-react";
 
 // Register a fetcher
 registerFetcher(["todos"], {
@@ -57,7 +57,7 @@ function TodosList() {
     },
     {
         name: 'Advanced Configuration',
-        code: `import { registerFetcher, setDefaultConfig } from "qortex-react";
+        code: `import { registerFetcher, setDefaultConfig } from "@qortex/query-react";
 
 // Set global defaults
 setDefaultConfig({

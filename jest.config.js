@@ -33,9 +33,9 @@ module.exports = {
   // Projects configuration for different packages
   projects: [
     {
-      displayName: 'qortex-core',
+      displayName: '@qortex/query',
       testEnvironment: 'node',
-      roots: ['<rootDir>/packages/qortex-core'],
+      roots: ['<rootDir>/packages/query'],
       testPathIgnorePatterns: [
         '/node_modules/',
         '/dist/',
@@ -49,12 +49,12 @@ module.exports = {
         '**/?(*.)+(spec|test).ts'
       ],
       collectCoverageFrom: [
-        'packages/qortex-core/src/**/*.ts',
-        '!packages/qortex-core/src/**/*.d.ts',
-        '!packages/qortex-core/src/**/*.test.ts',
-        '!packages/qortex-core/src/**/*.spec.ts'
+        'packages/query/src/**/*.ts',
+        '!packages/query/src/**/*.d.ts',
+        '!packages/query/src/**/*.test.ts',
+        '!packages/query/src/**/*.spec.ts'
       ],
-      coverageDirectory: 'coverage/qortex-core',
+      coverageDirectory: 'coverage/query',
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       transform: {
         '^.+\\.(js|ts)$': 'babel-jest',
@@ -62,9 +62,9 @@ module.exports = {
       moduleFileExtensions: ['js', 'ts', 'json'],
     },
     {
-      displayName: 'qortex-react',
+      displayName: '@qortex/query-react',
       testEnvironment: 'jsdom',
-      roots: ['<rootDir>/packages/qortex-react'],
+      roots: ['<rootDir>/packages/query-react'],
       testPathIgnorePatterns: [
         '/node_modules/',
         '/dist/',
@@ -78,25 +78,25 @@ module.exports = {
         '**/?(*.)+(spec|test).jsx'
       ],
       collectCoverageFrom: [
-        'packages/qortex-react/src/**/*.{js,jsx,ts,tsx}',
-        '!packages/qortex-react/src/**/*.d.ts',
-        '!packages/qortex-react/src/**/*.test.{js,jsx,ts,tsx}',
-        '!packages/qortex-react/src/**/*.spec.{js,jsx,ts,tsx}'
+        'packages/query-react/src/**/*.{js,jsx,ts,tsx}',
+        '!packages/query-react/src/**/*.d.ts',
+        '!packages/query-react/src/**/*.test.{js,jsx,ts,tsx}',
+        '!packages/query-react/src/**/*.spec.{js,jsx,ts,tsx}'
       ],
-      coverageDirectory: 'coverage/qortex-react',
+      coverageDirectory: 'coverage/query-react',
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       transform: {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
       },
       moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
       moduleNameMapper: {
-        '^qortex-core$': '<rootDir>/packages/qortex-core/dist/index.js',
+        '^@qortex/query$': '<rootDir>/packages/query/dist/index.js',
       },
     },
     {
-      displayName: 'qortex-db',
+      displayName: '@qortex/db',
       testEnvironment: 'jsdom',
-      roots: ['<rootDir>/packages/qortex-db'],
+      roots: ['<rootDir>/packages/db'],
       testPathIgnorePatterns: [
         '/node_modules/',
         '/dist/',
@@ -110,12 +110,12 @@ module.exports = {
         '**/?(*.)+(spec|test).ts'
       ],
       collectCoverageFrom: [
-        'packages/qortex-db/src/**/*.ts',
-        '!packages/qortex-db/src/**/*.d.ts',
-        '!packages/qortex-db/src/**/*.test.ts',
-        '!packages/qortex-db/src/**/*.spec.ts'
+        'packages/db/src/**/*.ts',
+        '!packages/db/src/**/*.d.ts',
+        '!packages/db/src/**/*.test.ts',
+        '!packages/db/src/**/*.spec.ts'
       ],
-      coverageDirectory: 'coverage/qortex-db',
+      coverageDirectory: 'coverage/db',
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       transform: {
         '^.+\\.(js|ts)$': 'babel-jest',
@@ -123,9 +123,9 @@ module.exports = {
       moduleFileExtensions: ['js', 'ts', 'json'],
     },
     {
-      displayName: 'qortex-store',
+      displayName: '@qortex/store',
       testEnvironment: 'node',
-      roots: ['<rootDir>/packages/qortex-store'],
+      roots: ['<rootDir>/packages/store'],
       testPathIgnorePatterns: [
         '/node_modules/',
         '/dist/',
@@ -139,12 +139,12 @@ module.exports = {
         '**/?(*.)+(spec|test).ts'
       ],
       collectCoverageFrom: [
-        'packages/qortex-store/src/**/*.ts',
-        '!packages/qortex-store/src/**/*.d.ts',
-        '!packages/qortex-store/src/**/*.test.ts',
-        '!packages/qortex-store/src/**/*.spec.ts'
+        'packages/store/src/**/*.ts',
+        '!packages/store/src/**/*.d.ts',
+        '!packages/store/src/**/*.test.ts',
+        '!packages/store/src/**/*.spec.ts'
       ],
-      coverageDirectory: 'coverage/qortex-store',
+      coverageDirectory: 'coverage/store',
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       transform: {
         '^.+\\.(js|ts)$': 'babel-jest',
@@ -152,9 +152,9 @@ module.exports = {
       moduleFileExtensions: ['js', 'ts', 'json'],
     },
     {
-      displayName: 'qortex-store-react',
+      displayName: '@qortex/store-react',
       testEnvironment: 'jsdom',
-      roots: ['<rootDir>/packages/qortex-store-react'],
+      roots: ['<rootDir>/packages/store-react'],
       testPathIgnorePatterns: [
         '/node_modules/',
         '/dist/',
@@ -168,19 +168,19 @@ module.exports = {
         '**/?(*.)+(spec|test).jsx'
       ],
       collectCoverageFrom: [
-        'packages/qortex-store-react/src/**/*.{js,jsx,ts,tsx}',
-        '!packages/qortex-store-react/src/**/*.d.ts',
-        '!packages/qortex-store-react/src/**/*.test.{js,jsx,ts,tsx}',
-        '!packages/qortex-store-react/src/**/*.spec.{js,jsx,ts,tsx}'
+        'packages/store-react/src/**/*.{js,jsx,ts,tsx}',
+        '!packages/store-react/src/**/*.d.ts',
+        '!packages/store-react/src/**/*.test.{js,jsx,ts,tsx}',
+        '!packages/store-react/src/**/*.spec.{js,jsx,ts,tsx}'
       ],
-      coverageDirectory: 'coverage/qortex-store-react',
+      coverageDirectory: 'coverage/store-react',
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       transform: {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
       },
       moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
       moduleNameMapper: {
-        '^qortex-store$': '<rootDir>/packages/qortex-store/src/index.ts',
+        '^@qortex/store$': '<rootDir>/packages/store/src/index.ts',
       },
     }
   ]

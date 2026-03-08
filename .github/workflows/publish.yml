@@ -73,7 +73,7 @@ jobs:
       - name: Create git tag
         if: steps.version_check.outputs.publish == 'true'
         run: |
-          VERSION=$(node -p "require('./packages/qortex-core/package.json').version")
+          VERSION=$(node -p "require('./packages/query/package.json').version")
           TAG="v${VERSION}"
 
           if git rev-parse "$TAG" >/dev/null 2>&1; then

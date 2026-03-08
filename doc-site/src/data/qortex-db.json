@@ -1,5 +1,5 @@
 {
-    "id": "qortex-db",
+    "id": "@qortex/db",
     "title": "Qortex DB",
     "subtitle": "Browser Key-Value Database",
     "description": "A browser-only, Redis-like key-value database with localStorage, sessionStorage, and IndexedDB support.",
@@ -12,7 +12,7 @@
         "indexedDB"
     ],
     "status": "stable",
-    "content": "qortex-db provides a unified async API across browser storage backends. It's simple, fast, and consistent!",
+    "content": "@qortex/db provides a unified async API across browser storage backends. It's simple, fast, and consistent!",
     "callouts": [
         {
             "type": "info",
@@ -24,10 +24,10 @@
     "sections": [
         {
             "title": "Installation",
-            "content": "Install qortex-db using your preferred package manager:",
+            "content": "Install @qortex/db using your preferred package manager:",
             "code": {
                 "language": "bash",
-                "code": "# npm\nnpm install qortex-db\n\n# yarn\nyarn add qortex-db\n\n# pnpm\npnpm add qortex-db"
+                "code": "# npm\nnpm install @qortex/db\n\n# yarn\nyarn add @qortex/db\n\n# pnpm\npnpm add @qortex/db"
             }
         },
         {
@@ -35,7 +35,7 @@
             "content": "Create a database and start storing data:",
             "code": {
                 "language": "typescript",
-                "code": "import { createDB } from 'qortex-db';\n\n// Simple usage (uses localStorage)\nconst db = createDB('myapp');\n\n// With options\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });\n\n// Basic operations\nawait db.set('user:1', { name: 'John', age: 30 });\nconst user = await db.get<User>('user:1');\nconst exists = await db.has('user:1');\nawait db.del('user:1');\n\n// Find keys by pattern\nconst userKeys = await db.scan('user:*');\n\n// Clear all data for this database\nawait db.drop();"
+                "code": "import { createDB } from '@qortex/db';\n\n// Simple usage (uses localStorage)\nconst db = createDB('myapp');\n\n// With options\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });\n\n// Basic operations\nawait db.set('user:1', { name: 'John', age: 30 });\nconst user = await db.get<User>('user:1');\nconst exists = await db.has('user:1');\nawait db.del('user:1');\n\n// Find keys by pattern\nconst userKeys = await db.scan('user:*');\n\n// Clear all data for this database\nawait db.drop();"
             }
         },
         {

@@ -12,33 +12,33 @@ export const reactNavigation: NavigationSection[] = [
     {
         title: "Getting Started",
         items: [
-            { title: "Installation", href: "/qortex-react/docs/installation" },
-            { title: "Quick Start", href: "/qortex-react/docs/quick-start" },
+            { title: "Installation", href: "/query-react/docs/installation" },
+            { title: "Quick Start", href: "/query-react/docs/quick-start" },
         ],
     },
     {
         title: "React Hooks",
         items: [
-            { title: "useQuery", href: "/qortex-react/docs/useQuery" },
-            { title: "useMutate", href: "/qortex-react/docs/useMutate" },
-            { title: "useQueryData", href: "/qortex-react/docs/useQueryData" },
-            { title: "useQuerySelect", href: "/qortex-react/docs/useQuerySelect" },
+            { title: "useQuery", href: "/query-react/docs/useQuery" },
+            { title: "useMutate", href: "/query-react/docs/useMutate" },
+            { title: "useQueryData", href: "/query-react/docs/useQueryData" },
+            { title: "useQuerySelect", href: "/query-react/docs/useQuerySelect" },
         ],
     },
     {
         title: "Core APIs",
         items: [
-            { title: "registerFetcher", href: "/qortex-react/docs/registerFetcher" },
-            { title: "fetchQuery", href: "/qortex-react/docs/fetchQuery" },
-            { title: "getQueryData", href: "/qortex-react/docs/getQueryData" },
-            { title: "setQueryData", href: "/qortex-react/docs/setQueryData" },
-            { title: "invalidateQuery", href: "/qortex-react/docs/invalidateQuery" },
+            { title: "registerFetcher", href: "/query-react/docs/registerFetcher" },
+            { title: "fetchQuery", href: "/query-react/docs/fetchQuery" },
+            { title: "getQueryData", href: "/query-react/docs/getQueryData" },
+            { title: "setQueryData", href: "/query-react/docs/setQueryData" },
+            { title: "invalidateQuery", href: "/query-react/docs/invalidateQuery" },
         ],
     },
     {
         title: "Advanced",
         items: [
-            { title: "createPersister", href: "/qortex-react/docs/createPersister" },
+            { title: "createPersister", href: "/query-react/docs/createPersister" },
         ],
     },
 ];

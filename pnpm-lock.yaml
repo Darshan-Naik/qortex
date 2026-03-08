@@ -99,9 +99,9 @@ importers:
 
   examples/react-app:
     dependencies:
-      qortex-react:
+      '@qortex/query-react':
         specifier: workspace:*
-        version: link:../../packages/qortex-react
+        version: link:../../packages/query-react
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -125,7 +125,7 @@ importers:
         specifier: ^4.0.0
         version: 4.5.14(@types/node@20.19.30)
 
-  packages/qortex-core:
+  packages/db:
     devDependencies:
       tsup:
         specifier: ^6.0.0
@@ -134,7 +134,7 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/qortex-db:
+  packages/query:
     devDependencies:
       tsup:
         specifier: ^6.0.0
@@ -143,11 +143,11 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/qortex-react:
+  packages/query-react:
     dependencies:
-      qortex-core:
+      '@qortex/query':
         specifier: workspace:*
-        version: link:../qortex-core
+        version: link:../query
       react:
         specifier: '>=18'
         version: 18.3.1
@@ -159,7 +159,7 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/qortex-store:
+  packages/store:
     devDependencies:
       tsup:
         specifier: ^6.0.0
@@ -168,11 +168,11 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  packages/qortex-store-react:
+  packages/store-react:
     dependencies:
-      qortex-store:
+      '@qortex/store':
         specifier: workspace:*
-        version: link:../qortex-store
+        version: link:../store
       react:
         specifier: '>=18'
         version: 18.3.1

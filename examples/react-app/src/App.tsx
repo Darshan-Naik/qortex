@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 
-import { useQuery, useMutate } from "qortex-react";
+import { useQuery, useMutate } from "@qortex/query-react";
 
 const fetcher = async () => {
   console.log("fetching data");
@@ -15,10 +15,10 @@ const fetcher = async () => {
 export default function App() {
   const { data, isLoading, isError, error } = useQuery(["posts"], { fetcher });
 
-  const {mutate} = useMutate(async()=>{
-      await new Promise(resolve => setTimeout(resolve, 500));
+  const { mutate } = useMutate(async () => {
+    await new Promise(resolve => setTimeout(resolve, 500));
     console.log("mutating data");
-  },{
+  }, {
     queryKey: ["posts"],
   })
 

@@ -1,0 +1,98 @@
+{
+    "id": "useStore",
+    "title": "useStore",
+    "subtitle": "React hook for @qortex/store",
+    "description": "Subscribe to a store from React components with selector and equality support.",
+    "category": "React Hooks",
+    "tags": [
+        "react",
+        "hook",
+        "useStore",
+        "selector"
+    ],
+    "status": "stable",
+    "content": "The `useStore` hook provides concurrent-mode safe subscriptions to your store. It re-renders the component only when the selected value changes.",
+    "signature": {
+        "language": "typescript",
+        "code": "useStore<T, U = T>(\n  store: Store<T>,\n  selector?: (state: T) => U,\n  equalityFn?: (a: U, b: U) => boolean,\n): U"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Default",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "store",
+                "type": "Store<T>",
+                "required": true,
+                "default": "-",
+                "description": "A store created with createStore from @qortex/store"
+            },
+            {
+                "name": "selector",
+                "type": "(state: T) => U",
+                "required": false,
+                "default": "identity",
+                "description": "Picks a slice of state; defaults to returning the full state"
+            },
+            {
+                "name": "equalityFn",
+                "type": "(a: U, b: U) => boolean",
+                "required": false,
+                "default": "Object.is",
+                "description": "Custom equality function to skip unnecessary re-renders"
+            }
+        ]
+    },
+    "returns": {
+        "type": "U",
+        "description": "The selected state slice, kept in sync with the store"
+    },
+    "examples": [
+        {
+            "title": "Full State",
+            "description": "Access the entire store state (re-renders on any change):",
+            "language": "tsx",
+            "code": "import { useStore } from '@qortex/store-react';\nimport { counterStore } from './stores';\n\nfunction Counter() {\n  const state = useStore(counterStore);\n  return <p>Count: {state.count}</p>;\n}"
+        },
+        {
+            "title": "Selector",
+            "description": "Select only the slice you need to minimize re-renders:",
+            "language": "tsx",
+            "code": "function CountDisplay() {\n  const count = useStore(counterStore, (s) => s.count);\n  return <p>Count: {count}</p>;\n}\n\nfunction Actions() {\n  const increment = useStore(counterStore, (s) => s.increment);\n  return <button onClick={increment}>+1</button>;\n}"
+        },
+        {
+            "title": "Custom Equality",
+            "description": "Use a shallow-equal function when selecting object slices:",
+            "language": "tsx",
+            "code": "import { shallow } from 'some-shallow-equal';\n\nfunction UserInfo() {\n  const { name, email } = useStore(\n    userStore,\n    (s) => ({ name: s.name, email: s.email }),\n    shallow,\n  );\n  return <p>{name} ({email})</p>;\n}"
+        },
+        {
+            "title": "Multiple Components",
+            "description": "Different components can select different slices of the same store:",
+            "language": "tsx",
+            "code": "function Header() {\n  const name = useStore(userStore, (s) => s.name);\n  return <h1>Hello, {name}</h1>;\n}\n\nfunction Settings() {\n  const theme = useStore(userStore, (s) => s.theme);\n  return <p>Theme: {theme}</p>;\n}"
+        }
+    ],
+    "behaviors": [
+        {
+            "icon": "zap",
+            "label": "Concurrent-mode safe — fully compatible with React 18+ features"
+        },
+        {
+            "icon": "info",
+            "label": "Without a selector, the full state is returned and the component re-renders on every change"
+        },
+        {
+            "icon": "activity",
+            "label": "Automatically unsubscribes when the component unmounts"
+        }
+    ],
+    "relatedPages": [
+        "createStore"
+    ]
+}

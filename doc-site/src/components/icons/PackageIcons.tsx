@@ -5,17 +5,17 @@ interface IconProps extends React.ComponentProps<typeof Brain> {
     className?: string;
 }
 
-// "The Core Mind" - Represents qortex-core
+// "The Core Mind" - Represents @qortex/query
 export function CoreIcon({ className, ...props }: IconProps) {
     return <Brain className={className} {...props} />;
 }
 
-// "The Synapse" - Represents qortex-react
+// "The Synapse" - Represents @qortex/query-react
 export function ReactIcon({ className, ...props }: IconProps) {
     return <BrainCircuit className={className} {...props} />;
 }
 
-// "The Memory" - Represents qortex-db
+// "The Memory" - Represents @qortex/db
 export function DbIcon({ className, strokeWidth, ...props }: IconProps) {
     // We separate strokeWidth so we can manipulate it for the smaller inner icon
     const sw = strokeWidth ? Number(strokeWidth) : 2;
@@ -44,7 +44,7 @@ export function DbIcon({ className, strokeWidth, ...props }: IconProps) {
     );
 }
 
-// "The Vault" - Represents qortex-store
+// "The Vault" - Represents @qortex/store
 export function StoreIcon({ className, strokeWidth, ...props }: IconProps) {
     const sw = strokeWidth ? Number(strokeWidth) : 2;
 

@@ -50,31 +50,31 @@
             "title": "Direct Update",
             "description": "Set query data directly with a value",
             "language": "tsx",
-            "code": "import { setQueryData } from 'qortex-react';\n\nfunction handleUserUpdate() {\n  // Set user data directly\n  setQueryData(['user', 'current'], {\n    id: '123',\n    name: 'John Doe',\n    email: 'john@example.com'\n  });\n  \n  // All components using this query will re-render with new data\n  console.log('User data updated');\n}"
+            "code": "import { setQueryData } from '@qortex/query-react';\n\nfunction handleUserUpdate() {\n  // Set user data directly\n  setQueryData(['user', 'current'], {\n    id: '123',\n    name: 'John Doe',\n    email: 'john@example.com'\n  });\n  \n  // All components using this query will re-render with new data\n  console.log('User data updated');\n}"
         },
         {
             "title": "Functional Update",
             "description": "Use an updater function to access previous data",
             "language": "tsx",
-            "code": "import { setQueryData } from 'qortex-react';\n\n// Update user name while preserving other fields\nsetQueryData('user', (prev) => ({\n  ...prev,\n  name: 'Jane Doe'\n}));\n\n// Increment a counter\nsetQueryData('counter', (prev) => (prev ?? 0) + 1);\n\n// Toggle a boolean\nsetQueryData('isOpen', (prev) => !prev);\n\n// Add item to array\nsetQueryData('todos', (prev) => [\n  ...(prev ?? []),\n  { id: Date.now(), text: 'New todo' }\n]);"
+            "code": "import { setQueryData } from '@qortex/query-react';\n\n// Update user name while preserving other fields\nsetQueryData('user', (prev) => ({\n  ...prev,\n  name: 'Jane Doe'\n}));\n\n// Increment a counter\nsetQueryData('counter', (prev) => (prev ?? 0) + 1);\n\n// Toggle a boolean\nsetQueryData('isOpen', (prev) => !prev);\n\n// Add item to array\nsetQueryData('todos', (prev) => [\n  ...(prev ?? []),\n  { id: Date.now(), text: 'New todo' }\n]);"
         },
         {
             "title": "Optimistic Updates",
             "description": "Update data optimistically before server response",
             "language": "tsx",
-            "code": "import { setQueryData, getQueryData } from 'qortex-react';\n\nasync function handleLikePost(postId: string) {\n  // Get current post data for rollback\n  const currentPost = getQueryData(['post', postId]);\n  \n  // Optimistically update using functional update\n  setQueryData(['post', postId], (prev) => ({\n    ...prev,\n    likes: (prev?.likes ?? 0) + 1,\n    liked: true\n  }));\n  \n  try {\n    await fetch(`/api/posts/${postId}/like`, { method: 'POST' });\n    console.log('Like successful');\n  } catch {\n    // Revert the optimistic update on error\n    if (currentPost) {\n      setQueryData(['post', postId], currentPost);\n    }\n  }\n}"
+            "code": "import { setQueryData, getQueryData } from '@qortex/query-react';\n\nasync function handleLikePost(postId: string) {\n  // Get current post data for rollback\n  const currentPost = getQueryData(['post', postId]);\n  \n  // Optimistically update using functional update\n  setQueryData(['post', postId], (prev) => ({\n    ...prev,\n    likes: (prev?.likes ?? 0) + 1,\n    liked: true\n  }));\n  \n  try {\n    await fetch(`/api/posts/${postId}/like`, { method: 'POST' });\n    console.log('Like successful');\n  } catch {\n    // Revert the optimistic update on error\n    if (currentPost) {\n      setQueryData(['post', postId], currentPost);\n    }\n  }\n}"
         },
         {
             "title": "Array Operations",
             "description": "Add, remove, or update items in array data",
             "language": "tsx",
-            "code": "import { setQueryData } from 'qortex-react';\n\n// Add a new item\nsetQueryData('todos', (prev) => [\n  ...(prev ?? []),\n  { id: Date.now(), text: 'New todo', completed: false }\n]);\n\n// Remove an item by id\nsetQueryData('todos', (prev) =>\n  (prev ?? []).filter((todo) => todo.id !== targetId)\n);\n\n// Update an item\nsetQueryData('todos', (prev) =>\n  (prev ?? []).map((todo) =>\n    todo.id === targetId ? { ...todo, completed: true } : todo\n  )\n);"
+            "code": "import { setQueryData } from '@qortex/query-react';\n\n// Add a new item\nsetQueryData('todos', (prev) => [\n  ...(prev ?? []),\n  { id: Date.now(), text: 'New todo', completed: false }\n]);\n\n// Remove an item by id\nsetQueryData('todos', (prev) =>\n  (prev ?? []).filter((todo) => todo.id !== targetId)\n);\n\n// Update an item\nsetQueryData('todos', (prev) =>\n  (prev ?? []).map((todo) =>\n    todo.id === targetId ? { ...todo, completed: true } : todo\n  )\n);"
         },
         {
             "title": "Cache Invalidation",
             "description": "Clear or reset query data",
             "language": "tsx",
-            "code": "import { setQueryData } from 'qortex-react';\n\nfunction handleLogout() {\n  // Clear user data from cache\n  setQueryData(['user', 'current'], undefined);\n  \n  // Clear all user-related queries\n  setQueryData(['user', 'profile'], undefined);\n  setQueryData(['user', 'settings'], undefined);\n  \n  console.log('User data cleared from cache');\n}"
+            "code": "import { setQueryData } from '@qortex/query-react';\n\nfunction handleLogout() {\n  // Clear user data from cache\n  setQueryData(['user', 'current'], undefined);\n  \n  // Clear all user-related queries\n  setQueryData(['user', 'profile'], undefined);\n  setQueryData(['user', 'settings'], undefined);\n  \n  console.log('User data cleared from cache');\n}"
         }
     ],
     "behavior": [

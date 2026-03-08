@@ -49,13 +49,13 @@
             "title": "Basic Usage",
             "description": "Get cached data synchronously",
             "language": "tsx",
-            "code": "import { getQueryData } from 'qortex-react';\n\nfunction handleFormSubmit() {\n  // Get current user data from cache\n  const currentUser = getQueryData(['user', 'current']);\n  \n  if (currentUser) {\n    console.log('Current user:', currentUser.name);\n    // Use cached data for form submission\n    submitForm({ userId: currentUser.id, ...formData });\n  } else {\n    console.log('No user data cached');\n  }\n}"
+            "code": "import { getQueryData } from '@qortex/query-react';\n\nfunction handleFormSubmit() {\n  // Get current user data from cache\n  const currentUser = getQueryData(['user', 'current']);\n  \n  if (currentUser) {\n    console.log('Current user:', currentUser.name);\n    // Use cached data for form submission\n    submitForm({ userId: currentUser.id, ...formData });\n  } else {\n    console.log('No user data cached');\n  }\n}"
         },
         {
             "title": "Conditional Logic",
             "description": "Use cached data for conditional operations",
             "language": "tsx",
-            "code": "import { getQueryData } from 'qortex-react';\n\nfunction NavigationMenu() {\n  const handleNavigation = (path: string) => {\n    // Check if user is authenticated using cached data\n    const user = getQueryData(['user', 'current']);\n    \n    if (user && user.role === 'admin') {\n      // Admin can access all routes\n      navigate(path);\n    } else if (user && path !== '/admin') {\n      // Regular user can access non-admin routes\n      navigate(path);\n    } else {\n      // Redirect to login\n      navigate('/login');\n    }\n  };\n\n  return (\n    <nav>\n      <button onClick={() => handleNavigation('/dashboard')}>\n        Dashboard\n      </button>\n      <button onClick={() => handleNavigation('/admin')}>\n        Admin\n      </button>\n    </nav>\n  );\n}"
+            "code": "import { getQueryData } from '@qortex/query-react';\n\nfunction NavigationMenu() {\n  const handleNavigation = (path: string) => {\n    // Check if user is authenticated using cached data\n    const user = getQueryData(['user', 'current']);\n    \n    if (user && user.role === 'admin') {\n      // Admin can access all routes\n      navigate(path);\n    } else if (user && path !== '/admin') {\n      // Regular user can access non-admin routes\n      navigate(path);\n    } else {\n      // Redirect to login\n      navigate('/login');\n    }\n  };\n\n  return (\n    <nav>\n      <button onClick={() => handleNavigation('/dashboard')}>\n        Dashboard\n      </button>\n      <button onClick={() => handleNavigation('/admin')}>\n        Admin\n      </button>\n    </nav>\n  );\n}"
         }
     ],
     "behavior": [

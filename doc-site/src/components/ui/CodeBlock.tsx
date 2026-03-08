@@ -152,7 +152,7 @@ export function CodeBlock({ children, language = 'typescript' }: CodeBlockProps)
                                             return <span key={key} {...tokenProps} style={{ ...tokenProps.style, color: '#9CDCFE' }} />;
                                         }
 
-                                        // Package names (qortex-core, qortex-react, etc.)
+                                        // Package names (@qortex/query, @qortex/query-react, etc.)
                                         if (/^qortex-(core|react)$/.test(content)) {
                                             return <span key={key} {...tokenProps} style={{ ...tokenProps.style, color: '#DCDCAA', fontWeight: 'bold' }} />;
                                         }

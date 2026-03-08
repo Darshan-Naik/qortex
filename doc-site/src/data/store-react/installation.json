@@ -1,0 +1,23 @@
+{
+    "id": "installation",
+    "title": "Installation",
+    "subtitle": "Get started with @qortex/store-react",
+    "description": "Install @qortex/store-react for React state management with selectors.",
+    "category": "Getting Started",
+    "status": "stable",
+    "content": "Install @qortex/store-react using your preferred package manager. It includes @qortex/store as a dependency automatically.",
+    "sections": [
+        {
+            "title": "Install Package",
+            "content": "@qortex/store is included as a dependency — you only need to install @qortex/store-react:",
+            "code": {
+                "language": "bash",
+                "code": "# npm\nnpm install @qortex/store-react\n\n# yarn\nyarn add @qortex/store-react\n\n# pnpm\npnpm add @qortex/store-react"
+            }
+        },
+        {
+            "title": "Requirements",
+            "content": "• **@qortex/store** — Included as a dependency (auto-installed)\n• **React** ≥ 18 — Required as peer dependency"
+        }
+    ]
+}

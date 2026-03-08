@@ -15,25 +15,25 @@
         {
             "type": "info",
             "title": "Choose Your Package",
-            "content": "Install qortex-core OR qortex-react - not both! qortex-react includes all core APIs.",
+            "content": "Install @qortex/query OR @qortex/query-react - not both! @qortex/query-react includes all core APIs.",
             "icon": "info"
         }
     ],
     "sections": [
         {
             "title": "For React Projects",
-            "content": "If you're using React, install qortex-react (includes all core APIs):",
+            "content": "If you're using React, install @qortex/query-react (includes all core APIs):",
             "code": {
                 "language": "bash",
-                "code": "# npm\nnpm install qortex-react\n\n# yarn\nyarn add qortex-react\n\n# pnpm\npnpm add qortex-react"
+                "code": "# npm\nnpm install @qortex/query-react\n\n# yarn\nyarn add @qortex/query-react\n\n# pnpm\npnpm add @qortex/query-react"
             }
         },
         {
             "title": "For Non-React Projects",
-            "content": "If you're using vanilla JS, Vue, or other frameworks, install qortex-core:",
+            "content": "If you're using vanilla JS, Vue, or other frameworks, install @qortex/query:",
             "code": {
                 "language": "bash",
-                "code": "# npm\nnpm install qortex-core\n\n# yarn\nyarn add qortex-core\n\n# pnpm\npnpm add qortex-core"
+                "code": "# npm\nnpm install @qortex/query\n\n# yarn\nyarn add @qortex/query\n\n# pnpm\npnpm add @qortex/query"
             }
         },
         {
@@ -41,7 +41,7 @@
             "content": "How to import from each package:",
             "code": {
                 "language": "typescript",
-                "code": "// React users - everything from qortex-react\nimport { useQuery, useQueryData, registerFetcher, fetchQuery } from 'qortex-react';\n\n// Core-only users - core APIs from qortex-core\nimport { registerFetcher, fetchQuery } from 'qortex-core';\n\n// Persister (subpackage) - for both React and core users\nimport { createPersister } from 'qortex-core/persister'; // or 'qortex-react/persister'"
+                "code": "// React users - everything from @qortex/query-react\nimport { useQuery, useQueryData, registerFetcher, fetchQuery } from '@qortex/query-react';\n\n// Core-only users - core APIs from @qortex/query\nimport { registerFetcher, fetchQuery } from '@qortex/query';\n\n// Persister (subpackage) - for both React and core users\nimport { createPersister } from '@qortex/query/persister'; // or '@qortex/query-react/persister'"
             }
         }
     ],

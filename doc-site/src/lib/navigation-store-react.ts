@@ -12,20 +12,20 @@ export const storeReactNavigation: NavigationSection[] = [
     {
         title: "Getting Started",
         items: [
-            { title: "Installation", href: "/qortex-store-react/docs/installation" },
-            { title: "Quick Start", href: "/qortex-store-react/docs/quick-start" },
+            { title: "Installation", href: "/store-react/docs/installation" },
+            { title: "Quick Start", href: "/store-react/docs/quick-start" },
         ],
     },
     {
         title: "Core API",
         items: [
-            { title: "createStore", href: "/qortex-store-react/docs/createStore" },
+            { title: "createStore", href: "/store-react/docs/createStore" },
         ],
     },
     {
         title: "React Hooks",
         items: [
-            { title: "useStore", href: "/qortex-store-react/docs/useStore" },
+            { title: "useStore", href: "/store-react/docs/useStore" },
         ],
     },
 ];

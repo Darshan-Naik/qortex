@@ -12,14 +12,14 @@ export const storeNavigation: NavigationSection[] = [
     {
         title: "Getting Started",
         items: [
-            { title: "Installation", href: "/qortex-store/docs/installation" },
-            { title: "Quick Start", href: "/qortex-store/docs/quick-start" },
+            { title: "Installation", href: "/store/docs/installation" },
+            { title: "Quick Start", href: "/store/docs/quick-start" },
         ],
     },
     {
         title: "Core API",
         items: [
-            { title: "createStore", href: "/qortex-store/docs/createStore" },
+            { title: "createStore", href: "/store/docs/createStore" },
         ],
     },
 ];
