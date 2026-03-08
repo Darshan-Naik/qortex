@@ -102,6 +102,9 @@ importers:
       '@qortex/query-react':
         specifier: workspace:*
         version: link:../../packages/query-react
+      '@qortex/store-react':
+        specifier: workspace:*
+        version: link:../../packages/store-react
       react:
         specifier: ^18.2.0
         version: 18.3.1

@@ -43,7 +43,8 @@
     "author": "Darshan Naik",
     "license": "LGPL-3.0",
     "dependencies": {
-        "@qortex/store": "workspace:*"
+        "@qortex/store": "workspace:*",
+        "use-sync-external-store": "^1.2.0"
     },
     "peerDependencies": {
         "react": ">=18"
@@ -51,7 +52,6 @@
     "devDependencies": {
         "@types/use-sync-external-store": "^0.0.6",
         "tsup": "^6.0.0",
-        "use-sync-external-store": "^1.2.0",
         "typescript": "^5.0.0"
     }
 }
