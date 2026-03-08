@@ -121,6 +121,67 @@ module.exports = {
         '^.+\\.(js|ts)$': 'babel-jest',
       },
       moduleFileExtensions: ['js', 'ts', 'json'],
+    },
+    {
+      displayName: 'qortex-store',
+      testEnvironment: 'node',
+      roots: ['<rootDir>/packages/qortex-store'],
+      testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+        '/coverage/'
+      ],
+      testMatch: [
+        '**/__tests__/**/*.test.js',
+        '**/__tests__/**/*.test.ts',
+        '**/?(*.)+(spec|test).js',
+        '**/?(*.)+(spec|test).ts'
+      ],
+      collectCoverageFrom: [
+        'packages/qortex-store/src/**/*.ts',
+        '!packages/qortex-store/src/**/*.d.ts',
+        '!packages/qortex-store/src/**/*.test.ts',
+        '!packages/qortex-store/src/**/*.spec.ts'
+      ],
+      coverageDirectory: 'coverage/qortex-store',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      transform: {
+        '^.+\\.(js|ts)$': 'babel-jest',
+      },
+      moduleFileExtensions: ['js', 'ts', 'json'],
+    },
+    {
+      displayName: 'qortex-store-react',
+      testEnvironment: 'jsdom',
+      roots: ['<rootDir>/packages/qortex-store-react'],
+      testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+        '/coverage/'
+      ],
+      testMatch: [
+        '**/__tests__/**/*.test.js',
+        '**/__tests__/**/*.test.jsx',
+        '**/?(*.)+(spec|test).js',
+        '**/?(*.)+(spec|test).jsx'
+      ],
+      collectCoverageFrom: [
+        'packages/qortex-store-react/src/**/*.{js,jsx,ts,tsx}',
+        '!packages/qortex-store-react/src/**/*.d.ts',
+        '!packages/qortex-store-react/src/**/*.test.{js,jsx,ts,tsx}',
+        '!packages/qortex-store-react/src/**/*.spec.{js,jsx,ts,tsx}'
+      ],
+      coverageDirectory: 'coverage/qortex-store-react',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      transform: {
+        '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+      },
+      moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
+      moduleNameMapper: {
+        '^qortex-store$': '<rootDir>/packages/qortex-store/src/index.ts',
+      },
     }
   ]
 };

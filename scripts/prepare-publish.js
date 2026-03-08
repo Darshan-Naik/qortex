@@ -31,6 +31,21 @@ const packages = [
     path: 'packages/qortex-db',
     publishName: 'qortex-db',
     description: 'Browser-only Redis-like key-value database with localStorage, sessionStorage, and IndexedDB support'
+  },
+  {
+    name: 'qortex-store',
+    path: 'packages/qortex-store',
+    publishName: 'qortex-store',
+    description: 'Framework-agnostic lightweight state management library'
+  },
+  {
+    name: 'qortex-store-react',
+    path: 'packages/qortex-store-react',
+    publishName: 'qortex-store-react',
+    description: 'React bindings for qortex-store state management',
+    dependencyTransforms: {
+      'qortex-store': 'qortex-store' // workspace:* -> qortex-store (same version)
+    }
   }
 ];
 

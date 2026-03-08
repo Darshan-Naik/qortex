@@ -1,0 +1,76 @@
+{
+    "id": "createStore",
+    "title": "createStore",
+    "subtitle": "Create a state store",
+    "description": "Creates a new store instance. Re-exported from qortex-store for convenience.",
+    "category": "Core API",
+    "tags": [
+        "store",
+        "createStore",
+        "state"
+    ],
+    "status": "stable",
+    "content": "The `createStore` function creates a new store. You can pass a raw object for simple state, or an initializer function that receives `set` and `get` to define complex actions and computed state.",
+    "signature": {
+        "language": "typescript",
+        "code": "createStore<T>(initializer: T | StateCreator<T>): Store<T>"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "initializer",
+                "type": "T | (set, get) => T",
+                "required": true,
+                "default": "-",
+                "description": "Either a raw initial state object or a function that receives set and get and returns the initial state object."
+            }
+        ]
+    },
+    "returns": {
+        "type": "Store<T>",
+        "description": "A store instance with getState, setState, subscribe, and destroy methods"
+    },
+    "examples": [
+        {
+            "title": "Raw Object",
+            "description": "The simplest way to create a store for data-only state:",
+            "language": "typescript",
+            "code": "import { createStore } from 'qortex-store-react';\n\nconst userStore = createStore({ \n  name: 'John', \n  loggedIn: false \n});\n\n// Use in React\n// const state = useStore(userStore);"
+        },
+        {
+            "title": "Initializer Function (Set/Get)",
+            "description": "Use an initializer to define actions that have access to current state and updates:",
+            "language": "typescript",
+            "code": "import { createStore } from 'qortex-store-react';\n\nconst counterStore = createStore((set, get) => ({\n  count: 0,\n  // Use get() to read current state\n  increment: () => set({ count: get().count + 1 }),\n  // Use functional updates for atomic changes\n  decrement: () => set((s) => ({ count: s.count - 1 })),\n  // Access other state properties within actions\n  resetIfHigh: () => {\n    if (get().count > 10) set({ count: 0 });\n  }\n}));"
+        },
+        {
+            "title": "setState() — All Variants",
+            "description": "setState supports partial merging, functional updates, and full replacement:",
+            "language": "typescript",
+            "code": "const store = createStore({ a: 1, b: 2 });\n\n// 1. Partial Merge (default)\nstore.setState({ a: 10 }); // { a: 10, b: 2 }\n\n// 2. Functional Update\nstore.setState((s) => ({ a: s.a + 1 })); // { a: 11, b: 2 }\n\n// 3. Full Replacement\nstore.setState({ a: 0 }, true); // { a: 0 }"
+        }
+    ],
+    "behaviors": [
+        {
+            "icon": "zap",
+            "label": "Listeners only fire when Object.is detects a state reference change"
+        },
+        {
+            "icon": "info",
+            "label": "When passed a raw object, it is treated as the starting value with no predefined actions"
+        },
+        {
+            "icon": "refresh-cw",
+            "label": "Re-exported from qortex-store — works identically in React and non-React environments"
+        }
+    ],
+    "relatedPages": [
+        "useStore"
+    ]
+}
