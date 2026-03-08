@@ -1,27 +1,27 @@
-# 🗄️ @qortex/db
+# 🗄️ qortex-db
 
 > **Browser-only Redis-like key-value database. Simple, fast, consistent! 🚀**
 
-[![npm version](https://badge.fury.io/js/@qortex/db.svg)](https://badge.fury.io/js/@qortex/db)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@qortex/db)](https://bundlephobia.com/package/@qortex/db)
+[![npm version](https://badge.fury.io/js/qortex-db.svg)](https://badge.fury.io/js/qortex-db)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/qortex-db)](https://bundlephobia.com/package/qortex-db)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
 ## ✨ What makes this special?
 
-**@qortex/db** provides a unified async API across browser storage backends:
+**qortex-db** provides a unified async API across browser storage backends:
 
 - 💾 **localStorage** - Persists across sessions (default)
 - 🔄 **sessionStorage** - Cleared on tab close
 - 📦 **IndexedDB** - Larger storage capacity
 
 ```bash
-npm install @qortex/db
+npm install qortex-db
 ```
 
 ## 🚀 Quick Start
 
 ```typescript
-import { createDB } from "@qortex/db";
+import { createDB } from "qortex-db";
 
 // Simple usage (uses localStorage)
 const db = createDB("myapp");

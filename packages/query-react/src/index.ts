@@ -1,5 +1,5 @@
 // Re-export runtime APIs for convenience
-export * from "@qortex/query";
+export * from "qortex-query";
 
 // Export React hooks
 export * from "./useQuery";

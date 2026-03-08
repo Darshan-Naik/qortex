@@ -42,19 +42,19 @@
             "title": "Basic Usage",
             "description": "Invalidate and refetch a query",
             "language": "tsx",
-            "code": "import { invalidateQuery } from '@qortex/query-react';\n\nfunction RefreshButton() {\n  const handleRefresh = () => {\n    // Invalidate and refetch user data (synchronous)\n    invalidateQuery(['user', 'current']);\n    console.log('User data refresh triggered');\n  };\n\n  return (\n    <button onClick={handleRefresh}>\n      Refresh User Data\n    </button>\n  );\n}"
+            "code": "import { invalidateQuery } from 'qortex-query-react';\n\nfunction RefreshButton() {\n  const handleRefresh = () => {\n    // Invalidate and refetch user data (synchronous)\n    invalidateQuery(['user', 'current']);\n    console.log('User data refresh triggered');\n  };\n\n  return (\n    <button onClick={handleRefresh}>\n      Refresh User Data\n    </button>\n  );\n}"
         },
         {
             "title": "After Mutation",
             "description": "Invalidate related queries after a mutation",
             "language": "tsx",
-            "code": "import { invalidateQuery } from '@qortex/query-react';\n\nasync function handleCreatePost(postData: any) {\n  try {\n    // Create the post\n    const response = await fetch('/api/posts', {\n      method: 'POST',\n      body: JSON.stringify(postData)\n    });\n    \n    if (response.ok) {\n      // Invalidate posts list to refetch with new post\n      invalidateQuery('posts');\n      \n      // Invalidate user posts if it exists\n      invalidateQuery(['user', 'posts']);\n      \n      console.log('Post created and cache invalidated');\n    }\n  } catch (error) {\n    console.error('Failed to create post:', error);\n  }\n}"
+            "code": "import { invalidateQuery } from 'qortex-query-react';\n\nasync function handleCreatePost(postData: any) {\n  try {\n    // Create the post\n    const response = await fetch('/api/posts', {\n      method: 'POST',\n      body: JSON.stringify(postData)\n    });\n    \n    if (response.ok) {\n      // Invalidate posts list to refetch with new post\n      invalidateQuery('posts');\n      \n      // Invalidate user posts if it exists\n      invalidateQuery(['user', 'posts']);\n      \n      console.log('Post created and cache invalidated');\n    }\n  } catch (error) {\n    console.error('Failed to create post:', error);\n  }\n}"
         },
         {
             "title": "Bulk Invalidation",
             "description": "Invalidate multiple related queries",
             "language": "tsx",
-            "code": "import { invalidateQuery } from '@qortex/query-react';\n\nasync function handleUserUpdate(userId: string) {\n  try {\n    // Update user data\n    await fetch(`/api/users/${userId}`, {\n      method: 'PUT',\n      body: JSON.stringify(userData)\n    });\n    \n    // Invalidate all user-related queries\n    const queriesToInvalidate = [\n      ['user', userId],\n      ['user', 'current'],\n      ['user', 'profile'],\n      ['user', 'settings']\n    ];\n    \n    queriesToInvalidate.forEach(queryKey => invalidateQuery(queryKey));\n    \n    console.log('All user queries invalidated');\n  } catch (error) {\n    console.error('Failed to update user:', error);\n  }\n}"
+            "code": "import { invalidateQuery } from 'qortex-query-react';\n\nasync function handleUserUpdate(userId: string) {\n  try {\n    // Update user data\n    await fetch(`/api/users/${userId}`, {\n      method: 'PUT',\n      body: JSON.stringify(userData)\n    });\n    \n    // Invalidate all user-related queries\n    const queriesToInvalidate = [\n      ['user', userId],\n      ['user', 'current'],\n      ['user', 'profile'],\n      ['user', 'settings']\n    ];\n    \n    queriesToInvalidate.forEach(queryKey => invalidateQuery(queryKey));\n    \n    console.log('All user queries invalidated');\n  } catch (error) {\n    console.error('Failed to update user:', error);\n  }\n}"
         }
     ],
     "behavior": [

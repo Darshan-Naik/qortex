@@ -33,7 +33,7 @@ module.exports = {
   // Projects configuration for different packages
   projects: [
     {
-      displayName: '@qortex/query',
+      displayName: 'qortex-query',
       testEnvironment: 'node',
       roots: ['<rootDir>/packages/query'],
       testPathIgnorePatterns: [
@@ -62,7 +62,7 @@ module.exports = {
       moduleFileExtensions: ['js', 'ts', 'json'],
     },
     {
-      displayName: '@qortex/query-react',
+      displayName: 'qortex-query-react',
       testEnvironment: 'jsdom',
       roots: ['<rootDir>/packages/query-react'],
       testPathIgnorePatterns: [
@@ -90,11 +90,11 @@ module.exports = {
       },
       moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
       moduleNameMapper: {
-        '^@qortex/query$': '<rootDir>/packages/query/dist/index.js',
+        '^qortex-query$': '<rootDir>/packages/query/dist/index.js',
       },
     },
     {
-      displayName: '@qortex/db',
+      displayName: 'qortex-db',
       testEnvironment: 'jsdom',
       roots: ['<rootDir>/packages/db'],
       testPathIgnorePatterns: [
@@ -123,7 +123,7 @@ module.exports = {
       moduleFileExtensions: ['js', 'ts', 'json'],
     },
     {
-      displayName: '@qortex/store',
+      displayName: 'qortex-store',
       testEnvironment: 'node',
       roots: ['<rootDir>/packages/store'],
       testPathIgnorePatterns: [
@@ -152,7 +152,7 @@ module.exports = {
       moduleFileExtensions: ['js', 'ts', 'json'],
     },
     {
-      displayName: '@qortex/store-react',
+      displayName: 'qortex-store-react',
       testEnvironment: 'jsdom',
       roots: ['<rootDir>/packages/store-react'],
       testPathIgnorePatterns: [
@@ -180,7 +180,7 @@ module.exports = {
       },
       moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
       moduleNameMapper: {
-        '^@qortex/store$': '<rootDir>/packages/store/src/index.ts',
+        '^qortex-store$': '<rootDir>/packages/store/src/index.ts',
       },
     }
   ]

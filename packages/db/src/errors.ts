@@ -1,6 +1,6 @@
 export class QortexDBError extends Error {
     constructor(message: string) {
-        super(`[@qortex/db] ${message}`);
+        super(`[qortex-db] ${message}`);
         this.name = "QortexDBError";
     }
 }

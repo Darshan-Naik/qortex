@@ -1,5 +1,5 @@
 {
-  "name": "@qortex/query",
+  "name": "qortex-query",
   "version": "1.0.0",
   "description": "Framework-agnostic query cache & fetch registry (MFE friendly).",
   "main": "dist/index.js",

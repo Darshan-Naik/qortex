@@ -1,4 +1,4 @@
-import { invalidateQuery, QueryKey } from "@qortex/query";
+import { invalidateQuery, QueryKey } from "qortex-query";
 import { useState } from "react";
 
 /** Internal: Generic mutation function type for inference */

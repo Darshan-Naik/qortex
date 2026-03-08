@@ -56,19 +56,19 @@
             "title": "Basic Usage",
             "description": "Simple data consumption without loading states",
             "language": "tsx",
-            "code": "import { useQueryData } from '@qortex/query-react';\n\nfunction UserName({ userId }: { userId: string }) {\n  const userName = useQueryData(\n    ['user', userId],\n    {\n      fetcher: async () => {\n        const response = await fetch(`/api/users/${userId}`);\n        const user = await response.json();\n        return user.name;\n      }\n    }\n  );\n\n  return <span>{userName || 'Loading...'}</span>;\n}"
+            "code": "import { useQueryData } from 'qortex-query-react';\n\nfunction UserName({ userId }: { userId: string }) {\n  const userName = useQueryData(\n    ['user', userId],\n    {\n      fetcher: async () => {\n        const response = await fetch(`/api/users/${userId}`);\n        const user = await response.json();\n        return user.name;\n      }\n    }\n  );\n\n  return <span>{userName || 'Loading...'}</span>;\n}"
         },
         {
             "title": "With Default Value",
             "description": "Provide a default value for better UX",
             "language": "tsx",
-            "code": "import { useQueryData } from '@qortex/query-react';\n\nfunction ProductPrice({ productId }: { productId: string }) {\n  const price = useQueryData(\n    ['product', productId],\n    {\n      fetcher: async () => {\n        const response = await fetch(`/api/products/${productId}`);\n        const product = await response.json();\n        return product.price;\n      }\n    }\n  );\n\n  return <span>${price ?? '0.00'}</span>;\n}"
+            "code": "import { useQueryData } from 'qortex-query-react';\n\nfunction ProductPrice({ productId }: { productId: string }) {\n  const price = useQueryData(\n    ['product', productId],\n    {\n      fetcher: async () => {\n        const response = await fetch(`/api/products/${productId}`);\n        const product = await response.json();\n        return product.price;\n      }\n    }\n  );\n\n  return <span>${price ?? '0.00'}</span>;\n}"
         },
         {
             "title": "Using Registered Fetcher",
             "description": "Using useQueryData with a previously registered fetcher",
             "language": "tsx",
-            "code": "import { useQueryData, registerFetcher } from '@qortex/query-react';\n\n// Register a fetcher once\nregisterFetcher('user-name', {\n  fetcher: async () => {\n    const response = await fetch('/api/user');\n    const user = await response.json();\n    return user.name;\n  }\n});\n\nfunction UserName() {\n  // No need to provide fetcher - uses registered one\n  const userName = useQueryData('user-name');\n\n  return <span>{userName || 'Loading...'}</span>;\n}"
+            "code": "import { useQueryData, registerFetcher } from 'qortex-query-react';\n\n// Register a fetcher once\nregisterFetcher('user-name', {\n  fetcher: async () => {\n    const response = await fetch('/api/user');\n    const user = await response.json();\n    return user.name;\n  }\n});\n\nfunction UserName() {\n  // No need to provide fetcher - uses registered one\n  const userName = useQueryData('user-name');\n\n  return <span>{userName || 'Loading...'}</span>;\n}"
         }
     ],
     "behavior": [

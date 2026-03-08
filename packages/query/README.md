@@ -1,22 +1,22 @@
-# 🎯 @qortex/query
+# 🎯 qortex-query
 
 > **Framework-agnostic query cache. Set and read data from anywhere! 🧠**
 
-[![npm version](https://badge.fury.io/js/@qortex/query.svg)](https://badge.fury.io/js/@qortex/query)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@qortex/query)](https://bundlephobia.com/package/@qortex/query)
-[![Bundle Size](https://img.shields.io/badge/gzipped-2.1KB-brightgreen)](https://bundlephobia.com/package/@qortex/query)
+[![npm version](https://badge.fury.io/js/qortex-query.svg)](https://badge.fury.io/js/qortex-query)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/qortex-query)](https://bundlephobia.com/package/qortex-query)
+[![Bundle Size](https://img.shields.io/badge/gzipped-2.1KB-brightgreen)](https://bundlephobia.com/package/qortex-query)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
 ## ✨ What makes this special?
 
-**@qortex/query** lets you **set and read data from anywhere** - not just within a specific framework! Perfect for:
+**qortex-query** lets you **set and read data from anywhere** - not just within a specific framework! Perfect for:
 
 - 🔐 **App core data** - Authentication, user profiles accessible from anywhere
 - 🎯 **Cross-framework** - Share data between React, Vue, vanilla JS, Node.js
 - ⚡ **Real-time apps** - Push changes from anywhere, see them everywhere instantly
 
 ```bash
-npm install @qortex/query
+npm install qortex-query
 ```
 
 ## 📚 Documentation

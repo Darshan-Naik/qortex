@@ -1,23 +1,23 @@
 {
     "id": "installation",
     "title": "Installation",
-    "subtitle": "Get started with @qortex/store",
-    "description": "Install @qortex/store for framework-agnostic state management.",
+    "subtitle": "Get started with qortex-store",
+    "description": "Install qortex-store for framework-agnostic state management.",
     "category": "Getting Started",
     "status": "stable",
-    "content": "Install @qortex/store using your preferred package manager. Zero runtime dependencies.",
+    "content": "Install qortex-store using your preferred package manager. Zero runtime dependencies.",
     "sections": [
         {
             "title": "Install Package",
             "content": "Add the package to your project:",
             "code": {
                 "language": "bash",
-                "code": "# npm\nnpm install @qortex/store\n\n# yarn\nyarn add @qortex/store\n\n# pnpm\npnpm add @qortex/store"
+                "code": "# npm\nnpm install qortex-store\n\n# yarn\nyarn add qortex-store\n\n# pnpm\npnpm add qortex-store"
             }
         },
         {
             "title": "Requirements",
-            "content": "• **Zero dependencies** — works everywhere\n• **TypeScript** ≥ 4.7 recommended for full type inference\n• For React bindings, see [@qortex/store-react](/store-react)"
+            "content": "• **Zero dependencies** — works everywhere\n• **TypeScript** ≥ 4.7 recommended for full type inference\n• For React bindings, see [qortex-store-react](/store-react)"
         }
     ]
 }

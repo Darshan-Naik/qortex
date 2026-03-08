@@ -1,5 +1,5 @@
 {
-  "name": "@qortex/query-react",
+  "name": "qortex-query-react",
   "version": "1.0.0",
   "description": "React hook bridge for qortex runtime",
   "main": "dist/index.js",
@@ -49,7 +49,7 @@
   "author": "Darshan Naik",
   "license": "LGPL-3.0",
   "dependencies": {
-    "@qortex/query": "workspace:*"
+    "qortex-query": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18"

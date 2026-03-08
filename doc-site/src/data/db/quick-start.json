@@ -2,17 +2,17 @@
     "id": "quick-start",
     "title": "Quick Start",
     "subtitle": "Database Usage",
-    "description": "Learn how to use @qortex/db to store and retrieve data.",
+    "description": "Learn how to use qortex-db to store and retrieve data.",
     "category": "Getting Started",
     "status": "stable",
-    "content": "@qortex/db provides a consistent API across localStorage, sessionStorage, and IndexedDB.",
+    "content": "qortex-db provides a consistent API across localStorage, sessionStorage, and IndexedDB.",
     "sections": [
         {
             "title": "1. Create a Database",
             "content": "Initialize your database:",
             "code": {
                 "language": "typescript",
-                "code": "import { createDB } from '@qortex/db';\n\n// Defaults to localStorage\nconst db = createDB('my-app');\n\n// Or use IndexedDB for large data\nconst idb = createDB({ name: 'my-app-data', driver: 'indexedDB' });"
+                "code": "import { createDB } from 'qortex-db';\n\n// Defaults to localStorage\nconst db = createDB('my-app');\n\n// Or use IndexedDB for large data\nconst idb = createDB({ name: 'my-app-data', driver: 'indexedDB' });"
             }
         },
         {

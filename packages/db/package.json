@@ -1,5 +1,5 @@
 {
-    "name": "@qortex/db",
+    "name": "qortex-db",
     "version": "1.0.0",
     "description": "Browser-only Redis-like key-value database with localStorage, sessionStorage, and IndexedDB support",
     "main": "dist/index.js",

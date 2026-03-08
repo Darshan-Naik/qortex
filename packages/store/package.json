@@ -1,5 +1,5 @@
 {
-    "name": "@qortex/store",
+    "name": "qortex-store",
     "version": "1.0.0",
     "description": "Framework-agnostic lightweight state management library",
     "main": "dist/index.js",

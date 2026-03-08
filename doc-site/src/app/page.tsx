@@ -69,14 +69,14 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {/* @qortex/query */}
+            {/* qortex-query */}
             <div className="relative bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
               <div className="flex items-center mb-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-purple-600 text-white">
                   <CoreIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-2xl font-bold text-gray-900">@qortex/query</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">qortex-query</h3>
                   <p className="text-sm text-purple-600 font-medium">Framework Agnostic</p>
                 </div>
               </div>
@@ -93,10 +93,10 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-purple-100/50">
                 <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
-                  npm i @qortex/query
+                  npm i qortex-query
                 </code>
                 <div className="flex items-center justify-between">
-                  <a href="https://www.npmjs.com/package/@qortex/query" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
+                  <a href="https://www.npmjs.com/package/qortex-query" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
                     <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current mr-2 group-hover:scale-110 transition-transform"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
                     View on NPM
                   </a>
@@ -107,14 +107,14 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* @qortex/query-react */}
+            {/* qortex-query-react */}
             <div className="relative bg-gradient-to-br from-blue-50 to-cyan-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
               <div className="flex items-center mb-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-white">
                   <ReactIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-2xl font-bold text-gray-900">@qortex/query-react</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">qortex-query-react</h3>
                   <p className="text-sm text-blue-600 font-medium">React Integration</p>
                 </div>
               </div>
@@ -131,10 +131,10 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-blue-100/50">
                 <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
-                  npm i @qortex/query-react
+                  npm i qortex-query-react
                 </code>
                 <div className="flex items-center justify-between">
-                  <a href="https://www.npmjs.com/package/@qortex/query-react" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
+                  <a href="https://www.npmjs.com/package/qortex-query-react" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
                     <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current mr-2 group-hover:scale-110 transition-transform"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
                     View on NPM
                   </a>
@@ -145,14 +145,14 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* @qortex/db */}
+            {/* qortex-db */}
             <div className="relative bg-gradient-to-br from-indigo-50 to-blue-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-visible">
               <div className="flex items-center mb-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-600 text-white">
                   <DbIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-2xl font-bold text-gray-900">@qortex/db</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">qortex-db</h3>
                   <p className="text-sm text-indigo-600 font-medium">Browser Database</p>
                 </div>
               </div>
@@ -169,10 +169,10 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-indigo-100/50">
                 <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
-                  npm i @qortex/db
+                  npm i qortex-db
                 </code>
                 <div className="flex items-center justify-between">
-                  <a href="https://www.npmjs.com/package/@qortex/db" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
+                  <a href="https://www.npmjs.com/package/qortex-db" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
                     <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current mr-2 group-hover:scale-110 transition-transform"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
                     View on NPM
                   </a>
@@ -183,7 +183,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* @qortex/store */}
+            {/* qortex-store */}
             <div className="relative bg-gradient-to-br from-emerald-50 to-teal-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-visible">
               <div className="absolute -top-3 -right-3 z-10">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-lg">
@@ -196,7 +196,7 @@ export default function HomePage() {
                   <StoreIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-2xl font-bold text-gray-900">@qortex/store</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">qortex-store</h3>
                   <p className="text-sm text-emerald-600 font-medium">State Management</p>
                 </div>
               </div>
@@ -213,10 +213,10 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-emerald-100/50">
                 <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
-                  npm i @qortex/store
+                  npm i qortex-store
                 </code>
                 <div className="flex items-center justify-between">
-                  <a href="https://www.npmjs.com/package/@qortex/store" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
+                  <a href="https://www.npmjs.com/package/qortex-store" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
                     <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current mr-2 group-hover:scale-110 transition-transform"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
                     View on NPM
                   </a>
@@ -227,7 +227,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* @qortex/store-react */}
+            {/* qortex-store-react */}
             <div className="relative bg-gradient-to-br from-teal-50 to-emerald-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-visible">
               <div className="absolute -top-3 -right-3 z-10">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-orange-400 to-pink-500 text-white shadow-lg">
@@ -240,13 +240,13 @@ export default function HomePage() {
                   <StoreIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-2xl font-bold text-gray-900">@qortex/store-react</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">qortex-store-react</h3>
                   <p className="text-sm text-teal-600 font-medium">React State Hooks</p>
                 </div>
               </div>
 
               <p className="text-gray-700 mb-6">
-                React hook for @qortex/store with selector support. Concurrent-mode safe with minimal re-renders.
+                React hook for qortex-store with selector support. Concurrent-mode safe with minimal re-renders.
               </p>
 
               <div className="flex flex-wrap gap-2 mb-6">
@@ -257,10 +257,10 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-teal-100/50">
                 <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
-                  npm i @qortex/store-react
+                  npm i qortex-store-react
                 </code>
                 <div className="flex items-center justify-between">
-                  <a href="https://www.npmjs.com/package/@qortex/store-react" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
+                  <a href="https://www.npmjs.com/package/qortex-store-react" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors font-medium text-sm group" title="View on NPM">
                     <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current mr-2 group-hover:scale-110 transition-transform"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
                     View on NPM
                   </a>

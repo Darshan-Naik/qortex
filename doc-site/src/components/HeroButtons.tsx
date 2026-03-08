@@ -26,23 +26,23 @@ export function HeroButtons() {
             {/* NPM Package Links */}
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a
-                    href="https://www.npmjs.com/package/@qortex/query"
+                    href="https://www.npmjs.com/package/qortex-query"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-50 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 border border-gray-200"
                 >
                     <Package className="h-5 w-5 text-primary-600" />
-                    <span className="font-semibold">@qortex/query</span>
+                    <span className="font-semibold">qortex-query</span>
                     <ExternalLink className="h-4 w-4 text-gray-500" />
                 </a>
                 <a
-                    href="https://www.npmjs.com/package/@qortex/query-react"
+                    href="https://www.npmjs.com/package/qortex-query-react"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-50 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 border border-gray-200"
                 >
                     <Package className="h-5 w-5 text-primary-600" />
-                    <span className="font-semibold">@qortex/query-react</span>
+                    <span className="font-semibold">qortex-query-react</span>
                     <ExternalLink className="h-4 w-4 text-gray-500" />
                 </a>
             </div>

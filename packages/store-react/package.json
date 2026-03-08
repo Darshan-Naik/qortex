@@ -1,7 +1,7 @@
 {
-    "name": "@qortex/store-react",
+    "name": "qortex-store-react",
     "version": "1.0.0",
-    "description": "React bindings for @qortex/store state management",
+    "description": "React bindings for qortex-store state management",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "types": "dist/index.d.ts",
@@ -43,7 +43,7 @@
     "author": "Darshan Naik",
     "license": "LGPL-3.0",
     "dependencies": {
-        "@qortex/store": "workspace:*",
+        "qortex-store": "workspace:*",
         "use-sync-external-store": "^1.2.0"
     },
     "peerDependencies": {

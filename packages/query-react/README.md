@@ -1,16 +1,16 @@
-# 🎭 @qortex/query-react
+# 🎭 qortex-query-react
 
 > **React hooks for universal data access. Set and read data from anywhere! ⚛️**
 
-[![npm version](https://badge.fury.io/js/@qortex/query-react.svg)](https://badge.fury.io/js/@qortex/query-react)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@qortex/query-react)](https://bundlephobia.com/package/@qortex/query-react)
-[![Bundle Size](https://img.shields.io/badge/gzipped-2KB-brightgreen)](https://bundlephobia.com/package/@qortex/query-react)
+[![npm version](https://badge.fury.io/js/qortex-query-react.svg)](https://badge.fury.io/js/qortex-query-react)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/qortex-query-react)](https://bundlephobia.com/package/qortex-query-react)
+[![Bundle Size](https://img.shields.io/badge/gzipped-2KB-brightgreen)](https://bundlephobia.com/package/qortex-query-react)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 
 ## ✨ What makes this special?
 
-**@qortex/query-react** lets you **set and read data from anywhere** - not just React components! Perfect for:
+**qortex-query-react** lets you **set and read data from anywhere** - not just React components! Perfect for:
 
 - 🔐 **App core data** - Authentication, user profiles accessible from anywhere
 - 🔄 **Background services** - WebSocket updates, timers, external events
@@ -18,7 +18,7 @@
 - ⚡ **Real-time updates** - Push changes from anywhere, see them in React instantly
 
 ```bash
-npm install @qortex/query-react
+npm install qortex-query-react
 ```
 
 ## 📚 Documentation

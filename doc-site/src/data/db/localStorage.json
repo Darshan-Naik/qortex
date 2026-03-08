@@ -12,7 +12,7 @@
             "content": "This is the default driver.",
             "code": {
                 "language": "typescript",
-                "code": "import { createDB } from '@qortex/db';\n\nconst db = createDB('my-app'); // defaults to localStorage"
+                "code": "import { createDB } from 'qortex-db';\n\nconst db = createDB('my-app'); // defaults to localStorage"
             }
         }
     ]

@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     return {
-        title: `${documentation.title} | @qortex/db`,
+        title: `${documentation.title} | qortex-db`,
         description: documentation.description || `Documentation for ${documentation.title}`,
     };
 }

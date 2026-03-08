@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getReactNavItemByHref, getReactSectionByHref } from '@/lib/navigation-react';
+import { getReactNavItemByHref, getReactSectionByHref } from '@/lib/navigation-query-react';
 import { getDocumentation } from '@/lib/documentation';
 import { DocumentationRenderer } from '@/components/documentation';
 
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     return {
-        title: `${documentation.title} | @qortex/query-react`,
+        title: `${documentation.title} | qortex-query-react`,
         description: documentation.description || `Documentation for ${documentation.title}`,
     };
 }

@@ -10,6 +10,6 @@ export default defineConfig({
   treeshake: true,
   splitting: false,
   target: "es2020",
-  external: ["react", "@qortex/query"],
+  external: ["react", "qortex-query"],
   onSuccess: "cd ../../ && node scripts/prepare-publish.js && cp packages/query-react/README.md packages/query-react/dist/ 2>/dev/null || true"
 });

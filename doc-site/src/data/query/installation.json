@@ -1,18 +1,18 @@
 {
     "id": "installation",
     "title": "Installation",
-    "subtitle": "Get started with @qortex/query",
-    "description": "Install @qortex/query for vanilla JS, Vue, Svelte, or other frameworks.",
+    "subtitle": "Get started with qortex-query",
+    "description": "Install qortex-query for vanilla JS, Vue, Svelte, or other frameworks.",
     "category": "Getting Started",
     "status": "stable",
-    "content": "Install @qortex/query using your preferred package manager.",
+    "content": "Install qortex-query using your preferred package manager.",
     "sections": [
         {
             "title": "Install Package",
             "content": "Add the package to your project:",
             "code": {
                 "language": "bash",
-                "code": "# npm\nnpm install @qortex/query\n\n# yarn\nyarn add @qortex/query\n\n# pnpm\npnpm add @qortex/query"
+                "code": "# npm\nnpm install qortex-query\n\n# yarn\nyarn add qortex-query\n\n# pnpm\npnpm add qortex-query"
             }
         },
         {
@@ -20,7 +20,7 @@
             "content": "You can also use it directly in the browser via ESM:",
             "code": {
                 "language": "html",
-                "code": "<script type=\"module\">\n  import { fetchQuery } from 'https://esm.sh/query';\n</script>"
+                "code": "<script type=\"module\">\n  import { fetchQuery } from 'https://esm.sh/qortex-query';\n</script>"
             }
         }
     ]

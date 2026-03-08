@@ -8,7 +8,7 @@ export default function StoreDocsLayout({ children }: { children: React.ReactNod
     return (
         <PackageDocsLayout
             navigation={storeNavigation}
-            packageName="@qortex/store"
+            packageName="qortex-store"
             packageIcon={<StoreIcon className="h-5 w-5 text-white" />}
             packageHref="/store"
             themeColor="emerald"

@@ -2,7 +2,7 @@
     "id": "createStore",
     "title": "createStore",
     "subtitle": "Create a state store",
-    "description": "Creates a new store instance. Re-exported from @qortex/store for convenience.",
+    "description": "Creates a new store instance. Re-exported from qortex-store for convenience.",
     "category": "Core API",
     "tags": [
         "store",
@@ -41,13 +41,13 @@
             "title": "Raw Object",
             "description": "The simplest way to create a store for data-only state:",
             "language": "typescript",
-            "code": "import { createStore } from '@qortex/store-react';\n\nconst userStore = createStore({ \n  name: 'John', \n  loggedIn: false \n});\n\n// Use in React\n// const state = useStore(userStore);"
+            "code": "import { createStore } from 'qortex-store-react';\n\nconst userStore = createStore({ \n  name: 'John', \n  loggedIn: false \n});\n\n// Use in React\n// const state = useStore(userStore);"
         },
         {
             "title": "Initializer Function (Set/Get)",
             "description": "Use an initializer to define actions that have access to current state and updates:",
             "language": "typescript",
-            "code": "import { createStore } from '@qortex/store-react';\n\nconst counterStore = createStore((set, get) => ({\n  count: 0,\n  // Use get() to read current state\n  increment: () => set({ count: get().count + 1 }),\n  // Use functional updates for atomic changes\n  decrement: () => set((s) => ({ count: s.count - 1 })),\n  // Access other state properties within actions\n  resetIfHigh: () => {\n    if (get().count > 10) set({ count: 0 });\n  }\n}));"
+            "code": "import { createStore } from 'qortex-store-react';\n\nconst counterStore = createStore((set, get) => ({\n  count: 0,\n  // Use get() to read current state\n  increment: () => set({ count: get().count + 1 }),\n  // Use functional updates for atomic changes\n  decrement: () => set((s) => ({ count: s.count - 1 })),\n  // Access other state properties within actions\n  resetIfHigh: () => {\n    if (get().count > 10) set({ count: 0 });\n  }\n}));"
         },
         {
             "title": "setState() — All Variants",
@@ -67,7 +67,7 @@
         },
         {
             "icon": "refresh-cw",
-            "label": "Re-exported from @qortex/store — works identically in React and non-React environments"
+            "label": "Re-exported from qortex-store — works identically in React and non-React environments"
         }
     ],
     "relatedPages": [

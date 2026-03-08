@@ -34,19 +34,19 @@
             "title": "Testing Usage",
             "description": "Clear cache between tests",
             "language": "tsx",
-            "code": "import { dangerClearCache, fetchQuery } from '@qortex/query-react';\n\n// In your test setup\nbeforeEach(() => {\n  // Clear all cached data before each test\n  dangerClearCache();\n});\n\ndescribe('User API', () => {\n  it('should fetch user data', async () => {\n    // Test user data fetching\n    const user = await fetchQuery(['user', '123'], {\n      fetcher: () => fetchUser('123')\n    });\n    \n    expect(user).toBeDefined();\n  });\n  \n  it('should handle user not found', async () => {\n    // Cache is cleared, so this test starts fresh\n    try {\n      await fetchQuery(['user', 'nonexistent'], {\n        fetcher: () => fetchUser('nonexistent')\n      });\n    } catch (error) {\n      expect(error.message).toBe('User not found');\n    }\n  });\n});"
+            "code": "import { dangerClearCache, fetchQuery } from 'qortex-query-react';\n\n// In your test setup\nbeforeEach(() => {\n  // Clear all cached data before each test\n  dangerClearCache();\n});\n\ndescribe('User API', () => {\n  it('should fetch user data', async () => {\n    // Test user data fetching\n    const user = await fetchQuery(['user', '123'], {\n      fetcher: () => fetchUser('123')\n    });\n    \n    expect(user).toBeDefined();\n  });\n  \n  it('should handle user not found', async () => {\n    // Cache is cleared, so this test starts fresh\n    try {\n      await fetchQuery(['user', 'nonexistent'], {\n        fetcher: () => fetchUser('nonexistent')\n      });\n    } catch (error) {\n      expect(error.message).toBe('User not found');\n    }\n  });\n});"
         },
         {
             "title": "Development Tools",
             "description": "Clear cache in development tools",
             "language": "tsx",
-            "code": "import { dangerClearCache } from '@qortex/query-react';\n\n// Development utility function\nfunction clearAllData() {\n  if (process.env.NODE_ENV === 'development') {\n    dangerClearCache();\n    console.log('All cached data cleared');\n  } else {\n    console.warn('dangerClearCache should only be used in development');\n  }\n}\n\n// Add to window for debugging\nif (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {\n  (window as any).clearQortexCache = clearAllData;\n}\n\n// Usage in browser console:\n// clearQortexCache()"
+            "code": "import { dangerClearCache } from 'qortex-query-react';\n\n// Development utility function\nfunction clearAllData() {\n  if (process.env.NODE_ENV === 'development') {\n    dangerClearCache();\n    console.log('All cached data cleared');\n  } else {\n    console.warn('dangerClearCache should only be used in development');\n  }\n}\n\n// Add to window for debugging\nif (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {\n  (window as any).clearQortexCache = clearAllData;\n}\n\n// Usage in browser console:\n// clearQortexCache()"
         },
         {
             "title": "Logout Handler",
             "description": "Clear cache on user logout (use with caution)",
             "language": "tsx",
-            "code": "import { dangerClearCache, setQueryData } from '@qortex/query-react';\n\nfunction handleLogout() {\n  // Clear all cached data on logout\n  // This ensures no user data remains in memory\n  dangerClearCache();\n  \n  // Redirect to login\n  window.location.href = '/login';\n}\n\n// Alternative: More targeted approach\nfunction handleLogoutSafe() {\n  // Instead of clearing everything, clear specific user data\n  setQueryData(['user', 'current'], undefined);\n  setQueryData(['user', 'profile'], undefined);\n  setQueryData(['user', 'settings'], undefined);\n  \n  // Redirect to login\n  window.location.href = '/login';\n}"
+            "code": "import { dangerClearCache, setQueryData } from 'qortex-query-react';\n\nfunction handleLogout() {\n  // Clear all cached data on logout\n  // This ensures no user data remains in memory\n  dangerClearCache();\n  \n  // Redirect to login\n  window.location.href = '/login';\n}\n\n// Alternative: More targeted approach\nfunction handleLogoutSafe() {\n  // Instead of clearing everything, clear specific user data\n  setQueryData(['user', 'current'], undefined);\n  setQueryData(['user', 'profile'], undefined);\n  setQueryData(['user', 'settings'], undefined);\n  \n  // Redirect to login\n  window.location.href = '/login';\n}"
         }
     ],
     "behavior": [

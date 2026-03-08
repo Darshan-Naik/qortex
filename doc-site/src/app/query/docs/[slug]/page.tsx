@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getCoreNavItemByHref, getCoreSectionByHref } from '@/lib/navigation-core';
+import { getCoreNavItemByHref, getCoreSectionByHref } from '@/lib/navigation-query';
 import { getDocumentation } from '@/lib/documentation';
 import { DocumentationRenderer } from '@/components/documentation';
 
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     return {
-        title: `${documentation.title} | @qortex/query`,
+        title: `${documentation.title} | qortex-query`,
         description: documentation.description || `Documentation for ${documentation.title}`,
     };
 }

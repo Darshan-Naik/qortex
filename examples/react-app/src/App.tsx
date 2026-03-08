@@ -1,8 +1,8 @@
 import React from "react";
 import "./App.css";
 
-import { useQuery, useMutate } from "@qortex/query-react";
-import { createStore, useStore } from "@qortex/store-react";
+import { useQuery, useMutate } from "qortex-query-react";
+import { createStore, useStore } from "qortex-store-react";
 
 interface CounterState {
   count: number;
@@ -38,7 +38,7 @@ function Counter() {
       border: '1px solid #d1d9e6',
       marginBottom: '20px'
     }}>
-      <h3>Simple Counter (@qortex/store-react)</h3>
+      <h3>Simple Counter (qortex-store-react)</h3>
       <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '10px 0' }}>{count}</div>
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button onClick={decrement}>- Decrement</button>
@@ -72,7 +72,7 @@ export default function App() {
         border: '1px solid #eaeaea',
         boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
       }}>
-        <h3>Data Fetching (@qortex/query-react)</h3>
+        <h3>Data Fetching (qortex-query-react)</h3>
         <p>Posts in cache: <strong>{data?.length || 0}</strong></p>
         <p>Status: {isLoading ? "⏳ Loading..." : "✅ Ready"}</p>
         {isError && <p style={{ color: 'red' }}>❌ Error fetching data</p>}

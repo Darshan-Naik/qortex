@@ -6,7 +6,7 @@ import {
   QueryOptions,
   queryManager,
   serializeKey,
-} from "@qortex/query";
+} from "qortex-query";
 
 /**
  * React hook for reactive data fetching that returns only the data value

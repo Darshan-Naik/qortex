@@ -7,7 +7,7 @@ import {
   QueryState,
   queryManager,
   serializeKey,
-} from "@qortex/query";
+} from "qortex-query";
 
 /**
  * React hook for reactive data fetching with automatic re-renders on state changes

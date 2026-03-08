@@ -1,8 +1,8 @@
 import { useSyncExternalStoreWithSelector } from "use-sync-external-store/shim/with-selector";
-import type { Store } from "@qortex/store";
+import type { Store } from "qortex-store";
 
 /**
- * React hook to read (and subscribe to) state from a `@qortex/store` store.
+ * React hook to read (and subscribe to) state from a `qortex-store` store.
  *
  * Uses `useSyncExternalStoreWithSelector` under the hood for safe concurrent-mode
  * rendering and efficient selector-based re-renders.

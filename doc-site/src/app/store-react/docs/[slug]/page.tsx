@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     return {
-        title: `${documentation.title} | @qortex/store-react`,
+        title: `${documentation.title} | qortex-store-react`,
         description: documentation.description || `Documentation for ${documentation.title}`,
     };
 }

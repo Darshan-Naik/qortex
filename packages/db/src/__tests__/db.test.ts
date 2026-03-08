@@ -8,7 +8,7 @@ const mockIndexedDB = {
 };
 Object.defineProperty(window, 'indexedDB', { value: mockIndexedDB });
 
-describe('@qortex/db', () => {
+describe('qortex-db', () => {
     beforeEach(() => {
         window.localStorage.clear();
         window.sessionStorage.clear();

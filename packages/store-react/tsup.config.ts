@@ -10,6 +10,6 @@ export default defineConfig({
     treeshake: true,
     splitting: false,
     target: "es2020",
-    external: ["react", "@qortex/store", "use-sync-external-store"],
+    external: ["react", "qortex-store", "use-sync-external-store"],
     onSuccess: "cd ../../ && node scripts/prepare-publish.js && cp packages/store-react/README.md packages/store-react/dist/ 2>/dev/null || true"
 });

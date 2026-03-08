@@ -4,7 +4,7 @@ import { useState, memo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, ChevronRight, X, Layers } from 'lucide-react';
-import { NavigationSection } from '@/lib/navigation-core';
+import { NavigationSection } from '@/lib/navigation-query';
 
 interface PackageSidebarProps {
     navigation: NavigationSection[];

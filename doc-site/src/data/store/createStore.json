@@ -41,7 +41,7 @@
             "title": "Raw Object",
             "description": "The simplest way to create a store for data-only state:",
             "language": "typescript",
-            "code": "import { createStore } from '@qortex/store';\n\nconst userStore = createStore({ \n  name: 'John', \n  loggedIn: false \n});\n\n// Update via external setState\nuserStore.setState({ loggedIn: true });"
+            "code": "import { createStore } from 'qortex-store';\n\nconst userStore = createStore({ \n  name: 'John', \n  loggedIn: false \n});\n\n// Update via external setState\nuserStore.setState({ loggedIn: true });"
         },
         {
             "title": "Initializer Function (Set/Get)",

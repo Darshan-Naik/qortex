@@ -41,7 +41,7 @@
             "title": "Basic Usage",
             "description": "Create a database with just a name (uses localStorage by default):",
             "language": "typescript",
-            "code": "import { createDB } from '@qortex/db';\n\n// Simple - uses localStorage\nconst db = createDB('myapp');\n\n// With options - use IndexedDB\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });"
+            "code": "import { createDB } from 'qortex-db';\n\n// Simple - uses localStorage\nconst db = createDB('myapp');\n\n// With options - use IndexedDB\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });"
         },
         {
             "title": "DB Methods",
@@ -93,7 +93,7 @@
         }
     ],
     "relatedPages": [
-        "@qortex/db",
+        "qortex-db",
         "createPersister"
     ]
 }

@@ -23,7 +23,7 @@ export default function QortexStorePage() {
                         </Link>
                         <div className="flex items-center space-x-2">
                             <StoreIcon className="h-6 w-6 text-emerald-600" />
-                            <span className="font-bold text-gray-900">@qortex/store</span>
+                            <span className="font-bold text-gray-900">qortex-store</span>
                         </div>
                     </div>
                 </div>
@@ -37,21 +37,21 @@ export default function QortexStorePage() {
                         State Management
                     </div>
                     <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl mb-6">
-                        <span className="text-emerald-600">@qortex/store</span>
+                        <span className="text-emerald-600">qortex-store</span>
                     </h1>
                     <p className="mx-auto max-w-2xl text-xl text-gray-600 mb-8">
                         A tiny, type-safe state management library. Framework-agnostic core that works anywhere — Node, browser, vanilla JS. Zero dependencies.
                     </p>
                     <div className="flex flex-col items-center justify-center gap-6 mt-8">
                         <code className="bg-gray-900 text-green-400 px-6 py-3 rounded-xl text-lg font-mono shadow-lg">
-                            npm install @qortex/store
+                            npm install qortex-store
                         </code>
                         <div className="flex gap-4">
                             <Link href="/store/docs/installation" className="inline-flex items-center px-6 py-3 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-colors shadow-md hover:shadow-lg">
                                 Documentation
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
-                            <a href="https://www.npmjs.com/package/@qortex/store" target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-700 font-semibold hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors shadow-sm" title="View on NPM">
+                            <a href="https://www.npmjs.com/package/qortex-store" target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-700 font-semibold hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors shadow-sm" title="View on NPM">
                                 <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0H1.763zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.048 19.16H5.13V5.323z" /></svg>
                             </a>
                         </div>
@@ -63,7 +63,7 @@ export default function QortexStorePage() {
             <section className="py-16 bg-white">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Quick Start</h2>
-                    <CodeBlock language="typescript">{`import { createStore } from '@qortex/store';
+                    <CodeBlock language="typescript">{`import { createStore } from 'qortex-store';
 
 // Create a store with state and actions
 const counterStore = createStore((set, get) => ({
@@ -147,7 +147,7 @@ const unsub = counterStore.subscribe((state, prev) => {
 
             {/* Bundle Size */}
             <BundleStats
-                packageName="@qortex/store"
+                packageName="qortex-store"
                 size="~0.5KB"
                 minifiedSize="1.2KB"
                 dependencyCount={0}
@@ -160,7 +160,7 @@ const unsub = counterStore.subscribe((state, prev) => {
                     <h2 className="text-3xl font-bold text-white mb-6">Ready to get started?</h2>
                     <div className="flex justify-center gap-4 flex-wrap">
                         <code className="bg-white/10 text-white px-4 py-3 rounded-lg text-lg backdrop-blur">
-                            npm install @qortex/store
+                            npm install qortex-store
                         </code>
                     </div>
                     <p className="mt-6 text-emerald-200">

@@ -15,10 +15,10 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@qortex/query": [
+      "qortex-query": [
         "../query/src"
       ],
-      "@qortex/query/persister": [
+      "qortex-query/persister": [
         "../query/src/persister"
       ]
     }

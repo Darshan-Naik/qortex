@@ -23,8 +23,8 @@ export function generateMetadata({
     const defaultKeywords = [
         'Qortex',
         'qortex',
-        '@qortex/query',
-        '@qortex/query-react',
+        'qortex-query',
+        'qortex-query-react',
         'data fetching',
         'react',
         'typescript',
@@ -77,9 +77,9 @@ export const seoConfigs = {
     },
     installation: {
         title: 'Installation',
-        description: 'Install Qortex in your React or vanilla JavaScript project. Choose between @qortex/query-react for React apps or @qortex/query for other frameworks.',
+        description: 'Install Qortex in your React or vanilla JavaScript project. Choose between qortex-query-react for React apps or qortex-query for other frameworks.',
         url: '/docs/installation',
-        keywords: ['installation', '@qortex/query-react', '@qortex/query', 'npm', 'yarn', 'pnpm'],
+        keywords: ['installation', 'qortex-query-react', 'qortex-query', 'npm', 'yarn', 'pnpm'],
     },
     quickStart: {
         title: 'Quick Start',

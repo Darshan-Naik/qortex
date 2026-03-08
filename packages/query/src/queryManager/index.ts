@@ -6,7 +6,7 @@ import QueryManagerCore from "./queryManagerCore";
  *
  * @example
  * ```typescript
- * import { queryManager } from '@qortex/query';
+ * import { queryManager } from 'qortex-query';
  *
  * queryManager.registerFetcher('users', { fetcher: () => fetch('/api/users') });
  * const users = await queryManager.fetchQuery('users');

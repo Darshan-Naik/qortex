@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { useQuerySelect } from '../src/useQuerySelect';
-import { queryManager } from '@qortex/query';
+import { queryManager } from 'qortex-query';
 
 // Destructuring works because all public methods are arrow functions
 const { registerFetcher, setQueryData, dangerClearCache, invalidateQuery } = queryManager;

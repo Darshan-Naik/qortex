@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   keywords: [
     "Qortex",
     "qortex",
-    "@qortex/query",
-    "@qortex/query-react",
+    "qortex-query",
+    "qortex-query-react",
     "data fetching",
     "react",
     "typescript",

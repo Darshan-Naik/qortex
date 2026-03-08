@@ -8,7 +8,7 @@ export default function DbDocsLayout({ children }: { children: React.ReactNode }
     return (
         <PackageDocsLayout
             navigation={dbNavigation}
-            packageName="@qortex/db"
+            packageName="qortex-db"
             packageIcon={<DbIcon className="h-5 w-5 text-white" />}
             packageHref="/db"
             themeColor="indigo"

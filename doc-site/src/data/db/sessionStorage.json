@@ -12,7 +12,7 @@
             "content": "Specify the driver in options:",
             "code": {
                 "language": "typescript",
-                "code": "import { createDB } from '@qortex/db';\n\nconst db = createDB({ \n  name: 'my-session', \n  driver: 'sessionStorage' \n});"
+                "code": "import { createDB } from 'qortex-db';\n\nconst db = createDB({ \n  name: 'my-session', \n  driver: 'sessionStorage' \n});"
             }
         }
     ]

@@ -1,8 +1,8 @@
-# ⚛️ @qortex/store-react
+# ⚛️ qortex-store-react
 
-> **React bindings for @qortex/store ⚡**
+> **React bindings for qortex-store ⚡**
 
-[![npm version](https://badge.fury.io/js/@qortex/store-react.svg)](https://badge.fury.io/js/@qortex/store-react)
+[![npm version](https://badge.fury.io/js/qortex-store-react.svg)](https://badge.fury.io/js/qortex-store-react)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
 ## ✨ Features
@@ -13,13 +13,13 @@
 - 🔐 **Type-safe** — full TypeScript generics
 
 ```bash
-npm install @qortex/store-react
+npm install qortex-store-react
 ```
 
 ## 🚀 Quick Start
 
 ```tsx
-import { createStore, useStore } from "@qortex/store-react";
+import { createStore, useStore } from "qortex-store-react";
 
 // Create a store (do this outside components)
 const counterStore = createStore((set, get) => ({

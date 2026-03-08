@@ -50,13 +50,13 @@
             "title": "Basic Usage",
             "description": "Access query state with optimized re-renders",
             "language": "tsx",
-            "code": "import { useQuerySelect } from '@qortex/query-react';\n\nfunction UserName({ userId }: { userId: string }) {\n  const userState = useQuerySelect(['user', userId], {\n    fetcher: async () => {\n      const response = await fetch(`/api/users/${userId}`);\n      return response.json();\n    }\n  });\n\n  // Only re-renders when userState.data changes, not when other state properties change\n  return <span>{userState.data?.name ?? 'Unknown'}</span>;\n}"
+            "code": "import { useQuerySelect } from 'qortex-query-react';\n\nfunction UserName({ userId }: { userId: string }) {\n  const userState = useQuerySelect(['user', userId], {\n    fetcher: async () => {\n      const response = await fetch(`/api/users/${userId}`);\n      return response.json();\n    }\n  });\n\n  // Only re-renders when userState.data changes, not when other state properties change\n  return <span>{userState.data?.name ?? 'Unknown'}</span>;\n}"
         },
         {
             "title": "State Property Access",
             "description": "Access specific state properties with optimized re-renders",
             "language": "tsx",
-            "code": "import { useQuerySelect } from '@qortex/query-react';\n\nfunction ProductStats({ productId }: { productId: string }) {\n  const productState = useQuerySelect(['product', productId], {\n    fetcher: async () => {\n      const response = await fetch(`/api/products/${productId}`);\n      return response.json();\n    }\n  });\n\n  // Component only re-renders when accessed state properties change\n  return (\n    <div>\n      <h3>{productState.data?.name ?? 'Unknown Product'}</h3>\n      <p>Price: ${productState.data?.price ?? 0}</p>\n      <p>In Stock: {(productState.data?.inventory ?? 0) > 0 ? 'Yes' : 'No'}</p>\n      {productState.isLoading && <div>Loading...</div>}\n      {productState.isError && <div>Error: {productState.error?.message}</div>}\n    </div>\n  );\n}"
+            "code": "import { useQuerySelect } from 'qortex-query-react';\n\nfunction ProductStats({ productId }: { productId: string }) {\n  const productState = useQuerySelect(['product', productId], {\n    fetcher: async () => {\n      const response = await fetch(`/api/products/${productId}`);\n      return response.json();\n    }\n  });\n\n  // Component only re-renders when accessed state properties change\n  return (\n    <div>\n      <h3>{productState.data?.name ?? 'Unknown Product'}</h3>\n      <p>Price: ${productState.data?.price ?? 0}</p>\n      <p>In Stock: {(productState.data?.inventory ?? 0) > 0 ? 'Yes' : 'No'}</p>\n      {productState.isLoading && <div>Loading...</div>}\n      {productState.isError && <div>Error: {productState.error?.message}</div>}\n    </div>\n  );\n}"
         }
     ],
     "behavior": [

@@ -2,7 +2,7 @@
     "id": "quick-start",
     "title": "Quick Start",
     "subtitle": "React Hooks Usage",
-    "description": "Learn how to use @qortex/query-react hooks in your components.",
+    "description": "Learn how to use qortex-query-react hooks in your components.",
     "category": "Getting Started",
     "status": "stable",
     "content": "Use the useQuery hook to fetch and subscribe to data in your components.",
@@ -12,7 +12,7 @@
             "content": "Register a global fetcher (usually in your app entry point):",
             "code": {
                 "language": "typescript",
-                "code": "import { registerFetcher } from '@qortex/query-react';\n\nregisterFetcher('users', async () => {\n  const res = await fetch('/api/users');\n  return res.json();\n});"
+                "code": "import { registerFetcher } from 'qortex-query-react';\n\nregisterFetcher('users', async () => {\n  const res = await fetch('/api/users');\n  return res.json();\n});"
             }
         },
         {
@@ -20,7 +20,7 @@
             "content": "Use useQuery in your components:",
             "code": {
                 "language": "tsx",
-                "code": "import { useQuery } from '@qortex/query-react';\n\nfunction UserList() {\n  const { data, isLoading, error } = useQuery('users');\n\n  if (isLoading) return <div>Loading...</div>;\n  if (error) return <div>Error: {error.message}</div>;\n\n  return (\n    <ul>\n      {data.map(user => (\n        <li key={user.id}>{user.name}</li>\n      ))}\n    </ul>\n  );\n}"
+                "code": "import { useQuery } from 'qortex-query-react';\n\nfunction UserList() {\n  const { data, isLoading, error } = useQuery('users');\n\n  if (isLoading) return <div>Loading...</div>;\n  if (error) return <div>Error: {error.message}</div>;\n\n  return (\n    <ul>\n      {data.map(user => (\n        <li key={user.id}>{user.name}</li>\n      ))}\n    </ul>\n  );\n}"
             }
         }
     ]

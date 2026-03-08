@@ -1,8 +1,8 @@
-# 🗄️ @qortex/store
+# 🗄️ qortex-store
 
 > **Framework-agnostic lightweight state management 🧠**
 
-[![npm version](https://badge.fury.io/js/@qortex/store.svg)](https://badge.fury.io/js/@qortex/store)
+[![npm version](https://badge.fury.io/js/qortex-store.svg)](https://badge.fury.io/js/qortex-store)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
 ## ✨ Features
@@ -10,16 +10,16 @@
 - 🪶 **Tiny** — zero runtime dependencies
 - 🔐 **Type-safe** — full TypeScript generics
 - ⚡ **Fast** — listeners only fire on reference changes (`Object.is`)
-- 🧩 **Framework-agnostic** — works anywhere (pair with `@qortex/store-react` for React)
+- 🧩 **Framework-agnostic** — works anywhere (pair with `qortex-store-react` for React)
 
 ```bash
-npm install @qortex/store
+npm install qortex-store
 ```
 
 ## 🚀 Quick Start
 
 ```ts
-import { createStore } from "@qortex/store";
+import { createStore } from "qortex-store";
 
 const counterStore = createStore((set, get) => ({
   count: 0,

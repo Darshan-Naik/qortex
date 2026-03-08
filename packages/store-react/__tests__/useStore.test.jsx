@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, act } from "@testing-library/react";
-import { createStore } from "@qortex/store";
+import { createStore } from "qortex-store";
 import { useStore } from "../src/useStore";
 
 describe("useStore", () => {

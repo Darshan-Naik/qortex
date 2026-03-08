@@ -15,7 +15,7 @@
         "skipLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@qortex/store": [
+            "qortex-store": [
                 "../store/src"
             ]
         }

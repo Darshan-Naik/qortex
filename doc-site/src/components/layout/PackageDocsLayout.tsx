@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Menu } from 'lucide-react';
 import { PackageSidebar } from '@/components/sidebar/PackageSidebar';
-import { NavigationSection } from '@/lib/navigation-core';
+import { NavigationSection } from '@/lib/navigation-query';
 
 interface PackageDocsLayoutProps {
     children: React.ReactNode;

@@ -1,7 +1,7 @@
 {
     "id": "useStore",
     "title": "useStore",
-    "subtitle": "React hook for @qortex/store",
+    "subtitle": "React hook for qortex-store",
     "description": "Subscribe to a store from React components with selector and equality support.",
     "category": "React Hooks",
     "tags": [
@@ -30,7 +30,7 @@
                 "type": "Store<T>",
                 "required": true,
                 "default": "-",
-                "description": "A store created with createStore from @qortex/store"
+                "description": "A store created with createStore from qortex-store"
             },
             {
                 "name": "selector",
@@ -57,7 +57,7 @@
             "title": "Full State",
             "description": "Access the entire store state (re-renders on any change):",
             "language": "tsx",
-            "code": "import { useStore } from '@qortex/store-react';\nimport { counterStore } from './stores';\n\nfunction Counter() {\n  const state = useStore(counterStore);\n  return <p>Count: {state.count}</p>;\n}"
+            "code": "import { useStore } from 'qortex-store-react';\nimport { counterStore } from './stores';\n\nfunction Counter() {\n  const state = useStore(counterStore);\n  return <p>Count: {state.count}</p>;\n}"
         },
         {
             "title": "Selector",

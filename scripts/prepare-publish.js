@@ -9,42 +9,42 @@ const path = require('path');
 
 const packages = [
   {
-    name: '@qortex/query',
+    name: 'qortex-query',
     path: 'packages/query',
-    publishName: '@qortex/query',
+    publishName: 'qortex-query',
     description: 'Framework-agnostic query cache & fetch registry (MFE friendly).',
     persisterExport: 'persister'
   },
   {
-    name: '@qortex/query-react',
+    name: 'qortex-query-react',
     path: 'packages/query-react',
-    publishName: '@qortex/query-react',
+    publishName: 'qortex-query-react',
     description: 'React hook bridge for qortex runtime',
     persisterExport: 'persister',
     // Transform workspace dependencies to published versions
     dependencyTransforms: {
-      '@qortex/query': '@qortex/query' // workspace:* -> @qortex/query (same version)
+      'qortex-query': 'qortex-query' // workspace:* -> qortex-query (same version)
     }
   },
   {
-    name: '@qortex/db',
+    name: 'qortex-db',
     path: 'packages/db',
-    publishName: '@qortex/db',
+    publishName: 'qortex-db',
     description: 'Browser-only Redis-like key-value database with localStorage, sessionStorage, and IndexedDB support'
   },
   {
-    name: '@qortex/store',
+    name: 'qortex-store',
     path: 'packages/store',
-    publishName: '@qortex/store',
+    publishName: 'qortex-store',
     description: 'Framework-agnostic lightweight state management library'
   },
   {
-    name: '@qortex/store-react',
+    name: 'qortex-store-react',
     path: 'packages/store-react',
-    publishName: '@qortex/store-react',
-    description: 'React bindings for @qortex/store state management',
+    publishName: 'qortex-store-react',
+    description: 'React bindings for qortex-store state management',
     dependencyTransforms: {
-      '@qortex/store': '@qortex/store' // workspace:* -> @qortex/store (same version)
+      'qortex-store': 'qortex-store' // workspace:* -> qortex-store (same version)
     }
   }
 ];
