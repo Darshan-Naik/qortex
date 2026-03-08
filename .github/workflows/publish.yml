@@ -42,7 +42,15 @@ jobs:
 
       - name: Publish to NPM
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
-          pnpm publish:packages
+          # 1. Configure the token in the global npm config for the runner
+          npm config set //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+          
+          # 2. Iterate and publish each package manually to ensure context
+          for pkg in query query-react db store store-react; do
+            echo "Publishing qortex-$pkg..."
+            cd packages/$pkg/dist
+            npm publish --access public --no-git-checks
+            cd ../../../
+          done
