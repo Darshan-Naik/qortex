@@ -1,0 +1,71 @@
+{
+    "id": "createUseStore",
+    "title": "createUseStore",
+    "subtitle": "Specialized Hook Factory",
+    "description": "Create a bound hook for a specific store instance to avoid passing the store repeatedly.",
+    "category": "React Hooks",
+    "tags": [
+        "react",
+        "hook",
+        "factory",
+        "typesafe"
+    ],
+    "status": "stable",
+    "content": "The `createUseStore` utility creates a specialized version of `useStore` that is already bound to a specific store instance. This is the recommended way to use stores in larger applications as it improves ergonomics and maintains full type safety without the mental overhead of carrying store references everywhere.",
+    "signature": {
+        "language": "typescript",
+        "code": "createUseStore<T>(\n  store: Store<T>\n): <U = T>(selector?: (state: T) => U, equalityFn?: (a: U, b: U) => boolean) => U"
+    },
+    "parameters": {
+        "columns": [
+            "Parameter",
+            "Type",
+            "Required",
+            "Description"
+        ],
+        "rows": [
+            {
+                "name": "store",
+                "type": "Store<T>",
+                "required": true,
+                "description": "The store instance to bind to the custom hook."
+            }
+        ]
+    },
+    "returns": {
+        "type": "Function",
+        "description": "A custom hook that accepts an optional selector and equality function."
+    },
+    "examples": [
+        {
+            "title": "Basic Usage",
+            "description": "Create a custom hook for your store and use it in components:",
+            "language": "tsx",
+            "code": "import { createStore, createUseStore } from 'qortex-store-react';\n\n// 1. Create your store\nconst counterStore = createStore((set, get) => ({\n  count: 0,\n  increment: () => set({ count: get().count + 1 }),\n}));\n\n// 2. Create the specialized hook\nexport const useCounter = createUseStore(counterStore);\n\n// 3. Use it anywhere\nfunction CounterDisplay() {\n  const count = useCounter(s => s.count);\n  return <div>{count}</div>;\n}"
+        },
+        {
+            "title": "Full Type Safety",
+            "description": "The created hook perfectly inherits the types from your store:",
+            "language": "tsx",
+            "code": "interface UserState {\n  name: string;\n  email: string;\n}\n\nconst userStore = createStore<UserState>((set) => ({\n  name: 'John',\n  email: 'john@example.com'\n}));\n\nconst useUser = createUseStore(userStore);\n\nfunction Profile() {\n  // 's' is automatically typed as UserState\n  const name = useUser(s => s.name);\n  return <h1>{name}</h1>;\n}"
+        }
+    ],
+    "behaviors": [
+        {
+            "icon": "layers",
+            "label": "Reduces boilerplate by removing the need to import/pass the store item to every useStore call"
+        },
+        {
+            "icon": "shield",
+            "label": "Maintains 100% type safety and generic inference"
+        },
+        {
+            "icon": "zap",
+            "label": "The returned hook follows all useStore performance optimizations"
+        }
+    ],
+    "relatedPages": [
+        "useStore",
+        "createStore"
+    ]
+}

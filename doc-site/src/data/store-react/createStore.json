@@ -71,6 +71,7 @@
         }
     ],
     "relatedPages": [
-        "useStore"
+        "useStore",
+        "createUseStore"
     ]
 }

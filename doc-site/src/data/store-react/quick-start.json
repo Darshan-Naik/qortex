@@ -16,19 +16,27 @@
             }
         },
         {
-            "title": "2. Use in a Component",
-            "content": "Use `useStore` with a selector to subscribe to specific state slices:",
+            "title": "2. Create a Bound Hook (Recommended)",
+            "content": "For better ergonomics, create a specialized hook for your store using `createUseStore`. This avoids passing the store as an argument to every hook call.",
             "code": {
-                "language": "tsx",
-                "code": "import { useStore } from 'qortex-store-react';\n\nfunction Counter() {\n  const count = useStore(counterStore, (s) => s.count);\n  const increment = useStore(counterStore, (s) => s.increment);\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={increment}>+1</button>\n    </div>\n  );\n}"
+                "language": "typescript",
+                "code": "import { createUseStore } from 'qortex-store-react';\n\n// Create a specialized hook\nexport const useCounter = createUseStore(counterStore);"
             }
         },
         {
-            "title": "3. Without a Selector",
-            "content": "Omit the selector to get the full state (re-renders on every change):",
+            "title": "3. Use in a Component",
+            "content": "Use your bound hook with a selector to subscribe to specific state slices:",
             "code": {
                 "language": "tsx",
-                "code": "function CounterFull() {\n  const state = useStore(counterStore);\n  return <p>Count: {state.count}</p>;\n}"
+                "code": "function Counter() {\n  const count = useCounter((s) => s.count);\n  const increment = useCounter((s) => s.increment);\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={increment}>+1</button>\n    </div>\n  );\n}"
+            }
+        },
+        {
+            "title": "Alternative: Using base useStore",
+            "content": "You can also use the base `useStore` hook by passing the store instance directly:",
+            "code": {
+                "language": "tsx",
+                "code": "import { useStore } from 'qortex-store-react';\n\nfunction Counter() {\n  const count = useStore(counterStore, (s) => s.count);\n  return <p>Count: {count}</p>;\n}"
             }
         }
     ]

@@ -40,7 +40,7 @@ export default function QortexStoreReactPage() {
                         <span className="text-teal-600">qortex-store-react</span>
                     </h1>
                     <p className="mx-auto max-w-2xl text-xl text-gray-600 mb-8">
-                        React hook for qortex-store with selector support. Concurrent-mode safe and optimized for minimal re-renders.
+                        React hooks for qortex-store with selector support. Optimized for minimal re-renders and developer ergonomics with <code>createUseStore</code>.
                     </p>
                     <div className="flex flex-col items-center justify-center gap-6 mt-8">
                         <code className="bg-gray-900 text-green-400 px-6 py-3 rounded-xl text-lg font-mono shadow-lg">
@@ -63,24 +63,26 @@ export default function QortexStoreReactPage() {
             <section className="py-16 bg-white">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Quick Start</h2>
-                    <CodeBlock language="tsx">{`import { createStore, useStore } from 'qortex-store-react';
+                    <CodeBlock language="tsx">{`import { createStore, createUseStore } from 'qortex-store-react';
 
-// Create a store (in a separate file)
+// 1. Create a store
 const counterStore = createStore((set, get) => ({
   count: 0,
   increment: () => set({ count: get().count + 1 }),
 }));
 
-// Use in React components
+// 2. Create a specialized hook (Recommended)
+export const useCounter = createUseStore(counterStore);
+
+// 3. Use in React components
 function Counter() {
-  const count = useStore(counterStore, (s) => s.count);
-  const increment = useStore(counterStore, (s) => s.increment);
+  const count = useCounter((s) => s.count);
+  const increment = useCounter((s) => s.increment);
 
   return <button onClick={increment}>Count: {count}</button>;
 }`}</CodeBlock>
                 </div>
             </section>
-
             {/* Features */}
             <section className="py-16 bg-gray-50">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -89,7 +91,7 @@ function Counter() {
                         {[
                             { icon: Layers, title: 'Selector Support', desc: 'Pick only the state slices you need', color: 'text-teal-600', bg: 'bg-teal-100' },
                             { icon: RefreshCw, title: 'Concurrent Safe', desc: 'Fully compatible with React 18+ concurrent features', color: 'text-blue-600', bg: 'bg-blue-100' },
-                            { icon: Zap, title: 'Minimal Re-renders', desc: 'Re-renders only when selected values change', color: 'text-yellow-600', bg: 'bg-yellow-100' },
+                            { icon: Zap, title: 'Bound Hooks', desc: 'Create specialized hooks with createUseStore for better ergonomics', color: 'text-orange-600', bg: 'bg-orange-100' },
                             { icon: Shield, title: 'Custom Equality', desc: 'Bring your own equality function for object selectors', color: 'text-green-600', bg: 'bg-green-100' },
                             { icon: Code, title: 'TypeScript First', desc: 'Full generic type inference out of the box', color: 'text-purple-600', bg: 'bg-purple-100' },
                             { icon: Clock, title: 'Auto Cleanup', desc: 'Unsubscribes automatically on unmount', color: 'text-pink-600', bg: 'bg-pink-100' },

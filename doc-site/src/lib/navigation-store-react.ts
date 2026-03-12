@@ -26,6 +26,7 @@ export const storeReactNavigation: NavigationSection[] = [
         title: "React Hooks",
         items: [
             { title: "useStore", href: "/store-react/docs/useStore" },
+            { title: "createUseStore", href: "/store-react/docs/createUseStore" },
         ],
     },
 ];

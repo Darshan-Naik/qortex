@@ -1,5 +1,4 @@
 import type { Listener, StateCreator, Store } from "./types";
-import { QortexStoreError } from "./errors";
 
 /**
  * Create a new store instance.
@@ -26,58 +25,35 @@ import { QortexStoreError } from "./errors";
  */
 export const createStore = <T>(initializer: T | StateCreator<T>): Store<T> => {
     let listeners = new Set<Listener<T>>();
-    let state: T;
-    let initialState: T;
-
-    // ── Internal helpers ────────────────────────────────────────────────
 
     const get: Store<T>["get"] = () => state;
 
     const set: Store<T>["set"] = (partial, replace) => {
-        const prevState = state;
+        const next = typeof partial === "function" ? (partial as any)(state) : partial;
+        const nextState = replace ? (next as T) : (typeof next === "object" && next !== null ? { ...state, ...next } : next as T);
 
-        // Resolve next state
-        const nextPartial =
-            typeof partial === "function"
-                ? (partial as (s: T) => T | Partial<T>)(state)
-                : partial;
-
-        // Replace entirely or shallow-merge
-        if (replace) {
-            state = nextPartial as T;
-        } else {
-            state =
-                typeof nextPartial === "object" && nextPartial !== null
-                    ? { ...state, ...(nextPartial as Partial<T>) }
-                    : (nextPartial as T);
-        }
-
-        // Only notify if state reference changed
-        if (!Object.is(state, prevState)) {
-            listeners.forEach((listener) => listener(state, prevState));
+        if (!Object.is(state, nextState)) {
+            const prev = state;
+            state = nextState;
+            listeners.forEach((l) => l(state, prev));
         }
     };
 
-    const subscribe: Store<T>["subscribe"] = (listener) => {
-        listeners.add(listener);
-        return () => {
-            listeners.delete(listener);
-        };
+    let state: T = typeof initializer === "function" ? (initializer as StateCreator<T>)(set, get) : initializer;
+    let initialState: T = state;
+
+    return {
+        get,
+        set,
+        subscribe: (listener) => {
+            listeners.add(listener);
+            return () => {
+                listeners.delete(listener);
+            };
+        },
+        destroy: () => {
+            listeners.clear();
+            state = initialState;
+        },
     };
-
-    const destroy: Store<T>["destroy"] = () => {
-        listeners.clear();
-        state = initialState;
-    };
-
-    // ── Initialise state ────────────────────────────────────────────────
-
-    if (typeof initializer === "function") {
-        state = (initializer as StateCreator<T>)(set, get);
-    } else {
-        state = initializer;
-    }
-    initialState = state;
-
-    return { get, set, subscribe, destroy };
 };
