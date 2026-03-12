@@ -94,6 +94,28 @@ describe("useStore", () => {
         expect(renderCount).toHaveBeenCalledTimes(1);
     });
 
+    it("skips re-render automatically when selected primitive slice is strictly equal", () => {
+        const renderCount = jest.fn();
+
+        function CountDisplay() {
+            const count = useStore(counterStore, (s) => s.count);
+            renderCount();
+            return <span data-testid="count">{count}</span>;
+        }
+
+        render(<CountDisplay />);
+        expect(renderCount).toHaveBeenCalledTimes(1);
+
+        // Change name (count stays the same) → should NOT re-render
+        act(() => {
+            counterStore.get().setName("newName");
+            counterStore.get().setName("newName2");
+        });
+
+        // The default Object.is equality should prevent any extra renders
+        expect(renderCount).toHaveBeenCalledTimes(1);
+    });
+
     // ── Unsubscribes on unmount ────────────────────────────────────────
 
     it("unsubscribes when component unmounts", () => {

@@ -8,8 +8,6 @@ import type { Listener, StateCreator, Store } from "./types";
  *                       and returns the initial state (can include action methods).
  * @returns A `Store<T>` instance with `get`, `set`, `subscribe`, and `destroy`.
  *
- * @throws {QortexStoreError} If `initializer` is not a function.
- *
  * @example
  * // Simple counter store
  * const counterStore = createStore((set, get) => ({
@@ -18,10 +16,6 @@ import type { Listener, StateCreator, Store } from "./types";
  *   decrement: () => set((state) => ({ count: state.count - 1 })),
  *   reset: () => set({ count: 0 }),
  * }));
- *
- * counterStore.get().count;       // 0
- * counterStore.get().increment();
- * counterStore.get().count;       // 1
  */
 export const createStore = <T>(initializer: T | StateCreator<T>): Store<T> => {
     let listeners = new Set<Listener<T>>();
@@ -30,12 +24,14 @@ export const createStore = <T>(initializer: T | StateCreator<T>): Store<T> => {
 
     const set: Store<T>["set"] = (partial, replace) => {
         const next = typeof partial === "function" ? (partial as any)(state) : partial;
-        const nextState = replace ? (next as T) : (typeof next === "object" && next !== null ? { ...state, ...next } : next as T);
+        const nextState = replace 
+            ? (next as T) 
+            : (typeof next === "object" && next !== null ? { ...state, ...next } : next as T);
 
         if (!Object.is(state, nextState)) {
-            const prev = state;
+            const prevState = state;
             state = nextState;
-            listeners.forEach((l) => l(state, prev));
+            listeners.forEach((listener) => listener(state, prevState));
         }
     };
 
