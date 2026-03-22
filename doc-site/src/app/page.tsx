@@ -49,21 +49,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Floating Demo Preview (Simplified) */}
-        <div className="mx-auto max-w-4xl px-4 mt-12 relative z-10 opacity-50 hover:opacity-100 transition-opacity">
-           <div className="bg-gray-800/50 border border-white/10 rounded-2xl p-4 backdrop-blur-sm hidden md:block">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/50" />
-                </div>
-                <div className="h-4 w-32 bg-white/5 rounded-full mx-auto" />
-              </div>
-              <div className="h-48 bg-gray-900/50 rounded-lg animate-pulse" />
-           </div>
-        </div>
-
         {/* Background decoration */}
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
