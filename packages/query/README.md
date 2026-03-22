@@ -19,6 +19,23 @@
 npm install qortex-query
 ```
 
+## 🔋 Persistence
+
+**qortex-query** provides the `Persister` interface but no longer bundles a default implementation. This keeps the package extremely lean and framework-agnostic.
+
+For persistence (localStorage, IndexedDB, etc.), we recommend using **[qortex-db/query](../db)**:
+
+```ts
+import { createDB } from "qortex-db";
+import { createQueryPersister } from "qortex-db/query";
+import { setDefaultConfig } from "qortex-query";
+
+const db = createDB({ name: "myapp", driver: "indexedDB" });
+setDefaultConfig({ 
+  persister: createQueryPersister(db) 
+});
+```
+
 ## 📚 Documentation
 
 **Complete documentation, examples, and API reference available at:**

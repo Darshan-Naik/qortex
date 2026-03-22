@@ -30,6 +30,13 @@ export const dbNavigation: NavigationSection[] = [
             { title: "IndexedDB", href: "/db/docs/indexedDB" },
         ],
     },
+    {
+        title: "Persistence",
+        items: [
+            { title: "createQueryPersister", href: "/db/docs/createQueryPersister" },
+            { title: "createStorePersister", href: "/db/docs/createStorePersister" },
+        ],
+    },
 ];
 
 export function getDbNavItemByHref(href: string): NavigationItem | null {

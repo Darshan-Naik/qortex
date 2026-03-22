@@ -1,4 +1,3 @@
-import type { Persister } from "../persister";
 
 /**
  * Query key can be a string or readonly array of strings/numbers
@@ -72,8 +71,33 @@ export type QueryOptions<T = any> = {
 };
 
 /**
- * Default configuration options that can be set globally
- * Includes throttleTime which is not part of regular QueryOptions
+ * Interface for a persister that can save and load query state.
+ *
+ * Implement this interface to provide custom persistence logic.
+ * The recommended implementation is `createQueryPersister` from `qortex-db`,
+ * which supports localStorage, sessionStorage, and IndexedDB drivers.
+ *
+ * @example
+ * ```ts
+ * import { createDB, createQueryPersister } from "qortex-db";
+ * import { setDefaultConfig } from "qortex-query";
+ *
+ * const db = createDB({ name: "myapp", driver: "indexedDB" });
+ * setDefaultConfig({ persister: createQueryPersister(db, { burstKey: "v2" }) });
+ * ```
+ */
+export interface Persister {
+    /** Hydrate the in-memory query cache from storage. Called once on boot. */
+    load(cache: Map<string, unknown>, hasQueriesBeenUsed: boolean): void;
+    /** Debounce-write the current cache snapshot to storage. */
+    sync(cache: Map<string, unknown>): void;
+    /** Remove all persisted data from storage. */
+    clear(): void;
+}
+
+/**
+ * Default configuration options that can be set globally.
+ * Includes throttleTime which is not part of regular QueryOptions.
  */
 export type DefaultConfig = {
   enabled?: boolean;

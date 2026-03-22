@@ -1,130 +1,23 @@
 {
   "id": "createPersister",
-  "title": "createPersister",
-  "subtitle": "Create a persister instance",
-  "description": "Create a persister instance for saving and restoring query cache data. Supports various storage backends like localStorage, sessionStorage implementations.",
+  "title": "createPersister (DEPRECATED)",
+  "subtitle": "Legacy persistence adapter",
+  "description": "The built-in createPersister has been removed from qortex-query to improve tree-shaking and reduce bundle size. Persistence is now powered by the qortex-db package.",
   "category": "Persistence",
-  "tags": ["persistence", "storage", "cache", "localStorage"],
-  "status": "stable",
+  "tags": ["persistence", "deprecated", "storage"],
+  "status": "deprecated",
   "signature": {
     "language": "typescript",
-    "code": "function createPersister(\n  type: 'local' | 'session',\n  config?: PersisterConfig\n): Persister | undefined"
+    "code": "// Removed in v2.0.0\nimport { createPersister } from 'qortex-query/persister'; // ERROR"
   },
-  "parameters": {
-    "columns": ["Parameter", "Type", "Required", "Default", "Description"],
-    "rows": [
-      {
-        "name": "type",
-        "type": "'local' | 'session'",
-        "required": true,
-        "default": "-",
-        "description": "Storage type to use. 'local' for localStorage, 'session' for sessionStorage."
-      },
-      {
-        "name": "config",
-        "type": "PersisterConfig",
-        "required": false,
-        "default": "{}",
-        "description": "Optional configuration object with burstKey, prefix, and debounceTime."
-      },
-      {
-        "name": "config.burstKey",
-        "type": "string",
-        "required": false,
-        "default": "'package version'",
-        "description": "Version key to invalidate old cached data when breaking changes occur."
-      },
-      {
-        "name": "config.prefix",
-        "type": "string",
-        "required": false,
-        "default": "'qortex'",
-        "description": "Prefix for storage keys to avoid conflicts with other applications."
-      },
-      {
-        "name": "config.debounceTime",
-        "type": "number",
-        "required": false,
-        "default": "100",
-        "description": "Time in milliseconds to debounce save operations for performance."
-      }
-    ]
-  },
-  "returns": {
-    "type": "Persister | undefined",
-    "description": "Persister instance with save, load, sync, and clear methods, or undefined if storage is not available"
-  },
-  "examples": [
-    {
-      "title": "Basic Usage",
-      "description": "Create a localStorage persister",
-      "language": "tsx",
-      "code": "import { createPersister } from 'qortex-query/persister';\nimport { setDefaultConfig } from 'qortex-query-react';\n\n// Create a localStorage persister\nconst persister = createPersister('local');\n\n// Use with setDefaultConfig\nsetDefaultConfig({ persister });"
-    },
-    {
-      "title": "Session Storage",
-      "description": "Create a sessionStorage persister",
-      "language": "tsx",
-      "code": "import { createPersister } from 'qortex-query/persister';\nimport { setDefaultConfig } from 'qortex-query-react';\n\n// Create a sessionStorage persister\nconst sessionPersister = createPersister('session');\n\n// Use for session-based caching\nsetDefaultConfig({ persister: sessionPersister });"
-    },
-    {
-      "title": "With Configuration",
-      "description": "Create a persister with custom configuration",
-      "language": "tsx",
-      "code": "import { createPersister } from 'qortex-query/persister';\nimport { setDefaultConfig } from 'qortex-query-react';\n\n// Create a persister with custom configuration\nconst persister = createPersister('local', {\n  burstKey: 'v1.0.0',\n  prefix: 'my_app_cache',\n  debounceTime: 50\n});\n\nsetDefaultConfig({ persister });"
-    },
-    {
-      "title": "Selective Persistence",
-      "description": "Exclude specific queries from persistence",
-      "language": "tsx",
-      "code": "import { createPersister } from 'qortex-query/persister';\nimport { setDefaultConfig, registerFetcher } from 'qortex-query-react';\n\n// Enable persistence globally\nconst persister = createPersister('local', { burstKey: 'v1' });\nsetDefaultConfig({ persister });\n\n// This query will be persisted (default)\nregisterFetcher('user-profile', {\n  fetcher: () => fetch('/api/profile').then(r => r.json())\n});\n\n// This query will NOT be persisted (sensitive data)\nregisterFetcher('auth-token', {\n  fetcher: () => fetch('/api/token').then(r => r.json()),\n  persist: false // Exclude from persistence\n});"
-    }
-  ],
-  "behavior": [
-    {
-      "title": "Storages",
-      "description": "Supports various storage backends (localStorage, sessionStorage)",
-      "icon": "database"
-    },
-    {
-      "title": "Configurable",
-      "description": "Highly configurable with custom serialization and age limits",
-      "icon": "settings"
-    },
-    {
-      "title": "Async Operations",
-      "description": "All operations are asynchronous for better performance",
-      "icon": "activity"
-    },
-    {
-      "title": "Error Handling",
-      "description": "Built-in error handling for storage operations",
-      "icon": "refresh-cw"
-    }
-  ],
+  "content": "### Migration Guide\n\nTo continue using persistence, install `qortex-db` and use the new subpath-exported adapters. This ensures you only bundle the persistence logic you actually need.\n\n#### New Approach\n\n```ts\nimport { createDB } from 'qortex-db';\nimport { createQueryPersister } from 'qortex-db/query';\nimport { setDefaultConfig } from 'qortex-query';\n\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });\n\nsetDefaultConfig({\n  persister: createQueryPersister(db)\n});\n```\n\nFor more details, see the [createQueryPersister](/db/docs/createQueryPersister) documentation.",
   "callouts": [
     {
-      "type": "info",
-      "title": "Storages",
-      "content": "createPersister supports localStorage and sessionStorage implementations. Choose the right one for your use case.",
-      "icon": "database"
-    },
-    {
-      "type": "tip",
-      "title": "Per-Query Control",
-      "content": "Use the persist: false option on individual queries to exclude sensitive or temporary data from persistence while keeping other queries persisted.",
-      "icon": "lock"
+      "type": "warning",
+      "title": "Deprecated",
+      "content": "This function is no longer available in qortex-query. Please migrate to qortex-db/query.",
+      "icon": "alert-triangle"
     }
   ],
-  "badges": [
-    {
-      "text": "Persistence",
-      "variant": "info"
-    },
-    {
-      "text": "Storage",
-      "variant": "success"
-    }
-  ],
-  "relatedPages": ["PersisterConfig", "Persister", "setDefaultConfig"]
+  "relatedPages": ["createQueryPersister", "qortex-db"]
 }

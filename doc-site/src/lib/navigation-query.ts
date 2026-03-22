@@ -32,7 +32,7 @@ export const coreNavigation: NavigationSection[] = [
         title: "Advanced",
         items: [
             { title: "setDefaultConfig", href: "/query/docs/setDefaultConfig" },
-            { title: "createPersister", href: "/query/docs/createPersister" },
+            { title: "Persistence (qortex-db)", href: "/db/docs/createQueryPersister" },
         ],
     },
 ];

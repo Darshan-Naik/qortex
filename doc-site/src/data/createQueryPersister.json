@@ -1,0 +1,80 @@
+{
+  "id": "createQueryPersister",
+  "title": "createQueryPersister",
+  "subtitle": "Create a persister for qortex-query",
+  "description": "Create a persistence adapter that connects qortex-query to a qortex-db instance. Supports localStorage, sessionStorage, and IndexedDB via the provided DB driver.",
+  "category": "Persistence",
+  "tags": ["persistence", "query", "storage", "qortex-db"],
+  "status": "stable",
+  "signature": {
+    "language": "typescript",
+    "code": "import { createQueryPersister } from 'qortex-db/query';\n\nfunction createQueryPersister(\n  db: DB,\n  config?: QueryPersisterConfig\n): Persister"
+  },
+  "parameters": {
+    "columns": ["Parameter", "Type", "Required", "Default", "Description"],
+    "rows": [
+      {
+        "name": "db",
+        "type": "DB",
+        "required": true,
+        "default": "-",
+        "description": "A qortex-db instance created via createDB()."
+      },
+      {
+        "name": "config",
+        "type": "QueryPersisterConfig",
+        "required": false,
+        "default": "{}",
+        "description": "Optional configuration."
+      },
+      {
+        "name": "config.burstKey",
+        "type": "string",
+        "required": false,
+        "default": "'1'",
+        "description": "Cache-bust key. When changed, stale persisted data is discarded."
+      },
+      {
+        "name": "config.storageKey",
+        "type": "string",
+        "required": false,
+        "default": "'qortex-query-cache'",
+        "description": "Key used inside the DB to store the snapshot."
+      },
+      {
+        "name": "config.debounceTime",
+        "type": "number",
+        "required": false,
+        "default": "100",
+        "description": "Debounce delay (ms) before writing to DB."
+      }
+    ]
+  },
+  "returns": {
+    "type": "Persister",
+    "description": "An object compatible with qortex-query's Persister interface."
+  },
+  "examples": [
+    {
+      "title": "Basic Usage",
+      "description": "Connect qortex-query to an IndexedDB instance",
+      "language": "tsx",
+      "code": "import { createDB } from 'qortex-db';\nimport { createQueryPersister } from 'qortex-db/query';\nimport { setDefaultConfig } from 'qortex-query';\n\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });\n\nsetDefaultConfig({\n  persister: createQueryPersister(db, { burstKey: 'v2' })\n});"
+    }
+  ],
+  "callouts": [
+    {
+      "type": "important",
+      "title": "Subpath Export",
+      "content": "Import from 'qortex-db/query' to ensure better tree-shaking. The main 'qortex-db' package only exports the core DB driver.",
+      "icon": "package"
+    },
+    {
+      "type": "tip",
+      "title": "Async Safe",
+      "content": "The persister automatically waits for the initial async DB read to finish before allowing any writes, preventing race conditions.",
+      "icon": "shield"
+    }
+  ],
+  "relatedPages": ["createDB", "createStorePersister", "setDefaultConfig"]
+}

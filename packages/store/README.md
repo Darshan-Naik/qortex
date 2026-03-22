@@ -45,6 +45,24 @@ unsub();
 counterStore.destroy();
 ```
 
+## 🔋 Persistence
+
+**qortex-store** supports automatic hydration and persistence. While you can implement your own `StorePersister`, the recommended way is using **[qortex-db/store](../db)**:
+
+```ts
+import { createDB } from "qortex-db";
+import { createStorePersister } from "qortex-db/store";
+import { createStore } from "qortex-store";
+
+const db = createDB("myapp");
+
+const store = createStore(
+  (set) => ({ theme: "light" }),
+  { persister: createStorePersister(db) }
+);
+// ↑ Automatically hydrates on creation and persists on change.
+```
+
 ## 📖 Documentation
 
 **Complete documentation, examples, and API reference available at:**

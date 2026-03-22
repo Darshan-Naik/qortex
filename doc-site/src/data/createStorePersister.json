@@ -1,0 +1,81 @@
+{
+  "id": "createStorePersister",
+  "title": "createStorePersister",
+  "subtitle": "Create a persister for qortex-store",
+  "description": "Create a persistence adapter that connects qortex-store to a qortex-db instance. Enables automatic hydration on store creation and automatic persistence on every state change.",
+  "category": "Persistence",
+  "tags": ["persistence", "store", "storage", "qortex-db"],
+  "status": "stable",
+  "signature": {
+    "language": "typescript",
+    "code": "import { createStorePersister } from 'qortex-db/store';\n\nfunction createStorePersister<T>(\n  db: DB,\n  config?: StorePersisterConfig<T>\n): StorePersister<T>"
+  },
+  "parameters": {
+    "columns": ["Parameter", "Type", "Required", "Default", "Description"],
+    "rows": [
+      {
+        "name": "db",
+        "type": "DB",
+        "required": true,
+        "default": "-",
+        "description": "A qortex-db instance created via createDB()."
+      },
+      {
+        "name": "config",
+        "type": "StorePersisterConfig",
+        "required": false,
+        "default": "{}",
+        "description": "Optional configuration."
+      },
+      {
+        "name": "config.burstKey",
+        "type": "string",
+        "required": false,
+        "default": "'1'",
+        "description": "Cache-bust key. When changed, stale persisted data is discarded."
+      },
+      {
+        "name": "config.storageKey",
+        "type": "string",
+        "required": false,
+        "default": "'qortex-store-snapshot'",
+        "description": "Key used inside the DB to store the snapshot."
+      },
+      {
+        "name": "config.debounceTime",
+        "type": "number",
+        "required": false,
+        "default": "100",
+        "description": "Debounce delay (ms) before writing to DB."
+      },
+      {
+        "name": "config.select",
+        "type": "(state: T) => any",
+        "required": false,
+        "default": "undefined",
+        "description": "Function to select only a specific slice of state to be persisted."
+      }
+    ]
+  },
+  "returns": {
+    "type": "StorePersister",
+    "description": "An object compatible with qortex-store's StorePersister interface."
+  },
+  "examples": [
+    {
+      "title": "Basic Usage",
+      "description": "Enable automatic persistence for a store",
+      "language": "tsx",
+      "code": "import { createDB } from 'qortex-db';\nimport { createStorePersister } from 'qortex-db/store';\nimport { createStore } from 'qortex-store';\n\nconst db = createDB('myapp');\n\nconst store = createStore(\n  (set) => ({ theme: 'light', count: 0 }),\n  {\n    persister: createStorePersister(db, {\n      storageKey: 'settings',\n      select: (s) => ({ theme: s.theme }) // Only persist theme\n    })\n  }\n);"
+    }
+  ],
+  "callouts": [
+    {
+      "type": "important",
+      "title": "Subpath Export",
+      "content": "Import from 'qortex-db/store' to ensure better tree-shaking. The main 'qortex-db' package only exports the core DB driver.",
+      "icon": "package"
+    }
+  ],
+  "relatedPages": ["createDB", "createQueryPersister", "createStore"]
+}

@@ -43,6 +43,14 @@
             "content": "Choose the right storage driver for your use case:\n\n| Driver | Persistence | Capacity | Use Case |\n|--------|-------------|----------|----------|\n| `local` | Permanent | ~5MB | Default, most common |\n| `session` | Tab session | ~5MB | Temporary data |\n| `indexedDB` | Permanent | Large | Large datasets |"
         },
         {
+            "title": "Unified Persistence",
+            "content": "qortex-db provides first-class persistence adapters for the entire ecosystem via subpath exports. This ensures that you only bundle the persistence logic you actually use.\n\n### `qortex-db/query`\nAdapter for `qortex-query`. [Learn more](/db/docs/createQueryPersister)\n\n### `qortex-db/store`\nAdapter for `qortex-store`. [Learn more](/db/docs/createStorePersister)",
+            "code": {
+                "language": "typescript",
+                "code": "import { createDB } from 'qortex-db';\nimport { createQueryPersister } from 'qortex-db/query';\nimport { createStorePersister } from 'qortex-db/store';\n\nconst db = createDB({ name: 'myapp', driver: 'indexedDB' });\n\n// Use for query persistence\nconst queryPersister = createQueryPersister(db);\n\n// Use for store persistence\nconst storePersister = createStorePersister(db);"
+            }
+        },
+        {
             "title": "Key Features",
             "content": "- 🚀 **Unified API** - Same async interface for all storage backends\n- 🔒 **Key Namespacing** - Data isolation between database instances\n- 🔍 **Pattern Matching** - Find keys with wildcard patterns\n- 📦 **TypeScript** - Full type inference support\n- ⚡ **Tiny** - Under 3KB minified"
         }

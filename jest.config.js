@@ -121,6 +121,10 @@ module.exports = {
         '^.+\\.(js|ts)$': 'babel-jest',
       },
       moduleFileExtensions: ['js', 'ts', 'json'],
+      moduleNameMapper: {
+        '^qortex-db/query$': '<rootDir>/packages/db/src/query.ts',
+        '^qortex-db/store$': '<rootDir>/packages/db/src/store.ts',
+      },
     },
     {
       displayName: 'qortex-store',

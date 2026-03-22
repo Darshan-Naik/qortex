@@ -17,9 +17,10 @@ export const storeReactNavigation: NavigationSection[] = [
         ],
     },
     {
-        title: "Core API",
+        title: "API",
         items: [
             { title: "createStore", href: "/store-react/docs/createStore" },
+            { title: "Persistence (qortex-db)", href: "/db/docs/createStorePersister" },
         ],
     },
     {

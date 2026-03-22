@@ -157,4 +157,55 @@ describe("createStore", () => {
             expect(store.get().items).toEqual([]);
         });
     });
+    // ── Persistence ────────────────────────────────────────────────────────
+    describe("persistence", () => {
+        it("triggers hydration on creation", async () => {
+            const storedState = { count: 100 };
+            const persister = {
+                hydrate: jest.fn().mockResolvedValue(storedState),
+                persist: jest.fn(),
+            };
+
+            const store = createStore<Counter>({ count: 0 }, { persister });
+
+            // Initial state should be updated after microtask
+            await Promise.resolve();
+            expect(persister.hydrate).toHaveBeenCalled();
+            expect(store.get()).toEqual(storedState);
+        });
+
+        it("triggers persistence on set", () => {
+            const persister = {
+                hydrate: jest.fn().mockResolvedValue(null),
+                persist: jest.fn(),
+            };
+
+            const store = createStore<Counter>({ count: 0 }, { persister });
+
+            store.set({ count: 1 });
+            expect(persister.persist).toHaveBeenCalledWith({ count: 1 });
+
+            store.set({ count: 2 });
+            expect(persister.persist).toHaveBeenCalledWith({ count: 2 });
+        });
+
+        it("handles hydration failure gracefully", async () => {
+            const consoleSpy = jest.spyOn(console, "warn").mockImplementation();
+            const persister = {
+                hydrate: jest.fn().mockRejectedValue(new Error("DB Error")),
+                persist: jest.fn(),
+            };
+
+            const store = createStore<Counter>({ count: 0 }, { persister });
+
+            await Promise.resolve();
+            await Promise.resolve();
+            expect(store.get()).toEqual({ count: 0 });
+            expect(consoleSpy).toHaveBeenCalledWith(
+                "[Qortex Store] Failed to hydrate:",
+                expect.any(Error)
+            );
+            consoleSpy.mockRestore();
+        });
+    });
 });

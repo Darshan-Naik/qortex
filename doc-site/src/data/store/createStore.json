@@ -13,7 +13,7 @@
     "content": "The `createStore` function creates a new store. You can pass a raw object for simple state, or an initializer function that receives `set` and `get` to define complex actions and computed state.",
     "signature": {
         "language": "typescript",
-        "code": "createStore<T>(initializer: T | StateCreator<T>): Store<T>"
+        "code": "createStore<T>(\n  initializer: T | StateCreator<T>,\n  options?: CreateStoreOptions<T>\n): Store<T>"
     },
     "parameters": {
         "columns": [
@@ -29,6 +29,20 @@
                 "required": true,
                 "default": "-",
                 "description": "Either a raw initial state object or a function that receives set and get and returns the initial state object."
+            },
+            {
+                "name": "options",
+                "type": "CreateStoreOptions<T>",
+                "required": false,
+                "default": "{}",
+                "description": "Optional configuration for the store, including persistence."
+            },
+            {
+                "name": "options.persister",
+                "type": "StorePersister<T>",
+                "required": false,
+                "default": "undefined",
+                "description": "Adapter for automatic hydration and persistence. Use createStorePersister from qortex-db/store."
             }
         ]
     },
@@ -66,6 +80,12 @@
             "description": "Listen for state changes. Returns an unsubscribe function:",
             "language": "typescript",
             "code": "const unsub = counterStore.subscribe((state, prevState) => {\n  console.log('Changed:', prevState.count, '→', state.count);\n});\n\n// Stop listening\nunsub();"
+        },
+        {
+            "title": "Automatic Persistence",
+            "description": "Use a persister to automatically hydrate the store on creation and save changes to DB:",
+            "language": "typescript",
+            "code": "import { createDB } from 'qortex-db';\nimport { createStorePersister } from 'qortex-db/store';\nimport { createStore } from 'qortex-store';\n\nconst db = createDB('myapp');\nconst persister = createStorePersister(db);\n\nconst store = createStore(\n  { count: 0 },\n  { persister }\n);\n\n// 1. On creation, store.get().count will be restored from DB\n// 2. On change, it automatically debounces and writes to DB"
         },
         {
             "title": "destroy()",

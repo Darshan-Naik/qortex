@@ -13,7 +13,7 @@
     "content": "The `createStore` function creates a new store. You can pass a raw object for simple state, or an initializer function that receives `set` and `get` to define complex actions and computed state.",
     "signature": {
         "language": "typescript",
-        "code": "createStore<T>(initializer: T | StateCreator<T>): Store<T>"
+        "code": "createStore<T>(\n  initializer: T | StateCreator<T>,\n  options?: CreateStoreOptions<T>\n): Store<T>"
     },
     "parameters": {
         "columns": [
@@ -29,6 +29,13 @@
                 "required": true,
                 "default": "-",
                 "description": "Either a raw initial state object or a function that receives set and get and returns the initial state object."
+            },
+            {
+                "name": "options",
+                "type": "CreateStoreOptions<T>",
+                "required": false,
+                "default": "{}",
+                "description": "Optional configuration for the store, including persistence."
             }
         ]
     },
@@ -50,10 +57,10 @@
             "code": "import { createStore } from 'qortex-store-react';\n\nconst counterStore = createStore((set, get) => ({\n  count: 0,\n  // Use get() to read current state\n  increment: () => set({ count: get().count + 1 }),\n  // Use functional updates for atomic changes\n  decrement: () => set((s) => ({ count: s.count - 1 })),\n  // Access other state properties within actions\n  resetIfHigh: () => {\n    if (get().count > 10) set({ count: 0 });\n  }\n}));"
         },
         {
-            "title": "set() — All Variants",
-            "description": "set supports partial merging, functional updates, and full replacement:",
+            "title": "Automatic Persistence",
+            "description": "Enable automatic persistence via qortex-db/store:",
             "language": "typescript",
-            "code": "const store = createStore({ a: 1, b: 2 });\n\n// 1. Partial Merge (default)\nstore.set({ a: 10 }); // { a: 10, b: 2 }\n\n// 2. Functional Update\nstore.set((s) => ({ a: s.a + 1 })); // { a: 11, b: 2 }\n\n// 3. Full Replacement\nstore.set({ a: 0 }, true); // { a: 0 }"
+            "code": "import { createDB } from 'qortex-db';\nimport { createStorePersister } from 'qortex-db/store';\nimport { createStore } from 'qortex-store-react';\n\nconst db = createDB('myapp');\n\nconst counterStore = createStore(\n  { count: 0 },\n  { persister: createStorePersister(db) }\n);"
         }
     ],
     "behaviors": [

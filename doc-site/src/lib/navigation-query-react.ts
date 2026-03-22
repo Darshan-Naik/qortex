@@ -38,7 +38,7 @@ export const reactNavigation: NavigationSection[] = [
     {
         title: "Advanced",
         items: [
-            { title: "createPersister", href: "/query-react/docs/createPersister" },
+            { title: "Persistence (qortex-db)", href: "/db/docs/createQueryPersister" },
         ],
     },
 ];

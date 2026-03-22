@@ -43,6 +43,42 @@ const allKeys = await db.scan("*");
 await db.drop();
 ```
 
+## 🔋 Unified Persistence
+
+**qortex-db** provides first-class persistence adapters for the entire Qortex ecosystem. To keep your bundles tiny, these are provided as **subpath exports**:
+
+### `qortex-db/query`
+DB-backed persister for **qortex-query**.
+
+```ts
+import { createDB } from "qortex-db";
+import { createQueryPersister } from "qortex-db/query";
+import { setDefaultConfig } from "qortex-query";
+
+const db = createDB({ name: "myapp", driver: "indexedDB" });
+setDefaultConfig({ 
+  persister: createQueryPersister(db, { burstKey: "v2" }) 
+});
+```
+
+### `qortex-db/store`
+DB-backed persister for **qortex-store**.
+
+```ts
+import { createDB } from "qortex-db";
+import { createStorePersister } from "qortex-db/store";
+import { createStore } from "qortex-store";
+
+const db = createDB({ name: "myapp", driver: "indexedDB" });
+const store = createStore(
+  (set) => ({ count: 0 }),
+  { persister: createStorePersister(db) }
+);
+```
+
+> [!TIP]
+> **Race-Condition Safe:** Both persisters automatically wait for the initial async hydration to complete before allowing any writes, preventing data loss.
+
 ## 📖 API
 
 | Method | Description |

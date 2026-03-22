@@ -103,3 +103,51 @@ export type StateCreator<T> = (
     set: Store<T>["set"],
     get: Store<T>["get"],
 ) => T;
+
+/**
+ * Persister interface for `createStore`.
+ *
+ * Implement this (or use `createStorePersister` from `qortex-db`) to add
+ * transparent persistence to any store. The store calls `hydrate()` once on
+ * creation and `persist()` after every state change.
+ *
+ * @template T - The state type
+ */
+export interface StorePersister<T> {
+    /**
+     * Load the last saved snapshot from storage.
+     * Return `undefined` or `null` to keep the store's initial state.
+     */
+    hydrate(): Promise<T | null | undefined>;
+
+    /**
+     * Persist a new state snapshot to storage.
+     * Called after every `set` that produces a new state.
+     * Implementations should debounce this internally.
+     */
+    persist(state: T): void;
+}
+
+/**
+ * Options passed as the second argument to `createStore`.
+ *
+ * @template T - The state type
+ */
+export type CreateStoreOptions<T> = {
+    /**
+     * Attach a persister to automatically hydrate the store on creation
+     * and persist its state on every change.
+     *
+     * @example
+     * ```ts
+     * import { createDB, createStorePersister } from "qortex-db";
+     *
+     * const db = createDB({ name: "myapp", driver: "indexedDB" });
+     * const store = createStore(
+     *   (set) => ({ count: 0 }),
+     *   { persister: createStorePersister(db, { storageKey: "counter" }) }
+     * );
+     * ```
+     */
+    persister?: StorePersister<T>;
+};

@@ -41,7 +41,7 @@
             "content": "How to import from each package:",
             "code": {
                 "language": "typescript",
-                "code": "// React users - everything from qortex-query-react\nimport { useQuery, useQueryData, registerFetcher, fetchQuery } from 'qortex-query-react';\n\n// Core-only users - core APIs from qortex-query\nimport { registerFetcher, fetchQuery } from 'qortex-query';\n\n// Persister (subpackage) - for both React and core users\nimport { createPersister } from 'qortex-query/persister'; // or 'qortex-query-react/persister'"
+                "code": "// React users - everything from qortex-query-react\nimport { useQuery, useQueryData, registerFetcher, fetchQuery } from 'qortex-query-react';\n\n// Core-only users - core APIs from qortex-query\nimport { registerFetcher, fetchQuery } from 'qortex-query';\n\n// Persistence (separate package) - powered by qortex-db\nimport { createDB } from 'qortex-db';\nimport { createQueryPersister } from 'qortex-db/query';"
             }
         }
     ],

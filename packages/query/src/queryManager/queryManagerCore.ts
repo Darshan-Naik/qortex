@@ -7,6 +7,7 @@ import {
   InferFetcherResult,
   DefaultConfig,
   SetDataUpdater,
+  Persister,
 } from "./types";
 import type { QueryStateInternal } from "./internal-types";
 import {
@@ -17,7 +18,6 @@ import {
   warnNoFetcherOrData,
   getEqualityFunction,
 } from "./utils";
-import type { Persister } from "../persister";
 
 /**
  * Core query manager that handles caching, fetching, and state management
