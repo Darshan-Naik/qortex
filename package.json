@@ -21,6 +21,10 @@
   ],
   "author": "Darshan Naik",
   "license": "LGPL-3.0",
+  "engines": {
+    "node": ">=20.x",
+    "pnpm": ">=10.x"
+  },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
