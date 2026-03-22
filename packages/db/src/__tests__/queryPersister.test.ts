@@ -1,4 +1,4 @@
-import { createQueryPersister } from "../createQueryPersister";
+import { createQueryPersister } from "../persist/createQueryPersister";
 
 // ─── Mock DB ──────────────────────────────────────────────────────────────────
 
@@ -129,7 +129,7 @@ describe("load", () => {
     it("warns when called after queries are already in use", async () => {
         const db = createMockDB(undefined);
         const p = createQueryPersister(db as any);
-        const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+        const warn = jest.spyOn(console, "warn").mockImplementation(() => { });
 
         p.load(new Map(), true);
         await flushAsync();
@@ -164,7 +164,7 @@ describe("sync", () => {
         const p = createQueryPersister(db as any, { debounceTime: 50 });
         const cache = new Map<string, unknown>([
             ["users", makeQueryState("users")],
-            ["temp",  makeQueryState("temp", { persist: false })],
+            ["temp", makeQueryState("temp", { persist: false })],
         ]);
 
         p.sync(cache);
@@ -180,7 +180,7 @@ describe("sync", () => {
         const db = createMockDB();
         const p = createQueryPersister(db as any, { debounceTime: 50 });
         const cache = new Map<string, unknown>([
-            ["users", makeQueryState("users", { fetcher: () => {}, equalityFn: () => true, fetchPromise: Promise.resolve() })],
+            ["users", makeQueryState("users", { fetcher: () => { }, equalityFn: () => true, fetchPromise: Promise.resolve() })],
         ]);
 
         p.sync(cache);

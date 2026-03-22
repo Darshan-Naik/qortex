@@ -16,5 +16,5 @@
  * setDefaultConfig({ persister: createQueryPersister(db, { burstKey: "v2" }) });
  * ```
  */
-export { createQueryPersister } from "./createQueryPersister";
-export type { QueryPersisterConfig } from "./createQueryPersister";
+export { createQueryPersister } from "./persist/createQueryPersister";
+export type { QueryPersisterConfig } from "./persist/createQueryPersister";

@@ -1,4 +1,4 @@
-import type { DB } from "./types";
+import type { DB } from "../types";
 
 /**
  * Configuration for the query persister.
@@ -83,7 +83,7 @@ export const createQueryPersister = (db: DB, config?: QueryPersisterConfig) => {
             if (hasQueriesBeenUsed) {
                 console.warn(
                     "[Qortex DB] Persister configured after queries were already used. " +
-                        "Set the persister before any query access for consistent hydration."
+                    "Set the persister before any query access for consistent hydration."
                 );
             }
 

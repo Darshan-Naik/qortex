@@ -1,0 +1,6 @@
+{
+  "name": "qortex-db/store",
+  "main": "../dist/store.js",
+  "module": "../dist/store.mjs",
+  "types": "../dist/store.d.ts"
+}

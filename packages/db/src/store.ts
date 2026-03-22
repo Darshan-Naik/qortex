@@ -19,5 +19,5 @@
  * );
  * ```
  */
-export { createStorePersister } from "./createStorePersister";
-export type { StorePersisterConfig } from "./createStorePersister";
+export { createStorePersister } from "./persist/createStorePersister";
+export type { StorePersisterConfig } from "./persist/createStorePersister";

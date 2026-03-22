@@ -1,4 +1,4 @@
-import type { DB } from "./types";
+import type { DB } from "../types";
 
 /**
  * Configuration for the store persister.

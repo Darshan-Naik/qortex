@@ -1,4 +1,4 @@
-import { createStorePersister } from "../createStorePersister";
+import { createStorePersister } from "../persist/createStorePersister";
 
 // ─── Mock DB ──────────────────────────────────────────────────────────────────
 
@@ -139,10 +139,10 @@ describe("persist", () => {
         // 3. Resolve hydration
         resolveHydrate!({ burstKey: "1", timestamp: Date.now(), state: { count: 0 } });
         await hPromise; // Wait for hydrate to finish internally
-        await Promise.resolve(); 
-        await Promise.resolve(); 
-        await Promise.resolve(); 
-        await Promise.resolve(); 
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
 
         // Now db.set should have been called
         expect(db.set).toHaveBeenCalled();
