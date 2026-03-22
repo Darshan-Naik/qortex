@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from "react";
 import Link from "next/link";
-import { 
-  Database, 
-  RefreshCw, 
-  Brain, 
-  Zap, 
-  Package, 
-  ShieldCheck, 
+import {
+  Database,
+  RefreshCw,
+  Brain,
+  Zap,
+  Package,
+  ShieldCheck,
   ChevronLeft,
   Moon,
   Sun,
@@ -60,7 +60,7 @@ const getDB = () => {
   if (typeof window === "undefined") return null;
   if (!dbInstance) {
     dbInstance = createDB({
-      name: "qortex_demo_v11", // Bumping to v11 for Stress Test Baseline
+      name: "qortex_demo_v12", // Bumping to v12 for 2.2.0 Baseline
       driver: "indexedDB",
     });
   }
@@ -82,7 +82,7 @@ const getGlobalStore = () => {
       }),
       {
         persister: db
-          ? createStorePersister(db, { storageKey: "demo_user_settings_v11" })
+          ? createStorePersister(db, { storageKey: "demo_user_settings_v12" })
           : undefined,
       }
     );
@@ -96,8 +96,8 @@ const setupQuery = () => {
   if (db) {
     setDefaultConfig({
       persister: createQueryPersister(db, {
-        storageKey: "demo_query_cache_v11",
-        burstKey: "v2.5",
+        storageKey: "demo_query_cache_v12",
+        burstKey: "v3.0",
       }),
       staleTime: 1000 * 60 * 5,
     });
@@ -121,9 +121,8 @@ const useRenderCount = () => {
 };
 
 const RenderBadge = memo(({ count, theme }: { count: number, theme: string }) => (
-  <div className={`px-2 py-0.5 rounded-lg border text-[9px] font-black flex items-center gap-1.5 transition-all shadow-sm ${
-    count > 8 ? 'bg-amber-500/10 text-amber-500 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-  }`}>
+  <div className={`px-2 py-0.5 rounded-lg border text-[9px] font-black flex items-center gap-1.5 transition-all shadow-sm ${count > 8 ? 'bg-amber-500/10 text-amber-500 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+    }`}>
     <Activity className="w-3 h-3" /> RENDERS: {count}
   </div>
 ));
@@ -158,11 +157,10 @@ const NetworkLog = memo(({ logs }: { logs: any[] }) => (
       {logs.map(log => (
         <div key={log.id} className="flex gap-3 animate-in fade-in slide-in-from-left-2 duration-300 text-slate-400">
           <span className="text-slate-500 shrink-0">{log.time}</span>
-          <span className={`font-bold shrink-0 ${
-            log.type === 'NETWORK' ? 'text-amber-400' : 
-            log.type === 'CACHE' ? 'text-emerald-400' : 
-            log.type === 'SUCCESS' ? 'text-indigo-400' : 'text-rose-400'
-          }`}>[{log.type}]</span>
+          <span className={`font-bold shrink-0 ${log.type === 'NETWORK' ? 'text-amber-400' :
+              log.type === 'CACHE' ? 'text-emerald-400' :
+                log.type === 'SUCCESS' ? 'text-indigo-400' : 'text-rose-400'
+            }`}>[{log.type}]</span>
           <span className="truncate">{log.msg}</span>
         </div>
       ))}
@@ -179,8 +177,8 @@ const CacheInspector = memo(({ theme }: { theme: string }) => {
     setLoading(true);
     const db = getDB();
     if (db) {
-      const qCache = await db.get("demo_query_cache_v11");
-      const sCache = await db.get("demo_user_settings_v11");
+      const qCache = await db.get("demo_query_cache_v12");
+      const sCache = await db.get("demo_user_settings_v12");
       setData({ query: qCache, store: sCache });
     }
     setLoading(false);
@@ -190,25 +188,25 @@ const CacheInspector = memo(({ theme }: { theme: string }) => {
 
   return (
     <div className={`p-8 rounded-[2rem] border transition-all h-full ${theme === 'light' ? 'bg-white border-indigo-100' : 'bg-slate-900 border-slate-800'}`}>
-       <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-             <Eye className="w-5 h-5 text-emerald-400" />
-             <h3 className="font-black text-xs uppercase tracking-widest">Manual DB Inspector</h3>
-          </div>
-          <button onClick={refreshCache} className={`p-2 rounded-xl active:scale-95 transition-all ${loading ? 'animate-spin' : ''}`}>
-             <RefreshCw className="w-4 h-4 text-slate-500" />
-          </button>
-       </div>
-       <div className={`p-4 rounded-2xl font-mono text-[10px] h-[300px] overflow-y-auto scroller-subtle ${theme === 'light' ? 'bg-slate-50 text-slate-600' : 'bg-black/40 text-emerald-400'}`}>
-          <div className="mb-4">
-             <div className="text-indigo-400 font-bold mb-1">// GLOBAL_USER_STORE</div>
-             <pre className="whitespace-pre-wrap">{data?.store ? JSON.stringify(data.store, null, 2) : 'null'}</pre>
-          </div>
-          <div>
-             <div className="text-indigo-400 font-bold mb-1">// QUERY_CACHE_ENTRIES</div>
-             <pre className="whitespace-pre-wrap">{data?.query ? JSON.stringify(data.query, null, 2).slice(0, 1000) + '...' : 'null'}</pre>
-          </div>
-       </div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Eye className="w-5 h-5 text-emerald-400" />
+          <h3 className="font-black text-xs uppercase tracking-widest">Manual DB Inspector</h3>
+        </div>
+        <button onClick={refreshCache} className={`p-2 rounded-xl active:scale-95 transition-all ${loading ? 'animate-spin' : ''}`}>
+          <RefreshCw className="w-4 h-4 text-slate-500" />
+        </button>
+      </div>
+      <div className={`p-4 rounded-2xl font-mono text-[10px] h-[300px] overflow-y-auto scroller-subtle ${theme === 'light' ? 'bg-slate-50 text-slate-600' : 'bg-black/40 text-emerald-400'}`}>
+        <div className="mb-4">
+          <div className="text-indigo-400 font-bold mb-1">// GLOBAL_USER_STORE</div>
+          <pre className="whitespace-pre-wrap">{data?.store ? JSON.stringify(data.store, null, 2) : 'null'}</pre>
+        </div>
+        <div>
+          <div className="text-indigo-400 font-bold mb-1">// QUERY_CACHE_ENTRIES</div>
+          <pre className="whitespace-pre-wrap">{data?.query ? JSON.stringify(data.query, null, 2).slice(0, 1000) + '...' : 'null'}</pre>
+        </div>
+      </div>
     </div>
   );
 });
@@ -224,12 +222,12 @@ const StressTest = memo(({ onLog, theme }: { onLog: any, theme: string }) => {
     const start = performance.now();
     const db = getDB();
     onLog('NETWORK', 'Hammering IndexedDB: 2,000 Writes...');
-    
+
     // Simulating multiple rapid mutations
-    for(let i = 0; i < 2000; i++) {
-        setQueryData(["stress_key", i], { val: Math.random() });
+    for (let i = 0; i < 2000; i++) {
+      setQueryData(["stress_key", i], { val: Math.random() });
     }
-    
+
     const end = performance.now();
     onLog('SUCCESS', `Batched 2k items in ${(end - start).toFixed(2)}ms`);
     setCount(prev => prev + 2000);
@@ -238,25 +236,25 @@ const StressTest = memo(({ onLog, theme }: { onLog: any, theme: string }) => {
 
   return (
     <div className={`border rounded-3xl p-6 shadow-lg ${theme === 'light' ? 'bg-white border-indigo-100' : 'bg-slate-800/40 border-slate-700/50'}`}>
-       <div className="flex items-start justify-between mb-6">
-          <div>
-            <h3 className={`text-lg font-bold flex items-center gap-2 ${theme === 'light' ? 'text-indigo-950' : 'text-white'}`}>
-              <FastForward className="w-5 h-5 text-rose-500" /> Store Stress Test
-            </h3>
-            <p className="text-[11px] text-slate-500 mt-1 uppercase font-bold tracking-wider">High-Frequency Writes</p>
-          </div>
-          <RenderBadge count={renderCount} theme={theme} />
-       </div>
-       <div className={`mb-4 p-4 rounded-xl border flex items-center justify-between ${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-800'}`}>
-          <div className="flex flex-col">
-             <span className="text-[10px] text-slate-500 font-black uppercase">Buffered Entries</span>
-             <span className="text-2xl font-black">{count.toLocaleString()}</span>
-          </div>
-          <HardDriveDownload className={`w-8 h-8 ${isHammering ? 'text-rose-500 animate-bounce' : 'text-slate-700'}`} />
-       </div>
-       <button onClick={hammerPersistence} disabled={isHammering} className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl font-black text-xs active:scale-95 transition-all disabled:opacity-50">
-          {isHammering ? 'WRITING TO DISK...' : 'INJECT 2,000 RECORDS'}
-       </button>
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h3 className={`text-lg font-bold flex items-center gap-2 ${theme === 'light' ? 'text-indigo-950' : 'text-white'}`}>
+            <FastForward className="w-5 h-5 text-rose-500" /> Store Stress Test
+          </h3>
+          <p className="text-[11px] text-slate-500 mt-1 uppercase font-bold tracking-wider">High-Frequency Writes</p>
+        </div>
+        <RenderBadge count={renderCount} theme={theme} />
+      </div>
+      <div className={`mb-4 p-4 rounded-xl border flex items-center justify-between ${theme === 'light' ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-800'}`}>
+        <div className="flex flex-col">
+          <span className="text-[10px] text-slate-500 font-black uppercase">Buffered Entries</span>
+          <span className="text-2xl font-black">{count.toLocaleString()}</span>
+        </div>
+        <HardDriveDownload className={`w-8 h-8 ${isHammering ? 'text-rose-500 animate-bounce' : 'text-slate-700'}`} />
+      </div>
+      <button onClick={hammerPersistence} disabled={isHammering} className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl font-black text-xs active:scale-95 transition-all disabled:opacity-50">
+        {isHammering ? 'WRITING TO DISK...' : 'INJECT 2,000 RECORDS'}
+      </button>
     </div>
   );
 });
@@ -266,7 +264,7 @@ const StressTest = memo(({ onLog, theme }: { onLog: any, theme: string }) => {
 const OptimisticDemo = memo(({ onLog, theme }: { onLog: any, theme: string }) => {
   const renderCount = useRenderCount();
   const [offline, setOffline] = useState(false);
-  const key = ["optimistic_v11"];
+  const key = ["optimistic_v12"];
   const { data } = useQuery<Todo>(key, { fetcher: async () => ({ id: 1, title: "Initialize Core Engine", completed: false }) });
 
   const handleToggle = () => {
@@ -307,7 +305,7 @@ const OptimisticDemo = memo(({ onLog, theme }: { onLog: any, theme: string }) =>
 const SearchCacheDemo = memo(({ onLog, theme }: { onLog: any, theme: string }) => {
   const renderCount = useRenderCount();
   const [query, setQuery] = useState("");
-  const { data, isFetching } = useQuery(["search_v11", query], {
+  const { data, isFetching } = useQuery(["search_v12", query], {
     enabled: query.length >= 2,
     fetcher: async () => {
       onLog('NETWORK', `Query: "${query}"`);
@@ -335,30 +333,30 @@ const SearchCacheDemo = memo(({ onLog, theme }: { onLog: any, theme: string }) =
 
 // Final wrapper for existing ones to keep logic
 const LegacyGrid = ({ onLog, theme }: { onLog: any, theme: string }) => {
-    return (
-        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            <OptimisticDemo onLog={onLog} theme={theme} />
-            <SearchCacheDemo onLog={onLog} theme={theme} />
-            <div className="grid gap-8">
-                <NetworkLog logs={onLog.logs} />
-                <div className={`p-8 rounded-3xl border text-center shadow-xl flex flex-col items-center justify-center ${theme === 'light' ? 'bg-white' : 'bg-slate-900/60 border-slate-800'}`}>
-                    <h4 className="text-[10px] font-black uppercase text-indigo-400 mb-4 tracking-widest">Global Persistence</h4>
-                    <button onClick={() => window.location.reload()} className="w-full py-3 bg-indigo-600 text-white rounded-2xl font-black text-xs active:scale-95 transition-all flex items-center justify-center gap-3">
-                        <RefreshCw className="w-4 h-4" /> Full Re-Hydration
-                    </button>
-                </div>
-            </div>
-            <StressTest onLog={onLog} theme={theme} />
-            <CacheInspector theme={theme} />
-            <SyncDemo onLog={onLog} theme={theme} />
+  return (
+    <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
+      <OptimisticDemo onLog={onLog} theme={theme} />
+      <SearchCacheDemo onLog={onLog} theme={theme} />
+      <div className="grid gap-8">
+        <NetworkLog logs={onLog.logs} />
+        <div className={`p-8 rounded-3xl border text-center shadow-xl flex flex-col items-center justify-center ${theme === 'light' ? 'bg-white' : 'bg-slate-900/60 border-slate-800'}`}>
+          <h4 className="text-[10px] font-black uppercase text-indigo-400 mb-4 tracking-widest">Global Persistence</h4>
+          <button onClick={() => window.location.reload()} className="w-full py-3 bg-indigo-600 text-white rounded-2xl font-black text-xs active:scale-95 transition-all flex items-center justify-center gap-3">
+            <RefreshCw className="w-4 h-4" /> Full Re-Hydration
+          </button>
         </div>
-    )
+      </div>
+      <StressTest onLog={onLog} theme={theme} />
+      <CacheInspector theme={theme} />
+      <SyncDemo onLog={onLog} theme={theme} />
+    </div>
+  )
 }
 
 const SyncDemo = memo(({ onLog, theme }: { onLog: any, theme: string }) => {
   const renderCount = useRenderCount();
   const { userRole, updateRole } = useStore(getGlobalStore() as any) as GlobalState;
-  const { data, isLoading } = useQuery(["sync_v11", userRole], { fetcher: async () => { onLog('NETWORK', `Role: ${userRole}`); await new Promise(r => setTimeout(r, 600)); return [userRole]; } });
+  const { data, isLoading } = useQuery(["sync_v12", userRole], { fetcher: async () => { onLog('NETWORK', `Role: ${userRole}`); await new Promise(r => setTimeout(r, 600)); return [userRole]; } });
 
   return (
     <div className={`border rounded-3xl p-6 shadow-lg ${theme === 'light' ? 'bg-white border-indigo-100' : 'bg-slate-800/40 border-slate-700/50'}`}>
@@ -414,7 +412,7 @@ export default function DemoPage() {
           <div className="flex items-center gap-4">
             <div className={`px-4 py-2 rounded-2xl border flex items-center gap-3 ${theme === 'light' ? 'bg-white border-indigo-100 shadow-sm' : 'bg-slate-900/50 border-slate-800'}`}>
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Registry: V11.0 Performance</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Registry: 2.2.0 Runtime</span>
             </div>
             <button onClick={toggleTheme} className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all bg-white text-indigo-600 shadow-xl shadow-indigo-500/10 active:scale-90 ${theme === 'dark' ? 'invert' : ''}`}>
               {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -432,36 +430,36 @@ export default function DemoPage() {
             </p>
           </div>
           <div className="space-y-4">
-             <div className={`p-8 rounded-[2rem] border shadow-2xl backdrop-blur-xl ${theme === 'light' ? 'bg-white border-indigo-100' : 'bg-slate-900/60 border-slate-800/80'}`}>
-                <div className="flex items-center gap-2 mb-6">
-                   <Settings2 className="w-4 h-4 text-indigo-500" />
-                   <h3 className="font-black text-xs uppercase tracking-widest text-slate-500">Node Configuration</h3>
-                </div>
-                <input className={`w-full px-5 py-4 rounded-xl border text-sm mb-6 bg-transparent outline-none transition-all focus:border-indigo-500 ${theme === 'light' ? 'border-indigo-100' : 'border-slate-700'}`} value={username} onChange={(e) => updateUsername(e.target.value)} placeholder="Username..." />
-                <div className="text-[9px] font-mono text-slate-500 uppercase tracking-tighter">DRIVER: IDB_V11</div>
-             </div>
+            <div className={`p-8 rounded-[2rem] border shadow-2xl backdrop-blur-xl ${theme === 'light' ? 'bg-white border-indigo-100' : 'bg-slate-900/60 border-slate-800/80'}`}>
+              <div className="flex items-center gap-2 mb-6">
+                <Settings2 className="w-4 h-4 text-indigo-500" />
+                <h3 className="font-black text-xs uppercase tracking-widest text-slate-500">Node Configuration</h3>
+              </div>
+              <input className={`w-full px-5 py-4 rounded-xl border text-sm mb-6 bg-transparent outline-none transition-all focus:border-indigo-500 ${theme === 'light' ? 'border-indigo-100' : 'border-slate-700'}`} value={username} onChange={(e) => updateUsername(e.target.value)} placeholder="Username..." />
+              <div className="text-[9px] font-mono text-slate-500 uppercase tracking-tighter">DRIVER: IDB_V12</div>
+            </div>
           </div>
         </div>
 
         <div className={`mb-12 p-12 rounded-[2.5rem] border ${theme === 'light' ? 'bg-indigo-600 text-white shadow-3xl shadow-indigo-600/20' : 'bg-indigo-600/10 border-indigo-500/20 text-indigo-100'}`}>
-           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-              <div className="flex-1">
-                 <div className="flex items-center gap-3 mb-6">
-                    <Gauge className="w-10 h-10 text-amber-400" />
-                    <h2 className="text-4xl font-black tracking-tight leading-none">Render Isolation Dashboard</h2>
-                 </div>
-                 <p className="text-indigo-100/70 text-base leading-relaxed max-w-xl">
-                   Trigger a <b>Parent Update</b>. Qortex components are precision-memoized. Notice how the <span className="text-amber-400 font-bold italic">RENDERS BADGE</span> on each card stays fixed.
-                 </p>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-6">
+                <Gauge className="w-10 h-10 text-amber-400" />
+                <h2 className="text-4xl font-black tracking-tight leading-none">Render Isolation Dashboard</h2>
               </div>
-              <div className="flex gap-6 shrink-0 lg:-mr-4">
-                 <div className="bg-black/20 p-8 rounded-[2rem] flex flex-col items-center border border-white/10 shadow-inner">
-                    <span className="text-[10px] font-black uppercase opacity-50 mb-2">Virtual DOM Reset</span>
-                    <span className="text-6xl font-black mb-4">{fakeRenders}</span>
-                    <button onClick={() => setFakeRenders(r => r + 1)} className="px-6 py-2.5 bg-white text-indigo-900 rounded-xl font-black text-[10px] transition-all active:scale-95 uppercase shadow-xl">Trigger Re-Render</button>
-                 </div>
+              <p className="text-indigo-100/70 text-base leading-relaxed max-w-xl">
+                Trigger a <b>Parent Update</b>. Qortex components are precision-memoized. Notice how the <span className="text-amber-400 font-bold italic">RENDERS BADGE</span> on each card stays fixed.
+              </p>
+            </div>
+            <div className="flex gap-6 shrink-0 lg:-mr-4">
+              <div className="bg-black/20 p-8 rounded-[2rem] flex flex-col items-center border border-white/10 shadow-inner">
+                <span className="text-[10px] font-black uppercase opacity-50 mb-2">Virtual DOM Reset</span>
+                <span className="text-6xl font-black mb-4">{fakeRenders}</span>
+                <button onClick={() => setFakeRenders(r => r + 1)} className="px-6 py-2.5 bg-white text-indigo-900 rounded-xl font-black text-[10px] transition-all active:scale-95 uppercase shadow-xl">Trigger Re-Render</button>
               </div>
-           </div>
+            </div>
+          </div>
         </div>
 
         <LegacyGrid onLog={logger} theme={theme} />
