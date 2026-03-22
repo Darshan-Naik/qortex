@@ -15,9 +15,9 @@
     "prism-react-renderer": "^2.4.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "qortex-query-react": "workspace:*",
-    "qortex-store-react": "workspace:*",
-    "qortex-db": "workspace:*"
+    "qortex-query-react": "^2.1.0",
+    "qortex-store-react": "^2.1.0",
+    "qortex-db": "^2.1.0"
   },
   "license": "LGPL-3.0",
   "devDependencies": {
