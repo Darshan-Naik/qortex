@@ -58,6 +58,12 @@ function createPublishablePackageJson(pkg) {
   // Read the source package.json
   const srcPackageJson = JSON.parse(fs.readFileSync(srcPackageJsonPath, 'utf8'));
 
+  // Ensure dist folder exists before proceeding
+  if (!fs.existsSync(distPath)) {
+    console.log(`⏳ Skipping ${pkg.name}: dist folder not found yet.`);
+    return;
+  }
+
   // Transform dependencies if needed
   let dependencies = { ...(srcPackageJson.dependencies || {}) };
   if (pkg.dependencyTransforms) {
