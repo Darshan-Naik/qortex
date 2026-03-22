@@ -1,6 +1,6 @@
 {
   "name": "qortex-example-react",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "qortex-query-react": "workspace:*",
-    "qortex-store-react": "workspace:*"
+    "qortex-store-react": "workspace:*",
+    "qortex-db": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",

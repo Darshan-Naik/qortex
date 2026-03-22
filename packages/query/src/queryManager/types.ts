@@ -93,6 +93,8 @@ export interface Persister {
     sync(cache: Map<string, unknown>): void;
     /** Remove all persisted data from storage. */
     clear(): void;
+    /** Optional promise that resolves when hydration is complete. */
+    hydrationPromise?: Promise<void>;
 }
 
 /**

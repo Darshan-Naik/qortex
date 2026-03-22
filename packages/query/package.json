@@ -1,6 +1,6 @@
 {
   "name": "qortex-query",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Framework-agnostic query cache & fetch registry. Use qortex-db for persistence.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

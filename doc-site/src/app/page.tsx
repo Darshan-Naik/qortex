@@ -32,28 +32,101 @@ export default function HomePage() {
 
             <div className="mt-10 flex justify-center gap-4 flex-wrap">
               <Link
+                href="/demo"
+                className="inline-flex items-center px-8 py-4 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-500 transition-all shadow-lg shadow-purple-500/30 hover:scale-105 active:scale-95"
+              >
+                <Zap className="mr-2 h-5 w-5 fill-current" />
+                Try Live Demo
+              </Link>
+              <Link
                 href="#packages"
-                className="inline-flex items-center px-6 py-3 rounded-lg bg-white text-gray-900 font-semibold hover:bg-gray-100 transition-colors"
+                className="inline-flex items-center px-8 py-4 rounded-xl border border-white/20 text-white font-semibold hover:bg-white/10 transition-colors"
               >
                 Explore Packages
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-              <a
-                href="https://github.com/Darshan-Naik/qortex"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-6 py-3 rounded-lg border border-white/30 text-white font-semibold hover:bg-white/10 transition-colors"
-              >
-                <Github className="mr-2 h-5 w-5" />
-                GitHub
-              </a>
             </div>
           </div>
+        </div>
+
+        {/* Floating Demo Preview (Simplified) */}
+        <div className="mx-auto max-w-4xl px-4 mt-12 relative z-10 opacity-50 hover:opacity-100 transition-opacity">
+           <div className="bg-gray-800/50 border border-white/10 rounded-2xl p-4 backdrop-blur-sm hidden md:block">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                </div>
+                <div className="h-4 w-32 bg-white/5 rounded-full mx-auto" />
+              </div>
+              <div className="h-48 bg-gray-900/50 rounded-lg animate-pulse" />
+           </div>
         </div>
 
         {/* Background decoration */}
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+      </section>
+
+      {/* Demo Teaser Section */}
+      <section className="bg-gray-900 border-y border-white/5 relative overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-4xl font-extrabold text-white mb-6">
+                Real-world performance, <br />
+                <span className="text-purple-400">zero boilerplate.</span>
+              </h2>
+              <p className="text-xl text-gray-400 mb-8 leading-relaxed">
+                See how Qortex manages everything from **IndexedDB persistence** to **automatic cache hydration** in our interactive playground. 
+                Built with the latest Tailwind and React 18 standards.
+              </p>
+              <div className="space-y-4">
+                {[
+                  { icon: Shield, text: "Async-safe hydration (No overwrite race conditions)" },
+                  { icon: Zap, text: "Sub-3ms state updates across components" },
+                  { icon: Database, text: "Offline-first by default with qortex-db" }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 text-gray-200">
+                    <div className="p-1 bg-purple-500/20 rounded-lg">
+                      <item.icon className="h-5 w-5 text-purple-400" />
+                    </div>
+                    <span className="font-medium">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+              <Link
+                href="/demo"
+                className="mt-10 inline-flex items-center px-10 py-5 rounded-2xl bg-indigo-600 text-white text-lg font-black hover:bg-indigo-500 transition-all shadow-2xl shadow-indigo-500/40"
+              >
+                Launch Demo Environment
+                <ArrowRight className="ml-3 h-5 w-5" />
+              </Link>
+            </div>
+            <div className="relative">
+               <div className="absolute -inset-4 bg-indigo-500/20 rounded-[2.5rem] blur-2xl animate-pulse" />
+               <div className="relative bg-black/40 border border-white/10 rounded-3xl p-8 backdrop-blur-3xl shadow-2xl">
+                  {/* Mock UI snippet */}
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="w-16 h-3 bg-indigo-500/30 rounded-full" />
+                    <div className="w-8 h-8 bg-indigo-500/20 rounded-full" />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="w-full h-12 bg-white/5 rounded-xl border border-white/10" />
+                    <div className="w-3/4 h-12 bg-white/5 rounded-xl border border-white/10" />
+                    <div className="w-full h-12 bg-white/5 rounded-xl border border-white/10" />
+                  </div>
+                  <div className="mt-8 pt-6 border-t border-white/10 flex justify-between">
+                     <div className="w-12 h-12 bg-purple-500/20 rounded-2xl" />
+                     <div className="w-12 h-12 bg-blue-500/20 rounded-2xl" />
+                     <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl" />
+                     <div className="w-12 h-12 bg-pink-500/20 rounded-2xl" />
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Packages Section */}

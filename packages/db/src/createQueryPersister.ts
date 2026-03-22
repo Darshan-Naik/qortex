@@ -32,6 +32,7 @@ const NON_SERIALIZABLE = new Set([
     "fetchPromise",
     "refetch",
     "fromPersisterCache",
+    "lastReturnedState", // Contains nested functions (refetch)
 ]);
 
 /**
@@ -138,10 +139,13 @@ export const createQueryPersister = (db: DB, config?: QueryPersisterConfig) => {
                     // Per-query opt-out.
                     if (state["persist"] === false) continue;
 
-                    // Strip functions / promises before JSON serialisation.
+                    // Dynamically strip functions/promises/non-serializable types.
                     const serialized: Record<string, unknown> = {};
                     for (const [k, v] of Object.entries(state)) {
-                        if (!NON_SERIALIZABLE.has(k)) serialized[k] = v;
+                        // Only persist data, skip everything that can't be cloned (functions, etc.)
+                        if (typeof v !== "function" && !NON_SERIALIZABLE.has(k)) {
+                            serialized[k] = v;
+                        }
                     }
 
                     queries[key] = serialized;
@@ -156,9 +160,15 @@ export const createQueryPersister = (db: DB, config?: QueryPersisterConfig) => {
          * Called by `dangerClearCache` in QueryManagerCore.
          */
         clear(): void {
-            db.del(storageKey).catch((err: unknown) => {
-                console.warn("[Qortex DB] Failed to clear query cache:", err);
+            db.del(storageKey).catch((t) => {
+                console.warn("[Qortex DB] Failed to clear query cache:", t);
             });
+        },
+        /**
+         * Optional promise that resolves when hydration is complete.
+         */
+        get hydrationPromise(): Promise<void> | undefined {
+            return hydrationPromise ?? undefined;
         },
     };
 

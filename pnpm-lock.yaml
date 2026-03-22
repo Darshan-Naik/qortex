@@ -62,6 +62,15 @@ importers:
       prism-react-renderer:
         specifier: ^2.4.1
         version: 2.4.1(react@18.3.1)
+      qortex-db:
+        specifier: workspace:*
+        version: link:../packages/db
+      qortex-query-react:
+        specifier: workspace:*
+        version: link:../packages/query-react
+      qortex-store-react:
+        specifier: workspace:*
+        version: link:../packages/store-react
       react:
         specifier: ^18.0.0
         version: 18.3.1
@@ -99,6 +108,9 @@ importers:
 
   examples/react-app:
     dependencies:
+      qortex-db:
+        specifier: workspace:*
+        version: link:../../packages/db
       qortex-query-react:
         specifier: workspace:*
         version: link:../../packages/query-react

@@ -1,6 +1,6 @@
 {
     "name": "qortex-db",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Browser-only Redis-like key-value database with localStorage, sessionStorage, and IndexedDB support",
     "main": "dist/index.js",
     "module": "dist/index.mjs",

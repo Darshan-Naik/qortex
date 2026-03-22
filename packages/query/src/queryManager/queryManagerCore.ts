@@ -492,14 +492,20 @@ export class QueryManagerCore {
    * Core mount logic that determines when to fetch
    * Implements robust throttling and race condition prevention
    */
-  private handleMountLogic<T = any>(
+  private async handleMountLogic<T = any>(
     key: QueryKey,
     state: QueryStateInternal<T>
-  ): void {
+  ): Promise<void> {
     // Early exits
     if (state.status === "fetching" || !state.enabled || !state.fetcher) return;
 
-    // First fetch - always trigger
+    // If a persister is configured, ensure hydration has finished before making any data/fetch decisions
+    // This prevents double-fetching on page load when persisted data is already available
+    if (this.persister?.hydrationPromise) {
+      await this.persister.hydrationPromise;
+    }
+
+    // First fetch - always trigger if NO data was restored from persistence
     if (!state.updatedAt) {
       this.fetchQuery<T>(key);
       return;

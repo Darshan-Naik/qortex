@@ -1,6 +1,6 @@
 {
   "name": "qortex-docs",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "description": "Documentation and brand site for qortex",
   "scripts": {
@@ -14,7 +14,10 @@
     "next": "^14.0.0",
     "prism-react-renderer": "^2.4.1",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "qortex-query-react": "workspace:*",
+    "qortex-store-react": "workspace:*",
+    "qortex-db": "workspace:*"
   },
   "license": "LGPL-3.0",
   "devDependencies": {

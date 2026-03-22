@@ -104,6 +104,7 @@ export const createStorePersister = <T = unknown>(
          * Debounce-write the current state snapshot to the DB.
          * Called automatically by `createStore` after every state change.
          * If a `select` function is configured, only the selected slice is stored.
+         * Otherwise, it automatically filters out non-serializable properties (functions).
          */
         persist(state: T): void {
             if (writeTimer) clearTimeout(writeTimer);
@@ -113,7 +114,22 @@ export const createStorePersister = <T = unknown>(
                     await hydrationPromise;
                 }
 
-                const snapshot = select ? select(state) : state;
+                let snapshot: any;
+                if (select) {
+                    snapshot = select(state);
+                } else if (typeof state === "object" && state !== null) {
+                    // Automatically filter out functions (actions) which cannot be persisted
+                    snapshot = Object.keys(state).reduce((acc: any, key) => {
+                        const value = (state as any)[key];
+                        if (typeof value !== "function") {
+                            acc[key] = value;
+                        }
+                        return acc;
+                    }, Array.isArray(state) ? [] : {});
+                } else {
+                    snapshot = state;
+                }
+
                 const envelope: Envelope<unknown> = {
                     burstKey,
                     timestamp: Date.now(),
