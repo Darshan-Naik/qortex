@@ -12,14 +12,29 @@
   },
   "examples": [
     {
+      "title": "Text input",
+      "language": "tsx",
+      "code": "function NameField({ resource }) {\n  const { value, error, isChanged, onChange, onBlur } = useField(resource, 'name');\n  return (\n    <label>\n      Name {isChanged && <em>(edited)</em>}\n      <input\n        value={value ?? ''}\n        onChange={(e) => onChange(e.target.value)}\n        onBlur={onBlur}\n        aria-invalid={!!error}\n      />\n      {error && <span role=\"alert\">{error}</span>}\n    </label>\n  );\n}"
+    },
+    {
       "title": "Nested path",
       "language": "tsx",
       "code": "function CityField({ resource }) {\n  const { value, error, onChange, onBlur } = useField(resource, 'addresses.0.city');\n  return (\n    <label>\n      City\n      <input\n        value={value ?? ''}\n        onChange={(e) => onChange(e.target.value)}\n        onBlur={onBlur}\n      />\n      {error}\n    </label>\n  );\n}"
     },
     {
+      "title": "Checkbox / select / number",
+      "language": "tsx",
+      "code": "function NotifyField({ resource }) {\n  const { value, onChange } = useField(resource, 'notifyEmail');\n  return (\n    <label>\n      <input\n        type=\"checkbox\"\n        checked={!!value}\n        onChange={(e) => onChange(e.target.checked)}\n      />\n      Email me\n    </label>\n  );\n}\n\nfunction TierField({ resource }) {\n  const { value, onChange, onBlur } = useField(resource, 'plan.tier');\n  return (\n    <select\n      value={value ?? 'free'}\n      onChange={(e) => onChange(e.target.value)}\n      onBlur={onBlur}\n    >\n      <option value=\"free\">Free</option>\n      <option value=\"pro\">Pro</option>\n    </select>\n  );\n}\n\nfunction PriceField({ resource }) {\n  const { value, error, onChange, onBlur } = useField(resource, 'pricing.basePrice');\n  return (\n    <input\n      type=\"number\"\n      value={value ?? ''}\n      onChange={(e) => onChange(Number(e.target.value))}\n      onBlur={onBlur}\n    />\n  );\n}"
+    },
+    {
       "title": "Bound hooks variant",
       "language": "tsx",
-      "code": "// after createResourceHooks(...)\nconst { value, onChange, onBlur, error } = useField('pricing.basePrice');"
+      "code": "// after createResourceHooks(...)\nconst { value, onChange, onBlur, error, reset } = useField('pricing.basePrice');\n\n// Discard just this field\n<button type=\"button\" onClick={() => reset()}>Reset price</button>"
+    },
+    {
+      "title": "Manual validate on blur alternative",
+      "language": "tsx",
+      "code": "const field = useField(resource, 'email');\n\n<input\n  value={field.value ?? ''}\n  onChange={(e) => field.onChange(e.target.value)}\n  onBlur={async () => {\n    field.onBlur();\n    await field.validate();\n  }}\n/>"
     }
   ],
   "behavior": [
@@ -27,7 +42,16 @@
       "title": "onBlur touches",
       "description": "Calls resource.touch(path) so blur-mode validation can run.",
       "icon": "hand"
+    },
+    {
+      "title": "Ancestor notifies",
+      "description": "Parent path subscribers also refresh when a child path changes.",
+      "icon": "layers"
     }
   ],
-  "relatedPages": ["/resource-react/docs/useFieldArray", "/resource-react/docs/quick-start"]
+  "relatedPages": [
+    "/resource-react/docs/useFieldArray",
+    "/resource-react/docs/quick-start",
+    "/resource-react/docs/recipes"
+  ]
 }

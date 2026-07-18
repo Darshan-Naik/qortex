@@ -41,9 +41,20 @@
       }
     },
     {
-      "title": "Next: React",
-      "content": "For components, use `useResource` / `useField` from qortex-resource-react — see the React package docs."
+      "title": "5. Fetch + persist (next level)",
+      "code": {
+        "language": "typescript",
+        "code": "const user = createResource({\n  key: ['user', userId],\n  persist: { draft: true, debounce: 400 },\n  mutation: { optimistic: true },\n  source: {\n    fetch: () => api.getUser(userId),\n    save: (draft) => api.updateUser(userId, draft),\n  },\n});\n\n// Survive refresh while dirty; optimistic UI on save"
+      }
+    },
+    {
+      "title": "6. Next: React & recipes",
+      "content": "• React hooks → qortex-resource-react Quick Start\n• Browse recipes → Use Cases\n• Big form → Product Form Example"
     }
   ],
-  "relatedPages": ["/resource/docs/concepts", "/resource-react/docs/quick-start"]
+  "relatedPages": [
+    "/resource/docs/concepts",
+    "/resource/docs/use-cases",
+    "/resource-react/docs/quick-start"
+  ]
 }

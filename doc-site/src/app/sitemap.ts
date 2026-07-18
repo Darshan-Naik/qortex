@@ -137,6 +137,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.7,
         },
         {
+            url: `${baseUrl}/resource/docs/use-cases`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/resource/docs/product-form`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
             url: `${baseUrl}/resource-react`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
@@ -144,6 +156,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
         },
         {
             url: `${baseUrl}/resource-react/docs/installation`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.7,
+        },
+        {
+            url: `${baseUrl}/resource-react/docs/recipes`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.7,

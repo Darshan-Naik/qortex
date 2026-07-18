@@ -2,7 +2,7 @@
   "id": "sources",
   "title": "Sources",
   "subtitle": "How data enters and leaves a resource",
-  "description": "fetch, query bridge, store bridge, and controlled value modes.",
+  "description": "fetch, query bridge, store bridge, controlled value, and save meta — with full examples.",
   "category": "Guides",
   "version": "0.1.0-alpha.0",
   "status": "alpha",
@@ -13,7 +13,7 @@
       "content": "Simplest for forms that own their network calls:",
       "code": {
         "language": "typescript",
-        "code": "source: {\n  fetch: () => api.getProduct(id),\n  save: (draft, meta) => api.updateProduct(id, draft),\n}"
+        "code": "import { createResource } from 'qortex-resource';\n\nconst product = createResource({\n  key: ['product', id],\n  query: { enabled: true },\n  source: {\n    fetch: async () => {\n      const res = await fetch(`/api/products/${id}`);\n      if (!res.ok) throw new Error('Failed to load');\n      return res.json();\n    },\n    save: async (draft, meta) => {\n      const res = await fetch(`/api/products/${id}`, {\n        method: 'PUT',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({\n          ...draft,\n          // optional: tell the API what changed\n          _changed: meta.changedFields,\n        }),\n      });\n      if (!res.ok) throw new Error(await res.text());\n      return res.json();\n    },\n  },\n});\n\nawait product.fetch();\nawait product.refetch();"
       }
     },
     {
@@ -21,21 +21,44 @@
       "content": "Adapt qortex-query (or similar) via `source.query`. Resource reads `data` / status and can call `refetch`. Note: `query.staleTime` marks stale but does not auto-refetch in alpha.",
       "code": {
         "language": "typescript",
-        "code": "source: {\n  query: {\n    get data() { return query.data; },\n    get error() { return query.error; },\n    get status() { return query.status; },\n    subscribe: (cb) => query.subscribe(cb),\n    refetch: () => query.refetch(),\n  },\n  save: (draft) => api.save(draft),\n}"
+        "code": "function adaptQuery<T>(q: {\n  data: T | undefined;\n  error: unknown;\n  status: string;\n  subscribe: (cb: () => void) => () => void;\n  refetch: () => Promise<void>;\n}) {\n  return {\n    get data() { return q.data; },\n    get error() { return q.error; },\n    get status() { return q.status as any; },\n    subscribe: q.subscribe,\n    refetch: q.refetch,\n  };\n}\n\ncreateResource({\n  source: {\n    query: adaptQuery(userQuery),\n    save: (draft) => api.users.update(id, draft),\n  },\n});"
       }
     },
     {
       "title": "Bridge a store",
-      "content": "`source.state` with get / set / subscribe keeps the resource in sync with qortex-store (or any similar store)."
+      "content": "`source.state` keeps the resource in sync with qortex-store (or any get/set/subscribe store).",
+      "code": {
+        "language": "typescript",
+        "code": "import { createStore } from 'qortex-store';\nimport { createResource } from 'qortex-resource';\n\nconst profileStore = createStore({\n  name: '',\n  email: '',\n});\n\nconst resource = createResource({\n  source: {\n    state: {\n      get: () => profileStore.get(),\n      set: (next) => profileStore.set(next, true),\n      subscribe: (cb) => profileStore.subscribe(() => cb()),\n    },\n    save: async (draft) => {\n      await api.profile.save(draft);\n      return draft;\n    },\n  },\n});\n\n// Editing the resource updates the store after successful save (and via state.set wiring)"
+      }
     },
     {
       "title": "Controlled value",
-      "content": "`source.value` + `onChange` for fully parent-controlled entities (rare for large forms)."
+      "content": "`source.value` + `onChange` for parent-owned entities:",
+      "code": {
+        "language": "typescript",
+        "code": "function ControlledEditor({ value, onChange }: {\n  value: User;\n  onChange: (next: User) => void;\n}) {\n  const resource = createResource({\n    source: {\n      value,\n      onChange,\n      save: async (draft) => {\n        onChange(draft);\n        return draft;\n      },\n    },\n  });\n  // …\n}"
+      }
     },
     {
-      "title": "initialData",
-      "content": "Sync object or Promise. Useful for create-new flows without a fetch."
+      "title": "initialData (sync or Promise)",
+      "code": {
+        "language": "typescript",
+        "code": "// Sync defaults (create flow)\ncreateResource({ initialData: { title: '', body: '' } });\n\n// Async seed without source.fetch\ncreateResource({\n  initialData: () => api.templates.defaultPost(),\n});"
+      }
+    },
+    {
+      "title": "sourceUpdate policy",
+      "content": "When source refreshes while the user has local edits:",
+      "code": {
+        "language": "typescript",
+        "code": "createResource({\n  // default — keep path overrides when source changes\n  sourceUpdate: 'keepDirty',\n  // or wipe draft on source refresh:\n  // sourceUpdate: 'resetDraft',\n  source: { fetch, save },\n});"
+      }
     }
   ],
-  "relatedPages": ["/resource/docs/createResource", "/resource/docs/lifecycle"]
+  "relatedPages": [
+    "/resource/docs/createResource",
+    "/resource/docs/lifecycle",
+    "/resource/docs/use-cases"
+  ]
 }

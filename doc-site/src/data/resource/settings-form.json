@@ -1,0 +1,45 @@
+{
+  "id": "settings-form",
+  "title": "Settings Form",
+  "subtitle": "Toggles, selects, and optimistic saves",
+  "description": "A compact org/user settings editor — small surface area, fast feedback.",
+  "category": "Guides",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "content": "Settings forms rarely need field arrays. Focus on fetch, dirty tracking, optimistic save, and discard.",
+  "sections": [
+    {
+      "title": "Domain",
+      "code": {
+        "language": "typescript",
+        "code": "type OrgSettings = {\n  name: string;\n  timezone: string;\n  notifyEmail: boolean;\n  notifySlack: boolean;\n  retentionDays: number;\n};"
+      }
+    },
+    {
+      "title": "Core resource",
+      "code": {
+        "language": "typescript",
+        "code": "import { createResource } from 'qortex-resource';\n\nexport function createSettingsResource(orgId: string) {\n  return createResource<OrgSettings>({\n    key: ['settings', orgId],\n    mutation: { optimistic: true },\n    persist: { draft: true, debounce: 200 },\n    validate: {\n      on: 'change',\n      fields: {\n        name: (v) => (!v?.trim() ? 'Workspace name required' : null),\n        retentionDays: (v) =>\n          v < 7 || v > 365 ? 'Must be between 7 and 365' : null,\n      },\n    },\n    source: {\n      fetch: () => api.orgs.getSettings(orgId),\n      save: (draft) => api.orgs.putSettings(orgId, draft),\n    },\n    onSaveSuccess: () => toast.success('Settings saved'),\n    onSaveError: (err) => toast.error(err.message),\n  });\n}"
+      }
+    },
+    {
+      "title": "Vanilla wiring",
+      "code": {
+        "language": "typescript",
+        "code": "const settings = createSettingsResource(orgId);\n\nsettings.subscribe((snap) => {\n  saveBtn.disabled = !snap.isChanged || !snap.isValid || snap.isSaving;\n  nameInput.value = snap.draft?.name ?? '';\n  emailToggle.checked = !!snap.draft?.notifyEmail;\n});\n\nnameInput.oninput = (e) => settings.set('name', e.target.value);\nemailToggle.onchange = (e) => settings.set('notifyEmail', e.target.checked);\nsaveBtn.onclick = () => settings.save();\ndiscardBtn.onclick = () => settings.resetDraft();"
+      }
+    },
+    {
+      "title": "React section components",
+      "code": {
+        "language": "tsx",
+        "code": "import { createResourceHooks } from 'qortex-resource-react';\n\nexport const {\n  useResource,\n  useField,\n} = createResourceHooks((orgId: string) => ({\n  key: ['settings', orgId],\n  mutation: { optimistic: true },\n  persist: { draft: true },\n  source: {\n    fetch: () => api.orgs.getSettings(orgId),\n    save: (d) => api.orgs.putSettings(orgId, d),\n  },\n  onSaveError: (e) => toast.error(e.message),\n}));\n\nexport function SettingsPage({ orgId }: { orgId: string }) {\n  const { isLoading, isChanged, isSaving, save, resetDraft } = useResource(orgId);\n  if (isLoading) return <Spinner />;\n\n  return (\n    <div>\n      <h1>Workspace settings</h1>\n      <NameField />\n      <TimezoneField />\n      <NotifyEmailField />\n      <RetentionField />\n      <div>\n        <button disabled={!isChanged || isSaving} onClick={() => save()}>\n          {isSaving ? 'Saving…' : 'Save'}\n        </button>\n        <button type=\"button\" disabled={!isChanged} onClick={resetDraft}>\n          Discard\n        </button>\n      </div>\n    </div>\n  );\n}\n\nfunction NameField() {\n  const { value, error, onChange, onBlur } = useField('name');\n  return (\n    <label>\n      Name\n      <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} onBlur={onBlur} />\n      {error}\n    </label>\n  );\n}\n\nfunction NotifyEmailField() {\n  const { value, onChange } = useField('notifyEmail');\n  return (\n    <label>\n      <input\n        type=\"checkbox\"\n        checked={!!value}\n        onChange={(e) => onChange(e.target.checked)}\n      />\n      Email notifications\n    </label>\n  );\n}\n\nfunction RetentionField() {\n  const { value, error, onChange, onBlur } = useField('retentionDays');\n  return (\n    <label>\n      Retention (days)\n      <input\n        type=\"number\"\n        value={value ?? 30}\n        onChange={(e) => onChange(Number(e.target.value))}\n        onBlur={onBlur}\n      />\n      {error}\n    </label>\n  );\n}"
+      }
+    }
+  ],
+  "relatedPages": [
+    "/resource/docs/optimistic",
+    "/resource/docs/use-cases",
+    "/resource-react/docs/createResourceHooks"
+  ]
+}

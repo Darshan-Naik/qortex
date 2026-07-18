@@ -1,0 +1,35 @@
+{
+  "id": "multi-step",
+  "title": "Multi-step Form",
+  "subtitle": "Wizard UI over one resource draft",
+  "description": "One Resource, several steps. Validate the current step before advancing; save on the last step.",
+  "category": "Guides",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "content": "Keep a single draft across steps so Back does not lose data. Persist draft if users may refresh mid-wizard.",
+  "sections": [
+    {
+      "title": "Shape",
+      "code": {
+        "language": "typescript",
+        "code": "type Onboarding = {\n  account: { email: string; password: string };\n  profile: { name: string; company: string };\n  plan: { tier: 'free' | 'pro'; billing: 'monthly' | 'yearly' };\n};\n\nconst stepFields = {\n  0: ['account.email', 'account.password'],\n  1: ['profile.name', 'profile.company'],\n  2: ['plan.tier', 'plan.billing'],\n} as const;"
+      }
+    },
+    {
+      "title": "Bound hooks + wizard",
+      "code": {
+        "language": "tsx",
+        "code": "import { useState } from 'react';\nimport { z } from 'zod';\nimport { zodResolver } from 'qortex-resource';\nimport { createResourceHooks } from 'qortex-resource-react';\n\nconst Schema = z.object({\n  account: z.object({\n    email: z.string().email(),\n    password: z.string().min(8),\n  }),\n  profile: z.object({\n    name: z.string().min(1),\n    company: z.string().min(1),\n  }),\n  plan: z.object({\n    tier: z.enum(['free', 'pro']),\n    billing: z.enum(['monthly', 'yearly']),\n  }),\n});\n\nconst { useResource, useField } = createResourceHooks({\n  key: ['onboarding'],\n  initialData: {\n    account: { email: '', password: '' },\n    profile: { name: '', company: '' },\n    plan: { tier: 'free', billing: 'monthly' },\n  } satisfies Onboarding,\n  validate: { resolver: zodResolver(Schema), on: 'manual' },\n  persist: { draft: true, debounce: 300 },\n  source: {\n    save: (draft) => api.onboarding.complete(draft),\n  },\n});\n\nexport function OnboardingWizard() {\n  const { validateFields, save, isSaving, resetDraft } = useResource();\n  const [step, setStep] = useState(0);\n\n  async function next() {\n    const paths = [...stepFields[step as 0 | 1 | 2]];\n    const ok = await validateFields(paths);\n    if (!ok) return;\n    if (step < 2) setStep((s) => s + 1);\n    else await save();\n  }\n\n  return (\n    <div>\n      <ol>\n        <li data-active={step === 0}>Account</li>\n        <li data-active={step === 1}>Profile</li>\n        <li data-active={step === 2}>Plan</li>\n      </ol>\n\n      {step === 0 && <AccountStep />}\n      {step === 1 && <ProfileStep />}\n      {step === 2 && <PlanStep />}\n\n      <div>\n        <button type=\"button\" disabled={step === 0} onClick={() => setStep((s) => s - 1)}>\n          Back\n        </button>\n        <button type=\"button\" disabled={isSaving} onClick={next}>\n          {step < 2 ? 'Continue' : isSaving ? 'Submitting…' : 'Finish'}\n        </button>\n        <button type=\"button\" onClick={resetDraft}>Reset</button>\n      </div>\n    </div>\n  );\n}\n\nfunction AccountStep() {\n  const email = useField('account.email');\n  const password = useField('account.password');\n  return (\n    <>\n      <input value={email.value ?? ''} onChange={(e) => email.onChange(e.target.value)} onBlur={email.onBlur} />\n      {email.error}\n      <input type=\"password\" value={password.value ?? ''} onChange={(e) => password.onChange(e.target.value)} onBlur={password.onBlur} />\n      {password.error}\n    </>\n  );\n}\n\nfunction ProfileStep() {\n  const name = useField('profile.name');\n  const company = useField('profile.company');\n  return (\n    <>\n      <input value={name.value ?? ''} onChange={(e) => name.onChange(e.target.value)} onBlur={name.onBlur} />\n      {name.error}\n      <input value={company.value ?? ''} onChange={(e) => company.onChange(e.target.value)} onBlur={company.onBlur} />\n      {company.error}\n    </>\n  );\n}\n\nfunction PlanStep() {\n  const tier = useField('plan.tier');\n  return (\n    <select value={tier.value ?? 'free'} onChange={(e) => tier.onChange(e.target.value)}>\n      <option value=\"free\">Free</option>\n      <option value=\"pro\">Pro</option>\n    </select>\n  );\n}"
+      }
+    },
+    {
+      "title": "Why validateFields?",
+      "content": "Full `validate()` would fail later steps that are still empty. Step navigation should only check the active paths, then `save()` runs full validation on Finish."
+    }
+  ],
+  "relatedPages": [
+    "/resource/docs/validation",
+    "/resource-react/docs/createResourceHooks",
+    "/resource/docs/persistence"
+  ]
+}

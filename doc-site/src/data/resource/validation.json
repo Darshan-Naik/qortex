@@ -30,12 +30,28 @@
     },
     {
       "title": "APIs",
-      "content": "`validate()`, `validateField(path)`, `validateFields(paths[])`, `field(path).validate()`. Snapshot: `errors`, `isValid`."
+      "content": "`validate()`, `validateField(path)`, `validateFields(paths[])`, `field(path).validate()`. Snapshot: `errors`, `isValid`.",
+      "code": {
+        "language": "typescript",
+        "code": "// Full form\nconst ok = await resource.validate();\nif (!ok) console.log(resource.snapshot.errors);\n\n// One path\nawait resource.validateField('email');\nawait resource.field('email').validate();\n\n// Wizard step — only active paths\nconst stepOk = await resource.validateFields([\n  'account.email',\n  'account.password',\n]);\nif (stepOk) goNext();"
+      }
+    },
+    {
+      "title": "Async-style field validator",
+      "content": "Field validators can return a string or null. For async uniqueness checks, await inside save or a custom blur handler (alpha has no built-in async validator cancel):",
+      "code": {
+        "language": "typescript",
+        "code": "// Custom blur in React\nconst slug = useField(resource, 'slug');\n\n<input\n  value={slug.value ?? ''}\n  onChange={(e) => slug.onChange(e.target.value)}\n  onBlur={async () => {\n    slug.onBlur();\n    const taken = await api.slugs.exists(slug.value);\n    // show local UI error until first-class setErrors lands\n    setSlugTaken(taken);\n  }}\n/>"
+      }
     },
     {
       "title": "Server errors (alpha gap)",
       "content": "There is no first-class `setErrors` / `applyServerErrors` yet. Map API errors into UI manually, or call field-level helpers as a temporary approach. Tracked under Alpha Limitations."
     }
   ],
-  "relatedPages": ["/resource/docs/zodResolver", "/resource/docs/alpha-limitations"]
+  "relatedPages": [
+    "/resource/docs/zodResolver",
+    "/resource-react/docs/multi-step",
+    "/resource/docs/alpha-limitations"
+  ]
 }

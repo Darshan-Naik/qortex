@@ -21,6 +21,9 @@ export const resourceReactNavigation: NavigationSection[] = [
         items: [
             { title: "Sharing Patterns", href: "/resource-react/docs/sharing-patterns" },
             { title: "Dynamic Identity", href: "/resource-react/docs/dynamic-identity" },
+            { title: "React Recipes", href: "/resource-react/docs/recipes" },
+            { title: "Multi-step Form", href: "/resource-react/docs/multi-step" },
+            { title: "Row Editing", href: "/resource-react/docs/row-editing" },
         ],
     },
     {

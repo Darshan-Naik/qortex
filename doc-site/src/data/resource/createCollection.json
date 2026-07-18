@@ -2,30 +2,41 @@
   "id": "createCollection",
   "title": "createCollection",
   "subtitle": "Normalized list of entities with per-id resources",
-  "description": "Local collection store. Each item can expose a Resource via getResource(id) for row editing.",
+  "description": "Framework-agnostic collection: Map-backed CRUD, optional sort, subscribe, and getResource(id) for row-level drafts.",
   "category": "API",
   "version": "0.1.0-alpha.0",
   "status": "alpha",
+  "badges": [
+    { "text": "0.1.0-alpha.0", "variant": "warning" },
+    { "text": "local", "variant": "info" }
+  ],
+  "callouts": [
+    {
+      "type": "info",
+      "title": "Local only (alpha)",
+      "content": "No built-in fetch/pagination. Load remotely, then setAll. React apps should prefer useCollection."
+    }
+  ],
   "signature": {
     "language": "typescript",
-    "code": "createCollection<T>(config: CollectionConfig<T>): Collection<T>"
+    "code": "createCollection<T>(config: {\n  getId: (entity: T) => string;\n  sortBy?: (a: T, b: T) => number;\n}): Collection<T>"
   },
   "parameters": {
     "columns": ["Parameter", "Type", "Required", "Default", "Description"],
     "rows": [
       {
         "name": "config.getId",
-        "type": "(item: T) => string",
+        "type": "(entity: T) => string",
         "required": true,
         "default": "-",
-        "description": "Stable id extractor for normalization."
+        "description": "Unique id extractor for normalization and lookups."
       },
       {
-        "name": "config.initialData",
-        "type": "T[]",
+        "name": "config.sortBy",
+        "type": "(a: T, b: T) => number",
         "required": false,
-        "default": "[]",
-        "description": "Seed items."
+        "default": "-",
+        "description": "Comparator re-run after writes. Omit to keep insertion order."
       }
     ]
   },
@@ -33,26 +44,88 @@
     "type": "Collection<T>",
     "description": "Normalized collection API",
     "properties": [
-      { "name": "items", "type": "T[]", "description": "Current list" },
-      { "name": "version", "type": "number", "description": "Bumps on structural changes (React re-render signal)" },
-      { "name": "addOne / setAll / updateOne / removeOne", "type": "fn", "description": "CRUD" },
-      { "name": "getResource(id)", "type": "Resource<T>", "description": "In-memory resource; save writes back into the collection" },
-      { "name": "subscribe / destroy", "type": "fn", "description": "Lifecycle" }
+      { "name": "selectAll()", "type": "T[]", "description": "All entities in current order" },
+      { "name": "selectById(id)", "type": "T | undefined", "description": "O(1) lookup" },
+      { "name": "selectIds()", "type": "string[]", "description": "Ordered ids" },
+      { "name": "selectCount()", "type": "number", "description": "Size" },
+      { "name": "selectWhere(pred)", "type": "T[]", "description": "Filter copy" },
+      { "name": "addOne / addMany", "type": "fn", "description": "Insert (overwrite if id exists)" },
+      { "name": "setAll", "type": "fn", "description": "Replace all; clears resource cache" },
+      { "name": "updateOne / updateMany", "type": "fn", "description": "Patch by id (partial or functional)" },
+      { "name": "upsertOne / upsertMany", "type": "fn", "description": "Same as add* today" },
+      { "name": "removeOne / removeMany / removeAll", "type": "fn", "description": "Delete + destroy cached resources" },
+      { "name": "getResource(id)", "type": "Resource<T>", "description": "Draft editor; save → updateOne" },
+      { "name": "version", "type": "number", "description": "Bumps on every change" },
+      { "name": "status / isLoading / error", "type": "flags", "description": "status becomes ready after setAll" },
+      { "name": "subscribe / subscribeOne", "type": "fn", "description": "List or single-entity listeners" },
+      { "name": "destroy()", "type": "fn", "description": "Cleanup listeners + resources" }
     ]
   },
   "examples": [
     {
-      "title": "Basic collection",
+      "title": "Create and seed",
       "language": "typescript",
-      "code": "import { createCollection } from 'qortex-resource';\n\nconst todos = createCollection<Todo>({\n  getId: (t) => t.id,\n  initialData: [],\n});\n\ntodos.addOne({ id: '1', title: 'Ship alpha', done: false });\n\nconst row = todos.getResource('1');\nrow.set('title', 'Ship alpha docs');\nawait row.save(); // updates collection item"
-    }
-  ],
-  "callouts": [
+      "code": "import { createCollection } from 'qortex-resource';\n\ntype Todo = { id: string; title: string; done: boolean };\n\nconst todos = createCollection<Todo>({\n  getId: (t) => t.id,\n  sortBy: (a, b) => Number(a.done) - Number(b.done),\n});\n\n// Seed from API\nconst rows = await api.todos.list();\ntodos.setAll(rows);\n\ntodos.selectCount(); // rows.length\ntodos.selectIds();   // ordered ids"
+    },
     {
-      "type": "info",
-      "title": "Local only (alpha)",
-      "content": "Collections do not fetch/page from the network. Load remotely yourself, then setAll."
+      "title": "CRUD",
+      "language": "typescript",
+      "code": "todos.addOne({ id: '1', title: 'Ship alpha', done: false });\ntodos.addMany([\n  { id: '2', title: 'Docs', done: false },\n  { id: '3', title: 'Tests', done: true },\n]);\n\ntodos.updateOne('1', { title: 'Ship alpha docs' });\ntodos.updateOne('2', (prev) => ({ ...prev, done: true }));\ntodos.updateMany(['1', '2'], { done: false });\n\ntodos.upsertOne({ id: '1', title: 'Updated', done: false });\n\ntodos.removeOne('3');\ntodos.removeMany(['1', '2']);\ntodos.removeAll();"
+    },
+    {
+      "title": "Queries",
+      "language": "typescript",
+      "code": "todos.selectAll();\ntodos.selectById('1');\ntodos.selectWhere((t) => !t.done);\ntodos.selectCount();"
+    },
+    {
+      "title": "getResource — row draft",
+      "language": "typescript",
+      "code": "const row = todos.getResource('1');\n\nrow.set('title', 'Edited locally');\nrow.snapshot.isChanged; // true\n\nawait row.save();\n// collection entity '1' now has title 'Edited locally'\n// draft cleared\n\nrow.resetDraft(); // discard without save\n\n// Same id → same instance\ntodos.getResource('1') === row; // true\n\n// remove destroys the cached resource\ntodos.removeOne('1');"
+    },
+    {
+      "title": "Subscribe",
+      "language": "typescript",
+      "code": "const unsub = todos.subscribe(() => {\n  console.log('version', todos.version, todos.selectAll());\n});\n\nconst unsubOne = todos.subscribeOne('1', (entity) => {\n  console.log('entity 1', entity);\n});\n\nunsub();\nunsubOne();\ntodos.destroy();"
+    },
+    {
+      "title": "Sync from outside",
+      "description": "When setEntity runs (add/update), cached resources receive syncSource so open editors see fresh server data (respecting resource sourceUpdate policy).",
+      "language": "typescript",
+      "code": "const row = todos.getResource('1');\nrow.set('title', 'local edit');\n\n// External patch (e.g. websocket)\ntodos.updateOne('1', { title: 'from server', done: true });\n// row resource source updates; dirty override on 'title' may keepDirty"
     }
   ],
-  "relatedPages": ["/resource-react/docs/useCollection", "/resource/docs/createResource"]
+  "behavior": [
+    {
+      "title": "Normalized storage",
+      "description": "entities Map + ids array. Lookups are O(1); selectAll maps ids → entities.",
+      "icon": "layers"
+    },
+    {
+      "title": "sortBy after writes",
+      "description": "If provided, ids are re-sorted after add/update/setAll.",
+      "icon": "list"
+    },
+    {
+      "title": "setAll resets resources",
+      "description": "Clears the resource cache so stale drafts cannot outlive replaced data.",
+      "icon": "trash"
+    }
+  ],
+  "bestPractices": {
+    "dos": [
+      "Always provide stable string ids via getId",
+      "Use useCollection in React instead of createCollection + manual subscribe",
+      "destroy() when the collection is no longer needed (vanilla)"
+    ],
+    "donts": [
+      "Don't treat this as a remote query cache",
+      "Don't mutate entities in place — use updateOne / setAll",
+      "Don't share one getResource across different logical lists without remounting"
+    ]
+  },
+  "relatedPages": [
+    "/resource-react/docs/useCollection",
+    "/resource-react/docs/row-editing",
+    "/resource/docs/createResource"
+  ]
 }

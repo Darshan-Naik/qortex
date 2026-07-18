@@ -15,14 +15,33 @@
       "title": "Addresses editor",
       "language": "tsx",
       "code": "function Addresses({ resource }) {\n  const { fields, append, remove } = useFieldArray(resource, 'addresses');\n\n  return (\n    <>\n      {fields.map((row) => (\n        <fieldset key={row.id}>\n          <City resource={resource} index={row.index} />\n          <button type=\"button\" onClick={() => remove(row.index)}>Remove</button>\n        </fieldset>\n      ))}\n      <button\n        type=\"button\"\n        onClick={() => append({ label: 'Warehouse', line1: '', city: '', state: '', postalCode: '', country: 'US' })}\n      >\n        Add address\n      </button>\n    </>\n  );\n}\n\nfunction City({ resource, index }) {\n  const { value, onChange, onBlur } = useField(resource, `addresses.${index}.city`);\n  return <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} onBlur={onBlur} />;\n}"
+    },
+    {
+      "title": "Primitive string tags",
+      "language": "tsx",
+      "code": "function Tags({ resource }) {\n  const { fields, append, remove } = useFieldArray(resource, 'tags');\n  const [text, setText] = useState('');\n\n  return (\n    <div>\n      <ul>\n        {fields.map((row) => (\n          <li key={row.id}>\n            {String(row.item)}\n            <button type=\"button\" onClick={() => remove(row.index)}>×</button>\n          </li>\n        ))}\n      </ul>\n      <input value={text} onChange={(e) => setText(e.target.value)} />\n      <button\n        type=\"button\"\n        onClick={() => {\n          if (!text.trim()) return;\n          append(text.trim());\n          setText('');\n        }}\n      >\n        Add\n      </button>\n    </div>\n  );\n}"
+    },
+    {
+      "title": "Reorder with move / swap",
+      "language": "tsx",
+      "code": "function SortableLines({ resource }) {\n  const { fields, move, swap } = useFieldArray(resource, 'lineItems');\n\n  return fields.map((row) => (\n    <div key={row.id}>\n      <LineEditor resource={resource} index={row.index} />\n      <button\n        type=\"button\"\n        disabled={row.index === 0}\n        onClick={() => move(row.index, row.index - 1)}\n      >\n        Up\n      </button>\n      <button\n        type=\"button\"\n        disabled={row.index === fields.length - 1}\n        onClick={() => move(row.index, row.index + 1)}\n      >\n        Down\n      </button>\n      {row.index > 0 && (\n        <button type=\"button\" onClick={() => swap(row.index, 0)}>\n          Make first\n        </button>\n      )}\n    </div>\n  ));\n}"
+    },
+    {
+      "title": "Insert in the middle",
+      "language": "tsx",
+      "code": "const { fields, insert } = useFieldArray(resource, 'steps');\n\n<button\n  type=\"button\"\n  onClick={() => insert(1, { title: 'New step', done: false })}\n>\n  Insert after first\n</button>"
     }
   ],
   "callouts": [
     {
       "type": "success",
       "title": "Stable ids",
-      "content": "Row ids survive reorder/move so React does not remount inputs incorrectly."
+      "content": "Row ids survive reorder/move so React does not remount inputs incorrectly. Always use row.id as the React key — not row.index."
     }
   ],
-  "relatedPages": ["/resource/docs/product-form", "/resource-react/docs/useField"]
+  "relatedPages": [
+    "/resource/docs/arrays-nested",
+    "/resource/docs/product-form",
+    "/resource-react/docs/useField"
+  ]
 }

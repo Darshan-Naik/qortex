@@ -36,7 +36,36 @@
       "title": "Entity editor",
       "language": "tsx",
       "code": "const { isLoading, isSaving, isChanged, save, resource } = useResource({\n  key: userId,\n  source: {\n    fetch: () => api.getUser(userId),\n    save: (d) => api.updateUser(userId, d),\n  },\n});\n\nif (isLoading) return <Spinner />;\nreturn (\n  <>\n    <EmailField resource={resource} />\n    <button disabled={!isChanged || isSaving} onClick={() => save()}>Save</button>\n  </>\n);"
+    },
+    {
+      "title": "Key change = new identity",
+      "language": "tsx",
+      "code": "function UserPage({ userId }: { userId: string }) {\n  const { draft, isLoading, resource } = useResource({\n    key: ['user', userId],\n    persist: { draft: true },\n    source: {\n      fetch: () => api.getUser(userId),\n      save: (d) => api.updateUser(userId, d),\n    },\n  });\n\n  // Navigating /users/1 → /users/2 recreates the resource automatically\n  return isLoading ? null : <ProfileFields resource={resource} name={draft?.name} />;\n}"
+    },
+    {
+      "title": "Create mode",
+      "language": "tsx",
+      "code": "const { resource, save, isValid, isSaving } = useResource({\n  key: ['article', 'new'],\n  initialData: { title: '', body: '' },\n  validate: {\n    on: 'submit',\n    fields: { title: (v) => (!v ? 'Required' : null) },\n  },\n  source: {\n    save: async (draft) => {\n      const created = await api.articles.create(draft);\n      navigate(`/articles/${created.id}`);\n      return created;\n    },\n  },\n});"
+    },
+    {
+      "title": "Loading / error / saving UI",
+      "language": "tsx",
+      "code": "function Editor({ id }: { id: string }) {\n  const {\n    isLoading,\n    isFetching,\n    isSaving,\n    isChanged,\n    isValid,\n    error,\n    mutation,\n    save,\n    resetDraft,\n    refetch,\n    resource,\n  } = useResource({\n    key: id,\n    source: {\n      fetch: () => api.get(id),\n      save: (d) => api.put(id, d),\n    },\n  });\n\n  if (isLoading) return <Skeleton />;\n  if (error) {\n    return (\n      <div role=\"alert\">\n        {String(error)}\n        <button type=\"button\" onClick={() => refetch()}>Retry</button>\n      </div>\n    );\n  }\n\n  return (\n    <>\n      {isFetching && <span>Refreshing…</span>}\n      <Fields resource={resource} />\n      {mutation.error && <p role=\"alert\">{String(mutation.error)}</p>}\n      <button disabled={!isChanged || !isValid || isSaving} onClick={() => save()}>\n        {isSaving ? 'Saving…' : 'Save'}\n      </button>\n      <button type=\"button\" disabled={!isChanged} onClick={resetDraft}>Discard</button>\n    </>\n  );\n}"
     }
   ],
-  "relatedPages": ["/resource-react/docs/useField", "/resource/docs/createResource"]
+  "bestPractices": {
+    "dos": [
+      "Pass resource into leaf components with useField",
+      "Include route ids in config.key when using persist"
+    ],
+    "donts": [
+      "Don't put the entire form in one component that only uses useResource snapshot for every keystroke",
+      "Don't expect config changes other than key to recreate the instance"
+    ]
+  },
+  "relatedPages": [
+    "/resource-react/docs/useField",
+    "/resource/docs/createResource",
+    "/resource-react/docs/recipes"
+  ]
 }

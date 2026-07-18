@@ -2,23 +2,50 @@
   "id": "quick-start",
   "title": "Quick Start",
   "subtitle": "Forms with fine-grained field updates",
-  "description": "useResource + useField for a responsive React form.",
+  "description": "useResource + useField for a responsive React form — then level up to Zod, arrays, and bound hooks.",
   "category": "Getting Started",
   "version": "0.1.0-alpha.0",
   "status": "alpha",
   "content": "Keep the shell on useResource for save/status. Put each input in a child that calls useField so keystrokes stay local.",
   "sections": [
     {
-      "title": "Pass-resource pattern",
+      "title": "1. Install",
       "code": {
-        "language": "tsx",
-        "code": "import { useResource, useField } from 'qortex-resource-react';\n\nfunction ProfileForm() {\n  const { resource, isChanged, isSaving, save, resetDraft } = useResource({\n    initialData: { name: '', email: '' },\n    validate: {\n      on: 'blur',\n      fields: {\n        name: (v) => (!v ? 'Required' : null),\n      },\n    },\n    source: { save: (d) => api.saveProfile(d) },\n  });\n\n  return (\n    <form onSubmit={(e) => { e.preventDefault(); save(); }}>\n      <NameField resource={resource} />\n      <button disabled={!isChanged || isSaving}>Save</button>\n      <button type=\"button\" onClick={resetDraft}>Reset</button>\n    </form>\n  );\n}\n\nfunction NameField({ resource }) {\n  const { value, error, onChange, onBlur } = useField(resource, 'name');\n  return (\n    <>\n      <input\n        value={value ?? ''}\n        onChange={(e) => onChange(e.target.value)}\n        onBlur={onBlur}\n      />\n      {error && <span>{error}</span>}\n    </>\n  );\n}"
+        "language": "bash",
+        "code": "npm install qortex-resource-react@0.1.0-alpha.0\n# qortex-resource installs automatically · peer: react ^18.2"
       }
     },
     {
-      "title": "Bound hooks (no props)",
-      "content": "For a single screen, use createResourceHooks — see Sharing Patterns and Dynamic Identity."
+      "title": "2. Pass-resource pattern",
+      "code": {
+        "language": "tsx",
+        "code": "import { useResource, useField } from 'qortex-resource-react';\n\nfunction ProfileForm() {\n  const { resource, isChanged, isSaving, isValid, save, resetDraft } = useResource({\n    initialData: { name: '', email: '' },\n    validate: {\n      on: 'blur',\n      fields: {\n        name: (v) => (!v ? 'Required' : null),\n        email: (v) => (!v?.includes('@') ? 'Invalid email' : null),\n      },\n    },\n    source: { save: (d) => api.saveProfile(d) },\n  });\n\n  return (\n    <form onSubmit={(e) => { e.preventDefault(); save(); }}>\n      <NameField resource={resource} />\n      <EmailField resource={resource} />\n      <button disabled={!isChanged || !isValid || isSaving}>\n        {isSaving ? 'Saving…' : 'Save'}\n      </button>\n      <button type=\"button\" onClick={resetDraft}>Reset</button>\n    </form>\n  );\n}\n\nfunction NameField({ resource }) {\n  const { value, error, onChange, onBlur } = useField(resource, 'name');\n  return (\n    <>\n      <input\n        value={value ?? ''}\n        onChange={(e) => onChange(e.target.value)}\n        onBlur={onBlur}\n      />\n      {error && <span>{error}</span>}\n    </>\n  );\n}\n\nfunction EmailField({ resource }) {\n  const { value, error, onChange, onBlur } = useField(resource, 'email');\n  return (\n    <>\n      <input\n        value={value ?? ''}\n        onChange={(e) => onChange(e.target.value)}\n        onBlur={onBlur}\n      />\n      {error && <span>{error}</span>}\n    </>\n  );\n}"
+      }
+    },
+    {
+      "title": "3. Add Zod + fetch",
+      "code": {
+        "language": "tsx",
+        "code": "import { z } from 'zod';\nimport { zodResolver } from 'qortex-resource';\nimport { useResource, useField } from 'qortex-resource-react';\n\nconst Schema = z.object({\n  name: z.string().min(1),\n  email: z.string().email(),\n});\n\nfunction UserEditor({ userId }: { userId: string }) {\n  const { resource, isLoading, isChanged, save } = useResource({\n    key: ['user', userId],\n    validate: { resolver: zodResolver(Schema), on: 'blur' },\n    persist: { draft: true },\n    source: {\n      fetch: () => api.getUser(userId),\n      save: (d) => api.updateUser(userId, d),\n    },\n  });\n\n  if (isLoading) return <p>Loading…</p>;\n  return (\n    <>\n      <NameField resource={resource} />\n      <button disabled={!isChanged} onClick={() => save()}>Save</button>\n    </>\n  );\n}"
+      }
+    },
+    {
+      "title": "4. Bound hooks (no props)",
+      "content": "For a single screen, factory hooks remove prop drilling. See Dynamic Identity for productId params.",
+      "code": {
+        "language": "tsx",
+        "code": "import { createResourceHooks } from 'qortex-resource-react';\n\nexport const { useResource, useField } = createResourceHooks((userId: string) => ({\n  key: ['user', userId],\n  source: {\n    fetch: () => api.getUser(userId),\n    save: (d) => api.updateUser(userId, d),\n  },\n}));\n\nfunction Page({ userId }) {\n  useResource(userId);\n  return <Name />;\n}\n\nfunction Name() {\n  const { value, onChange, onBlur } = useField('name');\n  return <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} onBlur={onBlur} />;\n}"
+      }
+    },
+    {
+      "title": "Next steps",
+      "content": "• Arrays → useFieldArray / Arrays & Nested\n• Wizards → Multi-step Form\n• Tables → Row Editing\n• Catalog → Product Form Example"
     }
   ],
-  "relatedPages": ["/resource-react/docs/useField", "/resource-react/docs/sharing-patterns"]
+  "relatedPages": [
+    "/resource-react/docs/useField",
+    "/resource-react/docs/recipes",
+    "/resource-react/docs/sharing-patterns",
+    "/resource/docs/use-cases"
+  ]
 }

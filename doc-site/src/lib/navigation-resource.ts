@@ -16,6 +16,7 @@ export const resourceNavigation: NavigationSection[] = [
             { title: "Quick Start", href: "/resource/docs/quick-start" },
             { title: "Concepts", href: "/resource/docs/concepts" },
             { title: "Lifecycle", href: "/resource/docs/lifecycle" },
+            { title: "Use Cases", href: "/resource/docs/use-cases" },
         ],
     },
     {
@@ -25,6 +26,9 @@ export const resourceNavigation: NavigationSection[] = [
             { title: "Validation", href: "/resource/docs/validation" },
             { title: "Persistence", href: "/resource/docs/persistence" },
             { title: "Optimistic Updates", href: "/resource/docs/optimistic" },
+            { title: "Arrays & Nested", href: "/resource/docs/arrays-nested" },
+            { title: "Create vs Edit", href: "/resource/docs/create-vs-edit" },
+            { title: "Settings Form", href: "/resource/docs/settings-form" },
             { title: "Product Form Example", href: "/resource/docs/product-form" },
             { title: "Alpha Limitations", href: "/resource/docs/alpha-limitations" },
         ],

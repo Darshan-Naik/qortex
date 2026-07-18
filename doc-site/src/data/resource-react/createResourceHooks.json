@@ -20,6 +20,16 @@
       "title": "Dynamic product id",
       "language": "tsx",
       "code": "export const { useResource, useField, useFieldArray } =\n  createResourceHooks((productId: string) => ({\n    key: ['product', productId],\n    persist: { draft: true },\n    source: {\n      fetch: () => api.getProduct(productId),\n      save: (d) => api.updateProduct(productId, d),\n    },\n  }));\n\nfunction Editor({ productId }) {\n  const { save, isChanged } = useResource(productId);\n  return (\n    <>\n      <Name />\n      <button disabled={!isChanged} onClick={() => save()}>Save</button>\n    </>\n  );\n}\n\nfunction Name() {\n  const { value, onChange, onBlur } = useField('name');\n  return <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} onBlur={onBlur} />;\n}"
+    },
+    {
+      "title": "Composite params object",
+      "language": "tsx",
+      "code": "type Ids = { workspaceId: string; productId: string };\n\nexport const { useResource, useField } = createResourceHooks((ids: Ids) => ({\n  key: ['product', ids.workspaceId, ids.productId],\n  source: {\n    fetch: () => api.get(ids.workspaceId, ids.productId),\n    save: (d) => api.save(ids.workspaceId, ids.productId, d),\n  },\n}));\n\nfunction Page({ workspaceId, productId }: Ids) {\n  const { isLoading } = useResource({ workspaceId, productId });\n  if (isLoading) return null;\n  return <Name />;\n}"
+    },
+    {
+      "title": "Test cleanup",
+      "language": "typescript",
+      "code": "const hooks = createResourceHooks({ initialData: { n: 0 } });\n\nafterEach(() => {\n  hooks.destroy();\n});"
     }
   ],
   "bestPractices": {
@@ -32,5 +42,9 @@
       "Don't call factory useResource() without params"
     ]
   },
-  "relatedPages": ["/resource-react/docs/dynamic-identity", "/resource-react/docs/sharing-patterns"]
+  "relatedPages": [
+    "/resource-react/docs/dynamic-identity",
+    "/resource-react/docs/sharing-patterns",
+    "/resource/docs/product-form"
+  ]
 }

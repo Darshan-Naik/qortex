@@ -104,14 +104,29 @@
       "code": "import { createResource, zodResolver } from 'qortex-resource';\nimport { z } from 'zod';\n\nconst User = z.object({\n  name: z.string().min(1),\n  email: z.string().email(),\n});\n\nconst user = createResource({\n  key: ['user', userId],\n  validate: { resolver: zodResolver(User), on: 'blur' },\n  persist: { draft: true },\n  mutation: { optimistic: true },\n  source: {\n    fetch: () => api.getUser(userId),\n    save: (draft) => api.updateUser(userId, draft),\n  },\n  onSaveSuccess: () => console.log('saved'),\n  onSaveError: (e) => console.error(e),\n});"
     },
     {
+      "title": "Create-only (no fetch)",
+      "language": "typescript",
+      "code": "const neu = createResource({\n  key: ['post', 'new'],\n  initialData: { title: '', body: '', published: false },\n  validate: {\n    on: 'submit',\n    fields: {\n      title: (v) => (!v?.trim() ? 'Title required' : null),\n    },\n  },\n  source: {\n    save: async (draft) => api.posts.create(draft),\n  },\n});\n\nneu.set('title', 'Hello');\nconst result = await neu.save();\nif (result.ok) console.log('created', neu.snapshot.data);"
+    },
+    {
       "title": "Field & array edits",
       "language": "typescript",
-      "code": "user.set('name', 'Ada');\nuser.array('tags').append('admin');\n\nconst city = user.field('profile.address.city');\ncity.set('London');\nawait city.validate();"
+      "code": "user.set('name', 'Ada');\nuser.setMany({ 'profile.bio': '…', 'profile.age': 36 });\nuser.array('tags').append('admin');\nuser.array('tags').move(2, 0);\n\nconst city = user.field('profile.address.city');\ncity.set('London');\nawait city.validate();\n\nuser.reset('profile.bio');   // discard one path\nuser.resetDraft();           // discard all"
+    },
+    {
+      "title": "Subscribe (full + field)",
+      "language": "typescript",
+      "code": "const unsub = user.subscribe((snap) => {\n  console.log({\n    dirty: snap.isChanged,\n    saving: snap.isSaving,\n    errors: snap.errors,\n  });\n});\n\nconst unsubEmail = user.subscribeField('email', () => {\n  const f = user.field('email');\n  console.log(f.value, f.error, f.isChanged);\n});\n\n// later\nunsub();\nunsubEmail();\nuser.destroy();"
     },
     {
       "title": "Read snapshot",
       "language": "typescript",
-      "code": "const {\n  draft, data, isChanged, isValid, errors,\n  isLoading, isSaving, mutation,\n} = user.snapshot;"
+      "code": "const {\n  draft, data, isChanged, changedFields, isValid, errors,\n  isLoading, isFetching, isSaving, mutation, status,\n} = user.snapshot;\n\n// mutation.status: 'idle' | 'mutating' | 'success' | 'error'\n// mutation.retry() re-invokes save()"
+    },
+    {
+      "title": "Partial save meta",
+      "language": "typescript",
+      "code": "createResource({\n  source: {\n    save: async (draft, meta) => {\n      // Only patch dirty fields on the wire\n      const patch = Object.fromEntries(\n        meta.changedFields.map((path) => {\n          // resolve path → value from draft as needed\n          return [path, /* … */];\n        }),\n      );\n      return api.users.patch(id, patch);\n    },\n  },\n});"
     }
   ],
   "behavior": [
@@ -143,5 +158,5 @@
       "Don't forget destroy() outside React hooks"
     ]
   },
-  "relatedPages": ["/resource/docs/concepts", "/resource/docs/createCollection", "/resource-react/docs/useResource"]
+  "relatedPages": ["/resource/docs/concepts", "/resource/docs/use-cases", "/resource/docs/createCollection", "/resource-react/docs/useResource"]
 }

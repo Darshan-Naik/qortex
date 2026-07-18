@@ -1,21 +1,158 @@
 {
   "id": "useCollection",
   "title": "useCollection",
-  "subtitle": "React wrapper around createCollection",
-  "description": "Normalized list for the component lifetime. Remount with React key to reset identity.",
+  "subtitle": "Normalized entity lists with per-row resources",
+  "description": "React hook over createCollection: CRUD for many entities, optional sort, and getResource(id) for independent row drafts.",
   "category": "React Hooks",
   "version": "0.1.0-alpha.0",
   "status": "alpha",
+  "badges": [
+    { "text": "0.1.0-alpha.0", "variant": "warning" },
+    { "text": "multi-instance", "variant": "info" }
+  ],
+  "callouts": [
+    {
+      "type": "info",
+      "title": "Local store (alpha)",
+      "content": "Collections do not fetch or page from the network. Load with your API, then setAll / addMany. getResource(id).save() writes back into the collection — call your API yourself if you need persistence."
+    },
+    {
+      "type": "warning",
+      "title": "Reset = remount",
+      "content": "Config is captured once (useMemo []). Changing getId/sortBy later does nothing. To reset or switch list identity (e.g. workspaceId), remount with React key={workspaceId}."
+    }
+  ],
   "signature": {
     "language": "typescript",
-    "code": "useCollection<T>(config: CollectionConfig<T>): Collection API + items"
+    "code": "useCollection<T>(config: {\n  getId: (entity: T) => string;\n  sortBy?: (a: T, b: T) => number;\n}): {\n  items: T[];\n  count: number;\n  version: number;\n  status, isLoading, error;\n  addOne, addMany, setAll,\n  updateOne, updateMany,\n  upsertOne, upsertMany,\n  removeOne, removeMany, removeAll,\n  getResource, getById,\n  collection: Collection<T>;\n}"
+  },
+  "parameters": {
+    "columns": ["Parameter", "Type", "Required", "Default", "Description"],
+    "rows": [
+      {
+        "name": "config.getId",
+        "type": "(entity: T) => string",
+        "required": true,
+        "default": "-",
+        "description": "Stable unique id. Used for Map storage, React keys, and getResource(id)."
+      },
+      {
+        "name": "config.sortBy",
+        "type": "(a: T, b: T) => number",
+        "required": false,
+        "default": "-",
+        "description": "Optional comparator. Re-applied after every write so items stay ordered."
+      }
+    ]
+  },
+  "returns": {
+    "type": "UseCollectionResult<T>",
+    "description": "Reactive items plus bound CRUD and the underlying collection",
+    "properties": [
+      { "name": "items", "type": "T[]", "description": "selectAll() — re-computed when version bumps" },
+      { "name": "count", "type": "number", "description": "items.length" },
+      { "name": "version", "type": "number", "description": "Monotonic; drives React re-renders even when status stays ready" },
+      { "name": "status / isLoading / error", "type": "flags", "description": "Collection status (setAll marks ready)" },
+      { "name": "addOne / addMany", "type": "fn", "description": "Insert entities (upsert by id if already present)" },
+      { "name": "setAll", "type": "fn", "description": "Replace entire list; destroys cached row resources" },
+      { "name": "updateOne / updateMany", "type": "fn", "description": "Partial or functional update by id" },
+      { "name": "upsertOne / upsertMany", "type": "fn", "description": "Add or overwrite" },
+      { "name": "removeOne / removeMany / removeAll", "type": "fn", "description": "Delete; destroys that row's cached Resource" },
+      { "name": "getResource(id)", "type": "Resource<T>", "description": "Cached per-id resource for draft editing; save → updateOne" },
+      { "name": "getById(id)", "type": "T | undefined", "description": "O(1) lookup (selectById)" },
+      { "name": "collection", "type": "Collection<T>", "description": "Raw API: selectWhere, selectIds, subscribeOne, destroy, …" }
+    ]
   },
   "examples": [
     {
-      "title": "Board with per-row resources",
+      "title": "Mental model",
+      "description": "Normalized Map of entities + ordered ids. Each getResource(id) is its own Resource so two rows can be dirty at once (unlike createResourceHooks).",
+      "language": "typescript",
+      "code": "// Collection  ≈  Map<id, T> + id[]\n// getResource(id) ≈ createResource({ initialData: entity, save: draft => updateOne(id, draft) })\n//\n// List re-renders on version++\n// Row inputs use useField(resource, path) → only that row re-renders on keystrokes"
+    },
+    {
+      "title": "Minimal list",
       "language": "tsx",
-      "code": "function TodoBoard({ workspaceId }) {\n  return <TodoList key={workspaceId} />;\n}\n\nfunction TodoList() {\n  const { items, addOne, removeOne, getResource } = useCollection<Todo>({\n    getId: (t) => t.id,\n  });\n\n  return (\n    <ul>\n      {items.map((t) => (\n        <TodoRow\n          key={t.id}\n          resource={getResource(t.id)}\n          onRemove={() => removeOne(t.id)}\n        />\n      ))}\n    </ul>\n  );\n}"
+      "code": "import { useCollection } from 'qortex-resource-react';\n\ntype Todo = { id: string; title: string; done: boolean };\n\nfunction TodoList() {\n  const { items, addOne, removeOne, updateOne, count } = useCollection<Todo>({\n    getId: (t) => t.id,\n    sortBy: (a, b) => Number(a.done) - Number(b.done), // incomplete first\n  });\n\n  return (\n    <div>\n      <p>{count} tasks</p>\n      <button\n        type=\"button\"\n        onClick={() =>\n          addOne({ id: crypto.randomUUID(), title: 'New', done: false })\n        }\n      >\n        Add\n      </button>\n      <ul>\n        {items.map((t) => (\n          <li key={t.id}>\n            <input\n              type=\"checkbox\"\n              checked={t.done}\n              onChange={(e) => updateOne(t.id, { done: e.target.checked })}\n            />\n            {t.title}\n            <button type=\"button\" onClick={() => removeOne(t.id)}>×</button>\n          </li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
+    },
+    {
+      "title": "Load from API then setAll",
+      "language": "tsx",
+      "code": "function ProjectTasks({ projectId }: { projectId: string }) {\n  // Remount when project changes → fresh empty collection\n  return <TaskList key={projectId} projectId={projectId} />;\n}\n\nfunction TaskList({ projectId }: { projectId: string }) {\n  const { items, setAll, isLoading, error } = useCollection<Task>({\n    getId: (t) => t.id,\n  });\n  const [loading, setLoading] = useState(true);\n\n  useEffect(() => {\n    let cancelled = false;\n    setLoading(true);\n    api.tasks\n      .list(projectId)\n      .then((rows) => {\n        if (!cancelled) setAll(rows);\n      })\n      .catch((e) => {\n        if (!cancelled) console.error(e);\n      })\n      .finally(() => {\n        if (!cancelled) setLoading(false);\n      });\n    return () => {\n      cancelled = true;\n    };\n  }, [projectId, setAll]);\n\n  if (loading) return <p>Loading…</p>;\n  return <TaskTable items={items} />;\n}"
+    },
+    {
+      "title": "Inline row editing with getResource",
+      "description": "Each row gets its own Resource. Typing in one row does not re-render siblings when they use useField.",
+      "language": "tsx",
+      "code": "import { useCollection, useField } from 'qortex-resource-react';\nimport type { Resource } from 'qortex-resource';\n\nfunction EditableList() {\n  const { items, setAll, addOne, removeOne, getResource } = useCollection<Todo>({\n    getId: (t) => t.id,\n  });\n\n  useEffect(() => {\n    api.todos.list().then(setAll);\n  }, [setAll]);\n\n  return (\n    <ul>\n      {items.map((t) => (\n        <TodoRow\n          key={t.id}\n          resource={getResource(t.id)}\n          onRemove={() => removeOne(t.id)}\n        />\n      ))}\n      <button\n        type=\"button\"\n        onClick={() =>\n          addOne({ id: crypto.randomUUID(), title: '', done: false })\n        }\n      >\n        Add row\n      </button>\n    </ul>\n  );\n}\n\nfunction TodoRow({\n  resource,\n  onRemove,\n}: {\n  resource: Resource<Todo>;\n  onRemove: () => void;\n}) {\n  const title = useField(resource, 'title');\n  const done = useField(resource, 'done');\n  const dirty = resource.snapshot.isChanged;\n\n  return (\n    <li>\n      <input\n        type=\"checkbox\"\n        checked={!!done.value}\n        onChange={(e) => done.onChange(e.target.checked)}\n      />\n      <input\n        value={title.value ?? ''}\n        onChange={(e) => title.onChange(e.target.value)}\n        onBlur={title.onBlur}\n      />\n      <button\n        type=\"button\"\n        disabled={!dirty}\n        onClick={async () => {\n          // 1) commit draft into the collection\n          const result = await resource.save();\n          if (!result.ok) return;\n          // 2) optional: persist to API\n          const entity = resource.snapshot.data!;\n          await api.todos.update(entity.id, entity);\n        }}\n      >\n        Save\n      </button>\n      <button type=\"button\" disabled={!dirty} onClick={() => resource.resetDraft()}>\n        Discard\n      </button>\n      <button type=\"button\" onClick={onRemove}>Delete</button>\n    </li>\n  );\n}"
+    },
+    {
+      "title": "Bulk update / remove",
+      "language": "tsx",
+      "code": "function BulkActions() {\n  const { items, updateMany, removeMany, removeAll } = useCollection<Todo>({\n    getId: (t) => t.id,\n  });\n\n  const selectedIds = items.filter((t) => t.done).map((t) => t.id);\n\n  return (\n    <>\n      <button\n        type=\"button\"\n        onClick={() => updateMany(selectedIds, { done: false })}\n      >\n        Mark incomplete\n      </button>\n      <button type=\"button\" onClick={() => removeMany(selectedIds)}>\n        Delete completed\n      </button>\n      <button type=\"button\" onClick={() => removeAll()}>\n        Clear all\n      </button>\n    </>\n  );\n}"
+    },
+    {
+      "title": "Functional updateOne",
+      "language": "tsx",
+      "code": "const { updateOne } = useCollection<Todo>({ getId: (t) => t.id });\n\n// Merge patch\nupdateOne('1', { title: 'Renamed' });\n\n// Functional — based on previous entity\nupdateOne('1', (prev) => ({\n  ...prev,\n  title: prev.title.toUpperCase(),\n}));"
+    },
+    {
+      "title": "Filter with collection.selectWhere",
+      "description": "items is the full sorted list. For derived views, use the raw collection (does not subscribe by itself — combine with version or filter in render).",
+      "language": "tsx",
+      "code": "function OpenTasks() {\n  const { items, collection, version } = useCollection<Todo>({\n    getId: (t) => t.id,\n  });\n\n  // version in deps keeps this honest if you memoize\n  const open = useMemo(\n    () => collection.selectWhere((t) => !t.done),\n    [collection, version],\n  );\n\n  // Or simply:\n  const openSimple = items.filter((t) => !t.done);\n\n  return <ul>{open.map((t) => <li key={t.id}>{t.title}</li>)}</ul>;\n}"
+    },
+    {
+      "title": "sortBy",
+      "language": "tsx",
+      "code": "useCollection<Task>({\n  getId: (t) => t.id,\n  sortBy: (a, b) => {\n    // priority desc, then title asc\n    if (a.priority !== b.priority) return b.priority - a.priority;\n    return a.title.localeCompare(b.title);\n  },\n});\n// After every add/update/setAll, ids are re-sorted"
+    },
+    {
+      "title": "getById vs getResource",
+      "language": "tsx",
+      "code": "const { getById, getResource } = useCollection<Todo>({ getId: (t) => t.id });\n\ngetById('1');        // plain entity snapshot (or undefined)\ngetResource('1');    // Resource for editing — cached until remove/setAll/destroy\n\n// Safe pattern: only call getResource for ids that exist in items\nitems.map((t) => getResource(t.id));"
     }
   ],
-  "relatedPages": ["/resource/docs/createCollection", "/resource-react/docs/sharing-patterns"]
+  "behavior": [
+    {
+      "title": "version drives React",
+      "description": "useSyncExternalStore watches collection.version so list UI updates even when status stays \"ready\".",
+      "icon": "refresh"
+    },
+    {
+      "title": "getResource is cached",
+      "description": "Same id returns the same Resource until removeOne/setAll/removeAll/destroy. External entity updates sync via syncSource.",
+      "icon": "layers"
+    },
+    {
+      "title": "save writes into the collection",
+      "description": "Row resource save() calls updateOne(id, draft). It does not hit the network unless you wrap it.",
+      "icon": "save"
+    },
+    {
+      "title": "Lifetime = component",
+      "description": "Created once per mount; destroy() on unmount. Remount with key to reset.",
+      "icon": "clock"
+    }
+  ],
+  "bestPractices": {
+    "dos": [
+      "Remount with key={scopeId} when the list identity changes",
+      "Use row.id from the entity (getId) as React list keys",
+      "Use useField(getResource(id), path) for inline editors",
+      "setAll after fetch; addOne for optimistic local inserts"
+    ],
+    "donts": [
+      "Don't use createResourceHooks for multi-row editing — one identity only",
+      "Don't expect config.getId/sortBy changes to recreate the collection without remount",
+      "Don't assume getResource().save() persists to your backend",
+      "Don't call getResource for ids not in the collection without handling missing initialData"
+    ]
+  },
+  "relatedPages": [
+    "/resource/docs/createCollection",
+    "/resource-react/docs/row-editing",
+    "/resource-react/docs/sharing-patterns",
+    "/resource-react/docs/useField"
+  ]
 }

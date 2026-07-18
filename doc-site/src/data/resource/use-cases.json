@@ -1,0 +1,79 @@
+{
+  "id": "use-cases",
+  "title": "Use Cases",
+  "subtitle": "Pick a pattern for your screen",
+  "description": "Common production shapes mapped to qortex-resource — from a tiny settings form to a catalog product editor.",
+  "category": "Guides",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "badges": [
+    { "text": "0.1.0-alpha.0", "variant": "warning" },
+    { "text": "recipes", "variant": "info" }
+  ],
+  "content": "Start here if you know the UI you need but not which APIs to wire. Each recipe links to a deeper guide.",
+  "sections": [
+    {
+      "title": "1. Local-only form (no API yet)",
+      "content": "Prototype UI with initialData and a fake save. Great for Storybook and design iteration.",
+      "code": {
+        "language": "typescript",
+        "code": "import { createResource } from 'qortex-resource';\n\nconst draft = createResource({\n  initialData: {\n    theme: 'system',\n    emails: true,\n    digest: 'weekly',\n  },\n  source: {\n    save: async (data) => {\n      console.log('would save', data);\n      return data;\n    },\n  },\n});\n\ndraft.set('theme', 'dark');\nawait draft.save();"
+      }
+    },
+    {
+      "title": "2. Edit existing entity (fetch + save)",
+      "content": "Classic admin detail page. Composite key + fetch/save closures.",
+      "code": {
+        "language": "typescript",
+        "code": "const user = createResource({\n  key: ['user', userId],\n  source: {\n    fetch: () => api.users.get(userId),\n    save: (draft) => api.users.update(userId, draft),\n  },\n  validate: { on: 'blur', fields: {\n    email: (v) => (!v?.includes('@') ? 'Invalid email' : null),\n  }},\n  persist: { draft: true, debounce: 300 },\n});\n\n// UI reads user.snapshot.isLoading / isChanged / errors"
+      }
+    },
+    {
+      "title": "3. Create new entity",
+      "content": "No fetch — seed empty defaults, save creates on the server. See Create vs Edit guide.",
+      "code": {
+        "language": "typescript",
+        "code": "const neu = createResource({\n  key: ['user', 'new'],\n  initialData: { name: '', email: '', role: 'member' },\n  source: {\n    save: async (draft) => {\n      const created = await api.users.create(draft);\n      return created; // becomes new source\n    },\n  },\n});"
+      }
+    },
+    {
+      "title": "4. Nested product / CRM form",
+      "content": "Addresses, line items, variants — field arrays + Zod. See Product Form Example.",
+      "code": {
+        "language": "typescript",
+        "code": "product.array('addresses').append({ city: '', country: 'US', /* … */ });\nproduct.set('addresses.0.city', 'Austin');\nproduct.array('variants').move(2, 0);"
+      }
+    },
+    {
+      "title": "5. Settings page with optimistic UX",
+      "content": "Small payload, snappy toggles — optimistic save + toast on error.",
+      "code": {
+        "language": "typescript",
+        "code": "createResource({\n  key: ['settings', orgId],\n  mutation: { optimistic: true },\n  onSaveError: (e) => toast.error(e.message),\n  source: {\n    fetch: () => api.settings.get(orgId),\n    save: (d) => api.settings.put(orgId, d),\n  },\n});"
+      }
+    },
+    {
+      "title": "6. List with inline row edit",
+      "content": "Collection + getResource(id) per row (React: useCollection). See Row Editing guide in resource-react.",
+      "code": {
+        "language": "typescript",
+        "code": "const todos = createCollection({\n  getId: (t) => t.id,\n  initialData: await api.todos.list(),\n});\n\nconst row = todos.getResource(id);\nrow.set('done', true);\nawait row.save(); // writes back into the collection"
+      }
+    },
+    {
+      "title": "7. Bridge existing query cache",
+      "content": "Keep qortex-query (or similar) as source of truth; resource owns the draft. See Sources.",
+      "code": {
+        "language": "typescript",
+        "code": "createResource({\n  source: {\n    query: adaptQuery(userQuery), // data/status/subscribe/refetch\n    save: (draft) => api.users.update(id, draft),\n  },\n});"
+      }
+    }
+  ],
+  "relatedPages": [
+    "/resource/docs/product-form",
+    "/resource/docs/create-vs-edit",
+    "/resource/docs/settings-form",
+    "/resource-react/docs/row-editing",
+    "/resource-react/docs/recipes"
+  ]
+}
