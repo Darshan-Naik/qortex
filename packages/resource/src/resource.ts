@@ -298,32 +298,48 @@ export function createResource<T>(config: ResourceConfig<T>): Resource<T> {
     // ─────────────────────────────────────────
 
     const resource: Resource<T> = {
+        /** Get the full resource snapshot */
         get: () => getSnapshotInternal(state),
+        /** Get the initial/server data (unmodified) */
         getData: () => state.initialData,
+        /** Get data with user edits merged */
         getUpdatedData: state.getUpdatedDataInternal,
+        /** Get the state of a specific field */
         getField: state.getFieldCached,
 
+        /** Set a field value (direct or functional update) */
         setField,
+        /** Set multiple fields at once */
         setFields,
+        /** Reset a field to its initial value */
         resetField,
+        /** Reset all fields to initial values */
         resetAll,
+        /** Manually set the initial data */
         setInitialData,
 
+        /** Overall resource status */
         get status() { return state.status; },
+        /** Whether any field has changed */
         get isChanged() {
             for (const [path, value] of state.draftOverrides) {
                 if (!Object.is(value, getByPath(state.initialData, path))) return true;
             }
             return false;
         },
+        /** Whether all validations pass */
         get isValid() { return isAllValid(state.fieldMetaMap); },
+        /** Whether a mutation is in progress */
         get isMutating() { return state.mutationStatus === "mutating"; },
+        /** Whether initial data is loading */
         get isLoading() { return state.status === "loading"; },
+        /** List of changed field paths */
         get changedFields() {
             return [...state.draftOverrides.keys()].filter((path) => {
                 return !Object.is(state.draftOverrides.get(path), getByPath(state.initialData, path));
             });
         },
+        /** List of touched field paths */
         get touchedFields() {
             const touched: string[] = [];
             for (const [path, meta] of state.fieldMetaMap) {
@@ -331,20 +347,29 @@ export function createResource<T>(config: ResourceConfig<T>): Resource<T> {
             }
             return touched;
         },
+        /** Map of field path → error message */
         get errors() { return collectErrors(state.fieldMetaMap); },
 
+        /** Fire-and-forget mutation (errors tracked in state) */
         mutate: () => { mutateAsyncInternal(state).catch(() => {}); },
+        /** Async mutation that returns result */
         mutateAsync: () => mutateAsyncInternal(state),
+        /** Run validation only (populate errors) */
         validate: () => validate(state),
         
+        /** Mutation lifecycle status */
         get mutationStatus() { return state.mutationStatus; },
+        /** Last mutation error */
         get mutationError() { return state.mutationError; },
+        /** Last successful mutation return value */
         get mutationData() { return state.mutationData; },
 
+        /** Subscribe to all state changes */
         subscribe: (listener) => {
             state.listeners.add(listener);
             return () => state.listeners.delete(listener);
         },
+        /** Subscribe to a specific field's changes (supports nested paths) */
         subscribeField: (path, listener) => {
             let set = state.fieldListeners.get(path);
             if (!set) {
@@ -357,7 +382,9 @@ export function createResource<T>(config: ResourceConfig<T>): Resource<T> {
                 if (set!.size === 0) state.fieldListeners.delete(path);
             };
         },
+        /** Notify plugins of a field blur event */
         touchField,
+        /** Clean up all subscriptions and plugin resources */
         destroy,
     };
 
