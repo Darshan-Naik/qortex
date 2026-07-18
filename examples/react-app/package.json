@@ -15,7 +15,8 @@
     "qortex-store-react": "workspace:*",
     "qortex-resource": "workspace:*",
     "qortex-resource-react": "workspace:*",
-    "qortex-db": "workspace:*"
+    "qortex-db": "workspace:*",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",
