@@ -1,4 +1,5 @@
-declare var require: any;
+import { useSyncExternalStore } from "react";
+import { createResource } from "qortex-resource";
 import { useResource } from "./useResource";
 import { useField } from "./useField";
 import { useFieldArray } from "./useFieldArray";
@@ -31,13 +32,10 @@ export function createResourceHooks<T>(config: ResourceConfig<T>) {
     // We create a singleton instance for this module.
     // If you need dynamic config (like passing an ID), you should use Pattern 2 (Context)
     // or just the standard `useResource` hook directly.
-    const { createResource } = require("qortex-resource");
     const resourceInstance: Resource<T> = createResource(config);
 
     function useBoundResource() {
         // We still need to subscribe to it in React land
-        const { useSyncExternalStore } = require("react");
-        
         const snapshot = useSyncExternalStore(
             (listener: any) => resourceInstance.subscribe(listener),
             () => resourceInstance.get()

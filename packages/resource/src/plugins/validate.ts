@@ -1,5 +1,5 @@
-declare var require: any;
 import type { Plugin, PluginContext } from "../types";
+import { getByPath } from "../path";
 
 /**
  * Strategy for when validation should occur.
@@ -107,7 +107,6 @@ export function validatePlugin<T = any>(
         // we extract it directly here, but really the plugin system might pass it in `onFieldChange`.
         // We'll rely on a manual deep get for simplicity if needed, but it's better to just pass the value if available.
         // For general field validation, we'll traverse.
-        const getByPath = require("../path").getByPath;
         const value = getByPath(data, path);
 
         let errorStr: string | undefined = undefined;

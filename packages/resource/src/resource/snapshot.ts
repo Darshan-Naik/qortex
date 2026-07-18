@@ -1,20 +1,14 @@
 import { InternalResourceState } from "../types/state";
 import { ResourceSnapshot } from "../types";
 import { collectErrors, isAllValid } from "../field";
-import { getByPath } from "../path";
+import { getChangedFields, getTouchedFields } from "./derive";
 
 export function getSnapshotInternal<T>(state: InternalResourceState<T>): ResourceSnapshot<T> {
     if (state.snapshotCache) return state.snapshotCache;
 
     const errors = collectErrors(state.fieldMetaMap);
-    const changedFields = [...state.draftOverrides.keys()].filter((path) => {
-        const initialVal = getByPath(state.initialData, path);
-        return !Object.is(state.draftOverrides.get(path), initialVal);
-    });
-    const touchedFields: string[] = [];
-    for (const [path, meta] of state.fieldMetaMap) {
-        if (meta.isTouched) touchedFields.push(path);
-    }
+    const changedFields = getChangedFields(state);
+    const touchedFields = getTouchedFields(state);
 
     state.snapshotCache = {
         data: state.initialData,

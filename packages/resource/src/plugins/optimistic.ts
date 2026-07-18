@@ -25,7 +25,7 @@ export function optimisticPlugin<T = any>(): Plugin<T> {
     return {
         name: "optimistic",
 
-        async onBeforeMutate(draft: T, ctx: PluginContext<T>) {
+        async onBeforeMutate(_draft: T, ctx: PluginContext<T>) {
             rollbackData = ctx.getData();
             
             // In a real implementation tightly coupled with qortex-query, 
@@ -42,10 +42,6 @@ export function optimisticPlugin<T = any>(): Plugin<T> {
             // in a way that might disrupt the ongoing mutation state.
             // True optimistic UI usually updates the *cache* (qortex-query).
             
-            // Pseudocode for cache update:
-            // const qortexQuery = require('qortex-query');
-            // qortexQuery.setQueryData(queryKey, draft);
-
             return true; // allow mutation
         },
 
@@ -58,10 +54,6 @@ export function optimisticPlugin<T = any>(): Plugin<T> {
         onMutateError(_error: unknown, ctx: PluginContext<T>) {
             // Rollback on error
             if (rollbackData !== undefined) {
-                // Pseudocode for cache rollback:
-                // const qortexQuery = require('qortex-query');
-                // qortexQuery.setQueryData(queryKey, rollbackData);
-                
                 // Also reset resource's view if we modified it
                 ctx.setInitialData(rollbackData);
                 ctx.resetDrafts();

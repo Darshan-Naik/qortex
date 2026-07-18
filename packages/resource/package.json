@@ -9,29 +9,29 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/index.mjs"
     },
     "./query": {
+      "types": "./dist/plugins/query.d.ts",
       "require": "./dist/plugins/query.js",
-      "import": "./dist/plugins/query.mjs",
-      "types": "./dist/plugins/query.d.ts"
+      "import": "./dist/plugins/query.mjs"
     },
     "./validate": {
+      "types": "./dist/plugins/validate.d.ts",
       "require": "./dist/plugins/validate.js",
-      "import": "./dist/plugins/validate.mjs",
-      "types": "./dist/plugins/validate.d.ts"
+      "import": "./dist/plugins/validate.mjs"
     },
     "./optimistic": {
+      "types": "./dist/plugins/optimistic.d.ts",
       "require": "./dist/plugins/optimistic.js",
-      "import": "./dist/plugins/optimistic.mjs",
-      "types": "./dist/plugins/optimistic.d.ts"
+      "import": "./dist/plugins/optimistic.mjs"
     },
     "./persist": {
+      "types": "./dist/plugins/persist.d.ts",
       "require": "./dist/plugins/persist.js",
-      "import": "./dist/plugins/persist.mjs",
-      "types": "./dist/plugins/persist.d.ts"
+      "import": "./dist/plugins/persist.mjs"
     }
   },
   "files": [

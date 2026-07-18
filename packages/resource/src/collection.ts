@@ -30,140 +30,64 @@ import { createResource } from "./resource";
  * ```
  */
 export function createCollection<T>(config: CollectionConfig<T>): Collection<T> {
-    const { getId, sortBy } = config;
+    return new CollectionCore(config).api;
+}
 
-    // ═══ Internal Normalized State ═══
-    let ids: string[] = [];
-    const entities = new Map<string, T>();
-    let status: ResourceStatus = "idle";
-    let error: unknown = undefined;
+class CollectionCore<T> {
+    api: Collection<T>;
 
-    // ═══ Listeners ═══
-    const listeners = new Set<() => void>();
-    const entityListeners = new Map<string, Set<(entity: T | undefined) => void>>();
+    private ids: string[] = [];
+    private entities = new Map<string, T>();
+    private listeners = new Set<() => void>();
+    private entityListeners = new Map<string, Set<(entity: T | undefined) => void>>();
+    private resourceCache = new Map<string, Resource<T>>();
+    private pluginCleanups: Array<() => void> = [];
+    private pluginContext: PluginContext<T[]>;
+    private statusValue: ResourceStatus = "idle";
+    private errorValue: unknown = undefined;
 
-    // ═══ Resource Cache ═══
-    const resourceCache = new Map<string, Resource<T>>();
-
-    // ═══ Plugin Support ═══
-    const pluginCleanups: Array<() => void> = [];
-
-    // ─────────────────────────────────────────
-    // Internal Helpers
-    // ─────────────────────────────────────────
-
-    function emit(): void {
-        if (listeners.size === 0) return;
-        queueMicrotask(() => {
-            for (const listener of listeners) listener();
-        });
+    constructor(private config: CollectionConfig<T>) {
+        this.pluginContext = this.createPluginContext();
+        this.initializePlugins();
+        this.api = this.createApi();
     }
 
-    function emitEntity(id: string): void {
-        const set = entityListeners.get(id);
-        if (set && set.size > 0) {
-            const entity = entities.get(id);
-            queueMicrotask(() => {
-                for (const listener of set) listener(entity);
-            });
-        }
-        emit();
-    }
+    selectAll = (): T[] => this.ids.map((id) => this.entities.get(id)!);
+    selectById = (id: string): T | undefined => this.entities.get(id);
+    selectIds = (): string[] => [...this.ids];
+    selectCount = (): number => this.ids.length;
+    selectWhere = (predicate: (entity: T) => boolean): T[] => this.selectAll().filter(predicate);
 
-    function sortIds(): void {
-        if (sortBy) {
-            ids.sort((a, b) => {
-                const entityA = entities.get(a);
-                const entityB = entities.get(b);
-                if (!entityA || !entityB) return 0;
-                return sortBy(entityA, entityB);
-            });
-        }
-    }
-
-    // ─────────────────────────────────────────
-    // Plugin Context (for collection-level plugins)
-    // ─────────────────────────────────────────
-
-    const pluginContext: PluginContext<T[]> = {
-        getData: () => ids.map((id) => entities.get(id)!),
-        getUpdatedData: () => ids.map((id) => entities.get(id)!),
-        getDraftOverrides: () => new Map(),
-        resetDrafts: () => {},
-        setInitialData: (data: T[]) => {
-            // setAll equivalent via plugin
-            ids = [];
-            entities.clear();
-            for (const entity of data) {
-                const id = getId(entity);
-                ids.push(id);
-                entities.set(id, entity);
-            }
-            sortIds();
-            status = "ready";
-            error = undefined;
-            emit();
-        },
-        setFieldError: () => {},
-        setFieldErrors: () => {},
-        getFieldMeta: () => ({ isTouched: false, error: undefined }),
-        setStatus: (s) => {
-            status = s as ResourceStatus;
-            emit();
-        },
-        setError: (err) => {
-            error = err;
-            status = "error";
-            emit();
-        },
-        subscribe: (listener: any) => {
-            listeners.add(listener);
-            return () => listeners.delete(listener);
-        },
+    addOne = (entity: T): void => {
+        const id = this.config.getId(entity);
+        this.setEntity(id, entity);
+        this.sortIds();
+        this.emitEntity(id);
     };
 
-    // ─────────────────────────────────────────
-    // CRUD Methods
-    // ─────────────────────────────────────────
-
-    function addOne(entity: T): void {
-        const id = getId(entity);
-        if (!entities.has(id)) {
-            ids.push(id);
-        }
-        entities.set(id, entity);
-        sortIds();
-        emitEntity(id);
-    }
-
-    function addMany(newEntities: T[]): void {
+    addMany = (newEntities: T[]): void => {
         for (const entity of newEntities) {
-            const id = getId(entity);
-            if (!entities.has(id)) {
-                ids.push(id);
-            }
-            entities.set(id, entity);
+            this.setEntity(this.config.getId(entity), entity);
         }
-        sortIds();
-        emit();
-    }
+        this.sortIds();
+        this.emit();
+    };
 
-    function setAll(newEntities: T[]): void {
-        ids = [];
-        entities.clear();
-        resourceCache.clear();
+    setAll = (newEntities: T[]): void => {
+        this.ids = [];
+        this.entities.clear();
+        this.destroyCachedResources();
         for (const entity of newEntities) {
-            const id = getId(entity);
-            ids.push(id);
-            entities.set(id, entity);
+            this.setEntity(this.config.getId(entity), entity);
         }
-        sortIds();
-        status = "ready";
-        emit();
-    }
+        this.sortIds();
+        this.statusValue = "ready";
+        this.errorValue = undefined;
+        this.emit();
+    };
 
-    function updateOne(id: string, partial: Partial<T> | ((prev: T) => T)): void {
-        const existing = entities.get(id);
+    updateOne = (id: string, partial: Partial<T> | ((prev: T) => T)): void => {
+        const existing = this.entities.get(id);
         if (!existing) return;
 
         const updated =
@@ -171,160 +95,219 @@ export function createCollection<T>(config: CollectionConfig<T>): Collection<T> 
                 ? (partial as (prev: T) => T)(existing)
                 : { ...existing, ...partial };
 
-        entities.set(id, updated);
-        sortIds();
-        emitEntity(id);
-    }
+        this.setEntity(id, updated);
+        this.sortIds();
+        this.emitEntity(id);
+    };
 
-    function updateMany(updateIds: string[], partial: Partial<T>): void {
+    updateMany = (updateIds: string[], partial: Partial<T>): void => {
         for (const id of updateIds) {
-            const existing = entities.get(id);
+            const existing = this.entities.get(id);
             if (existing) {
-                entities.set(id, { ...existing, ...partial });
+                this.setEntity(id, { ...existing, ...partial });
             }
         }
-        sortIds();
-        emit();
-    }
+        this.sortIds();
+        this.emit();
+    };
 
-    function upsertOne(entity: T): void {
-        addOne(entity); // addOne handles both insert and update
-    }
+    upsertOne = (entity: T): void => {
+        this.addOne(entity);
+    };
 
-    function upsertMany(newEntities: T[]): void {
-        addMany(newEntities);
-    }
+    upsertMany = (newEntities: T[]): void => {
+        this.addMany(newEntities);
+    };
 
-    function removeOne(id: string): void {
-        if (!entities.has(id)) return;
-        entities.delete(id);
-        ids = ids.filter((i) => i !== id);
-        resourceCache.get(id)?.destroy();
-        resourceCache.delete(id);
-        emitEntity(id);
-    }
+    removeOne = (id: string): void => {
+        if (!this.entities.has(id)) return;
+        this.entities.delete(id);
+        this.ids = this.ids.filter((i) => i !== id);
+        this.resourceCache.get(id)?.destroy();
+        this.resourceCache.delete(id);
+        this.emitEntity(id);
+    };
 
-    function removeMany(removeIds: string[]): void {
+    removeMany = (removeIds: string[]): void => {
         const removeSet = new Set(removeIds);
         for (const id of removeIds) {
-            entities.delete(id);
-            resourceCache.get(id)?.destroy();
-            resourceCache.delete(id);
+            this.entities.delete(id);
+            this.resourceCache.get(id)?.destroy();
+            this.resourceCache.delete(id);
         }
-        ids = ids.filter((id) => !removeSet.has(id));
-        emit();
-    }
+        this.ids = this.ids.filter((id) => !removeSet.has(id));
+        this.emit();
+    };
 
-    function removeAll(): void {
-        ids = [];
-        entities.clear();
-        for (const resource of resourceCache.values()) {
-            resource.destroy();
-        }
-        resourceCache.clear();
-        emit();
-    }
+    removeAll = (): void => {
+        this.ids = [];
+        this.entities.clear();
+        this.destroyCachedResources();
+        this.emit();
+    };
 
-    // ─────────────────────────────────────────
-    // Resource Bridge
-    // ─────────────────────────────────────────
-
-    function getResource(id: string): Resource<T> {
-        const cached = resourceCache.get(id);
+    getResource = (id: string): Resource<T> => {
+        const cached = this.resourceCache.get(id);
         if (cached) return cached;
 
-        const entity = entities.get(id);
         const resource = createResource<T>({
-            initialData: entity,
+            initialData: this.entities.get(id),
             mutate: async (_initial, updated, _meta) => {
-                // Sync edits back to the collection
-                updateOne(id, () => updated);
+                this.updateOne(id, () => updated);
                 return updated;
             },
         });
 
-        resourceCache.set(id, resource);
+        this.resourceCache.set(id, resource);
         return resource;
+    };
+
+    subscribe = (listener: () => void): (() => void) => {
+        this.listeners.add(listener);
+        return () => this.listeners.delete(listener);
+    };
+
+    subscribeOne = (id: string, listener: (entity: T | undefined) => void): (() => void) => {
+        let set = this.entityListeners.get(id);
+        if (!set) {
+            set = new Set();
+            this.entityListeners.set(id, set);
+        }
+        set.add(listener);
+        return () => {
+            set!.delete(listener);
+            if (set!.size === 0) this.entityListeners.delete(id);
+        };
+    };
+
+    destroy = (): void => {
+        this.listeners.clear();
+        this.entityListeners.clear();
+        this.ids = [];
+        this.entities.clear();
+        this.destroyCachedResources();
+        for (const cleanup of this.pluginCleanups) cleanup();
+        this.pluginCleanups.length = 0;
+    };
+
+    get status(): ResourceStatus {
+        return this.statusValue;
     }
 
-    // ─────────────────────────────────────────
-    // Initialize Plugins
-    // ─────────────────────────────────────────
+    get isLoading(): boolean {
+        return this.statusValue === "loading";
+    }
 
-    for (const plugin of (config.plugins ?? []) as Plugin<T[]>[]) {
-        const cleanup = plugin.onInit?.(pluginContext);
-        if (typeof cleanup === "function") {
-            pluginCleanups.push(cleanup);
+    get error(): unknown {
+        return this.errorValue;
+    }
+
+    private createApi(): Collection<T> {
+        const core = this;
+
+        return {
+            selectAll: core.selectAll,
+            selectById: core.selectById,
+            selectIds: core.selectIds,
+            selectCount: core.selectCount,
+            selectWhere: core.selectWhere,
+            addOne: core.addOne,
+            addMany: core.addMany,
+            setAll: core.setAll,
+            updateOne: core.updateOne,
+            updateMany: core.updateMany,
+            upsertOne: core.upsertOne,
+            upsertMany: core.upsertMany,
+            removeOne: core.removeOne,
+            removeMany: core.removeMany,
+            removeAll: core.removeAll,
+            getResource: core.getResource,
+            get status() { return core.status; },
+            get isLoading() { return core.isLoading; },
+            get error() { return core.error; },
+            subscribe: core.subscribe,
+            subscribeOne: core.subscribeOne,
+            destroy: core.destroy,
+        };
+    }
+
+    private createPluginContext(): PluginContext<T[]> {
+        return {
+            getData: this.selectAll,
+            getUpdatedData: this.selectAll,
+            getDraftOverrides: () => new Map(),
+            resetDrafts: () => { },
+            setInitialData: this.setAll,
+            setFieldError: () => { },
+            setFieldErrors: () => { },
+            getFieldMeta: () => ({ isTouched: false, error: undefined }),
+            setStatus: (s) => {
+                this.statusValue = s as ResourceStatus;
+                this.emit();
+            },
+            setError: (err) => {
+                this.errorValue = err;
+                this.statusValue = "error";
+                this.emit();
+            },
+            subscribe: (listener) => {
+                const collectionListener = listener as unknown as () => void;
+                this.listeners.add(collectionListener);
+                return () => this.listeners.delete(collectionListener);
+            },
+        };
+    }
+
+    private initializePlugins(): void {
+        for (const plugin of (this.config.plugins ?? []) as Plugin<T[]>[]) {
+            const cleanup = plugin.onInit?.(this.pluginContext);
+            if (typeof cleanup === "function") {
+                this.pluginCleanups.push(cleanup);
+            }
         }
     }
 
-    // ─────────────────────────────────────────
-    // Build Collection Instance
-    // ─────────────────────────────────────────
+    private setEntity(id: string, entity: T): void {
+        if (!this.entities.has(id)) {
+            this.ids.push(id);
+        }
+        this.entities.set(id, entity);
+        this.resourceCache.get(id)?.setInitialData(entity);
+    }
 
-    return {
-        // ── Read ──
-        selectAll: () => ids.map((id) => entities.get(id)!),
-        selectById: (id: string) => entities.get(id),
-        selectIds: () => [...ids],
-        selectCount: () => ids.length,
-        selectWhere: (predicate: (entity: T) => boolean) =>
-            ids.map((id) => entities.get(id)!).filter(predicate),
+    private destroyCachedResources(): void {
+        for (const resource of this.resourceCache.values()) {
+            resource.destroy();
+        }
+        this.resourceCache.clear();
+    }
 
-        // ── Write ──
-        addOne,
-        addMany,
-        setAll,
-        updateOne,
-        updateMany,
-        upsertOne,
-        upsertMany,
-        removeOne,
-        removeMany,
-        removeAll,
+    private emit(): void {
+        if (this.listeners.size === 0) return;
+        queueMicrotask(() => {
+            for (const listener of this.listeners) listener();
+        });
+    }
 
-        // ── Resource Bridge ──
-        getResource,
+    private emitEntity(id: string): void {
+        const set = this.entityListeners.get(id);
+        if (set && set.size > 0) {
+            const entity = this.entities.get(id);
+            queueMicrotask(() => {
+                for (const listener of set) listener(entity);
+            });
+        }
+        this.emit();
+    }
 
-        // ── Status ──
-        get status() {
-            return status;
-        },
-        get isLoading() {
-            return status === "loading";
-        },
-        get error() {
-            return error;
-        },
+    private sortIds(): void {
+        if (!this.config.sortBy) return;
 
-        // ── Reactivity ──
-        subscribe: (listener: () => void) => {
-            listeners.add(listener);
-            return () => listeners.delete(listener);
-        },
-        subscribeOne: (id: string, listener: (entity: T | undefined) => void) => {
-            let set = entityListeners.get(id);
-            if (!set) {
-                set = new Set();
-                entityListeners.set(id, set);
-            }
-            set.add(listener);
-            return () => {
-                set!.delete(listener);
-                if (set!.size === 0) entityListeners.delete(id);
-            };
-        },
-        destroy: () => {
-            listeners.clear();
-            entityListeners.clear();
-            ids = [];
-            entities.clear();
-            for (const resource of resourceCache.values()) {
-                resource.destroy();
-            }
-            resourceCache.clear();
-            for (const cleanup of pluginCleanups) cleanup();
-            pluginCleanups.length = 0;
-        },
-    };
+        this.ids.sort((a, b) => {
+            const entityA = this.entities.get(a);
+            const entityB = this.entities.get(b);
+            if (!entityA || !entityB) return 0;
+            return this.config.sortBy!(entityA, entityB);
+        });
+    }
 }

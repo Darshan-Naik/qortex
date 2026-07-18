@@ -13,6 +13,7 @@ import type {
 import { InternalResourceState } from "./types/state";
 import { getSnapshotInternal } from "./resource/snapshot";
 import { mutateAsyncInternal, validate } from "./resource/mutation";
+import { getChangedFields, getTouchedFields, hasChanges } from "./resource/derive";
 import { getByPath, applyOverrides } from "./path";
 import {
     flattenFieldsConfig,
@@ -210,10 +211,7 @@ class ResourceCore<T> implements InternalResourceState<T> {
     };
 
     get isChanged(): boolean {
-        for (const [path, value] of this.draftOverrides) {
-            if (!Object.is(value, getByPath(this.initialData, path))) return true;
-        }
-        return false;
+        return hasChanges(this);
     }
 
     get isValid(): boolean {
@@ -229,17 +227,11 @@ class ResourceCore<T> implements InternalResourceState<T> {
     }
 
     get changedFields(): string[] {
-        return [...this.draftOverrides.keys()].filter((path) => {
-            return !Object.is(this.draftOverrides.get(path), getByPath(this.initialData, path));
-        });
+        return getChangedFields(this);
     }
 
     get touchedFields(): string[] {
-        const touched: string[] = [];
-        for (const [path, meta] of this.fieldMetaMap) {
-            if (meta.isTouched) touched.push(path);
-        }
-        return touched;
+        return getTouchedFields(this);
     }
 
     get errors(): Record<string, string> {

@@ -1,7 +1,7 @@
 import { InternalResourceState } from "../types/state";
 import { MutationResult } from "../types";
 import { isAllValid } from "../field";
-import { getByPath } from "../path";
+import { getChangedFields } from "./derive";
 
 export async function validate<T>(state: InternalResourceState<T>): Promise<boolean> {
     for (const plugin of state.config.plugins ?? []) {
@@ -46,10 +46,7 @@ export async function mutateAsyncInternal<T>(state: InternalResourceState<T>): P
         };
     }
 
-    const changedFields = [...state.draftOverrides.keys()].filter((path) => {
-        const initialVal = getByPath(state.initialData, path);
-        return !Object.is(state.draftOverrides.get(path), initialVal);
-    });
+    const changedFields = getChangedFields(state);
     const meta = {
         changedFields,
         isChanged: changedFields.length > 0,

@@ -32,6 +32,89 @@ describe('Collection Engine', () => {
         expect(resource.getData()).toEqual({ id, name: 'Alice', age: 31 });
     });
 
+    it('should keep a cached resource in sync when an entity updates', () => {
+        const id = 'user-1';
+        collection.addOne({ id, name: 'Alice', age: 30 });
+
+        const resource = collection.getResource(id);
+        collection.updateOne(id, { age: 31 });
+
+        expect(resource.getData()).toEqual({ id, name: 'Alice', age: 31 });
+    });
+
+    it('should support destructured methods', () => {
+        const { addOne, updateOne, selectById, removeOne } = collection;
+
+        addOne({ id: 'user-1', name: 'Alice', age: 30 });
+        updateOne('user-1', { age: 31 });
+
+        expect(selectById('user-1')).toEqual({ id: 'user-1', name: 'Alice', age: 31 });
+
+        removeOne('user-1');
+
+        expect(selectById('user-1')).toBeUndefined();
+    });
+
+    it('should expose only the public collection API at runtime', () => {
+        expect(Object.keys(collection).sort()).toEqual([
+            'addMany',
+            'addOne',
+            'destroy',
+            'error',
+            'getResource',
+            'isLoading',
+            'removeAll',
+            'removeMany',
+            'removeOne',
+            'selectAll',
+            'selectById',
+            'selectCount',
+            'selectIds',
+            'selectWhere',
+            'setAll',
+            'status',
+            'subscribe',
+            'subscribeOne',
+            'updateMany',
+            'updateOne',
+            'upsertMany',
+            'upsertOne',
+        ]);
+        expect((collection as any).entities).toBeUndefined();
+        expect((collection as any).pluginContext).toBeUndefined();
+    });
+
+    it('should preserve collection plugin context and cleanup', () => {
+        const events: string[] = [];
+        const pluginCollection = createCollection({
+            getId: (entity: any) => entity.id,
+            plugins: [
+                {
+                    name: 'collection-contract',
+                    onInit: (ctx) => {
+                        events.push(`init:${ctx.getData().length}`);
+                        ctx.subscribe(() => events.push('subscribe'));
+                        ctx.setInitialData([{ id: 'user-1', name: 'Alice' }]);
+                        return () => events.push('cleanup');
+                    },
+                }
+            ],
+        });
+
+        expect(pluginCollection.selectAll()).toEqual([{ id: 'user-1', name: 'Alice' }]);
+
+        pluginCollection.addOne({ id: 'user-2', name: 'Bob' });
+
+        return new Promise<void>((resolve) => {
+            queueMicrotask(() => {
+                expect(events).toEqual(['init:0', 'subscribe', 'subscribe']);
+                pluginCollection.destroy();
+                expect(events.at(-1)).toBe('cleanup');
+                resolve();
+            });
+        });
+    });
+
     it('should remove resource from collection', () => {
         const id = 'user-1';
         collection.addOne({ id, name: 'Alice', age: 30 });
