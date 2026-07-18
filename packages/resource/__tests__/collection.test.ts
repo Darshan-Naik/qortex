@@ -20,7 +20,7 @@ describe('Collection Engine', () => {
         
         const resource = collection.getResource(id);
         expect(resource).toBeDefined();
-        expect(resource.getData()).toEqual({ id, name: 'Alice', age: 30 });
+        expect(resource.data).toEqual({ id, name: 'Alice', age: 30 });
     });
 
     it('should update resource in collection', () => {
@@ -29,7 +29,7 @@ describe('Collection Engine', () => {
         collection.updateOne(id, { age: 31 });
         
         const resource = collection.getResource(id);
-        expect(resource.getData()).toEqual({ id, name: 'Alice', age: 31 });
+        expect(resource.data).toEqual({ id, name: 'Alice', age: 31 });
     });
 
     it('should keep a cached resource in sync when an entity updates', () => {
@@ -39,7 +39,7 @@ describe('Collection Engine', () => {
         const resource = collection.getResource(id);
         collection.updateOne(id, { age: 31 });
 
-        expect(resource.getData()).toEqual({ id, name: 'Alice', age: 31 });
+        expect(resource.data).toEqual({ id, name: 'Alice', age: 31 });
     });
 
     it('should support destructured methods', () => {
@@ -129,7 +129,7 @@ describe('Collection Engine', () => {
         
         const resource = collection.getResource(id);
         expect(resource).toBeDefined();
-        expect(resource.getData()).toBeUndefined();
+        expect(resource.data).toBeUndefined();
     });
 
     it('should allow batch addMany', () => {
@@ -140,6 +140,6 @@ describe('Collection Engine', () => {
 
         expect(collection.selectById('user-1')).toBeDefined();
         expect(collection.selectById('user-2')).toBeDefined();
-        expect(collection.getResource('user-2').getData()).toEqual({ id: 'user-2', name: 'Bob' });
+        expect(collection.getResource('user-2').data).toEqual({ id: 'user-2', name: 'Bob' });
     });
 });

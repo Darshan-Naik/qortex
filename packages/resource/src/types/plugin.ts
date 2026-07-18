@@ -12,6 +12,10 @@ export interface PluginContext<T = any> {
     getUpdatedData(): T;
     /** Get the draft overrides map */
     getDraftOverrides(): Map<string, any>;
+    /** Set a field value through the resource draft layer */
+    setField(path: string, value: any | ((prev: any) => any)): void;
+    /** Set multiple field values through the resource draft layer */
+    setFields(patches: Record<string, any>): void;
     /** Manually set the initial data (e.g., from query fetch) */
     setInitialData(data: T): void;
     /** Reset all draft overrides */

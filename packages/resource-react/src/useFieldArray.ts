@@ -29,7 +29,7 @@ export function useFieldArray<T = any>(resource: Resource<any>, path: string) {
     // However, for simplicity, we subscribe to the path.
     const arrayState = useSyncExternalStore(
         (listener) => resource.subscribeField(path, listener),
-        () => resource.getField(path),
+        () => resource.field(path),
     );
 
     const value = (arrayState.value as any[]) || [];
@@ -40,7 +40,7 @@ export function useFieldArray<T = any>(resource: Resource<any>, path: string) {
         // We try to generate and persist keys for array items.
         // In a real robust implementation, the core might need to track keys internally.
         // Doing it at the hook level is slightly fragile if the array is modified
-        // outside this hook (e.g., resource.setField('contacts', [new array])).
+        // outside this hook (e.g., resource.set('contacts', [new array])).
         // We do a best-effort tracking here based on item identity if possible,
         // or just sequentially if items are primitives.
         
@@ -62,17 +62,17 @@ export function useFieldArray<T = any>(resource: Resource<any>, path: string) {
         return result;
     }, [value]);
 
-    // 3. Convenience Methods (all map to setField functionally)
+    // 3. Convenience Methods (all map to set functionally)
     const append = useCallback((item: T) => {
-        resource.setField(path, (prev: any[]) => [...(prev || []), item]);
+        resource.set(path, (prev: any[]) => [...(prev || []), item]);
     }, [resource, path]);
 
     const prepend = useCallback((item: T) => {
-        resource.setField(path, (prev: any[]) => [item, ...(prev || [])]);
+        resource.set(path, (prev: any[]) => [item, ...(prev || [])]);
     }, [resource, path]);
 
     const remove = useCallback((index: number) => {
-        resource.setField(path, (prev: any[]) => {
+        resource.set(path, (prev: any[]) => {
             if (!prev) return prev;
             const next = [...prev];
             next.splice(index, 1);
@@ -81,7 +81,7 @@ export function useFieldArray<T = any>(resource: Resource<any>, path: string) {
     }, [resource, path]);
 
     const insert = useCallback((index: number, item: T) => {
-        resource.setField(path, (prev: any[]) => {
+        resource.set(path, (prev: any[]) => {
             if (!prev) return [item];
             const next = [...prev];
             next.splice(index, 0, item);
@@ -90,7 +90,7 @@ export function useFieldArray<T = any>(resource: Resource<any>, path: string) {
     }, [resource, path]);
 
     const swap = useCallback((indexA: number, indexB: number) => {
-        resource.setField(path, (prev: any[]) => {
+        resource.set(path, (prev: any[]) => {
             if (!prev) return prev;
             const next = [...prev];
             const temp = next[indexA];
@@ -101,7 +101,7 @@ export function useFieldArray<T = any>(resource: Resource<any>, path: string) {
     }, [resource, path]);
 
     const move = useCallback((from: number, to: number) => {
-        resource.setField(path, (prev: any[]) => {
+        resource.set(path, (prev: any[]) => {
             if (!prev) return prev;
             const next = [...prev];
             const [item] = next.splice(from, 1);

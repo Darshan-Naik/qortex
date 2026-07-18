@@ -1,5 +1,17 @@
 import type { Plugin, PluginContext } from "../types";
 
+export interface DraftStorage {
+    get<T = unknown>(key: string): Promise<T | undefined | null>;
+    set<T = unknown>(key: string, value: T): Promise<void>;
+    remove(key: string): Promise<void>;
+}
+
+export interface DraftDBStorage {
+    get<T = unknown>(key: string): Promise<T | undefined>;
+    set<T = unknown>(key: string, value: T): Promise<void>;
+    del(key: string): Promise<void>;
+}
+
 /**
  * Options for the persist draft plugin.
  */
@@ -8,8 +20,14 @@ export interface PersistDraftOptions {
     key: string;
     /** Debounce time in milliseconds for saving changes. Default: 500 */
     debounce?: number;
-    /** Storage driver mechanism (e.g., localStorage, indexedDB). Default: 'localStorage' */
-    driver?: "localStorage" | "indexedDB";
+    /** Browser storage driver. Default: 'localStorage' */
+    driver?: "localStorage" | "sessionStorage";
+    /** DB instance from `qortex-db`. Takes precedence over `driver`. */
+    db?: DraftDBStorage;
+    /** Fully custom draft storage adapter. Takes precedence over `db` and `driver`. */
+    storage?: DraftStorage;
+    /** Called when draft hydration fails. Defaults to console.warn. */
+    onError?: (error: unknown) => void;
 }
 
 /**
@@ -25,53 +43,33 @@ export interface PersistDraftOptions {
 export function persistDraftPlugin<T = any>(
     options: PersistDraftOptions,
 ): Plugin<T> {
-    const { key, debounce = 500, driver = "localStorage" } = options;
+    const { key, debounce = 500, onError = defaultErrorHandler } = options;
     let timeoutId: any = null;
 
-    /**
-     * Simple storage adapter wrapper.
-     */
-    const storage = {
-        get: async (): Promise<any> => {
-            if (driver === "localStorage" && typeof window !== "undefined") {
-                const val = window.localStorage.getItem(key);
-                return val ? JSON.parse(val) : null;
+    const storage = createDraftStorage(options);
+
+    function scheduleSave(ctx: PluginContext<T>): void {
+        if (timeoutId) clearTimeout(timeoutId);
+
+        timeoutId = setTimeout(() => {
+            const overrides = ctx.getDraftOverrides();
+            if (overrides.size > 0) {
+                storage.set(key, Object.fromEntries(overrides.entries())).catch(onError);
+            } else {
+                storage.remove(key).catch(onError);
             }
-            return null;
-        },
-        set: async (val: any) => {
-            if (driver === "localStorage" && typeof window !== "undefined") {
-                window.localStorage.setItem(key, JSON.stringify(val));
-            }
-        },
-        remove: async () => {
-            if (driver === "localStorage" && typeof window !== "undefined") {
-                window.localStorage.removeItem(key);
-            }
-        },
-    };
+        }, debounce);
+    }
 
     return {
         name: "persist",
 
         onInit(ctx: PluginContext<T>) {
-            // Hydrate draft from storage
-            storage.get().then((savedDraft) => {
+            storage.get<Record<string, any>>(key).then((savedDraft) => {
                 if (savedDraft && typeof savedDraft === "object") {
-                    // Apply saved draft as overrides
-                    // For a robust implementation, you might need an exposed method on ctx
-                    // to bulk-apply overrides without firing events for every single one,
-                    // or just fire one event at the end.
-                    
-                    // We can simulate this by iterating and setting fields.
-                    // This assumes savedDraft is a flat map or object of patches.
-                    // For simplicity, let's say it's an object of { path: value }.
-                    
-                    // Note: setFields is not on ctx, only setFieldError. 
-                    // To properly implement, ctx might need `applyDraftOverrides(map)`.
-                    // We'll leave the hydration logic abstract for now.
+                    ctx.setFields(savedDraft);
                 }
-            });
+            }).catch(onError);
 
             return () => {
                 if (timeoutId) clearTimeout(timeoutId);
@@ -79,25 +77,50 @@ export function persistDraftPlugin<T = any>(
         },
 
         onFieldChange(_path: string, _value: any, ctx: PluginContext<T>) {
-            // Debounced save
-            if (timeoutId) clearTimeout(timeoutId);
-
-            timeoutId = setTimeout(() => {
-                const overrides = ctx.getDraftOverrides();
-                if (overrides.size > 0) {
-                    // Convert Map to plain object for JSON serialization
-                    const plainObj = Object.fromEntries(overrides.entries());
-                    storage.set(plainObj);
-                } else {
-                    storage.remove();
-                }
-            }, debounce);
+            scheduleSave(ctx);
         },
 
         onAfterMutate(_result: any, _ctx: PluginContext<T>) {
-            // Clear draft on success
             if (timeoutId) clearTimeout(timeoutId);
-            storage.remove();
+            storage.remove(key).catch(onError);
         },
     };
+}
+
+function createDraftStorage(options: PersistDraftOptions): DraftStorage {
+    if (options.storage) return options.storage;
+
+    if (options.db) {
+        return {
+            get: (key) => options.db!.get(key),
+            set: (key, value) => options.db!.set(key, value),
+            remove: (key) => options.db!.del(key),
+        };
+    }
+
+    const driver = options.driver ?? "localStorage";
+    return {
+        async get<T = unknown>(key: string): Promise<T | undefined> {
+            const storage = getBrowserStorage(driver);
+            const val = storage?.getItem(key);
+            return val ? JSON.parse(val) : undefined;
+        },
+        async set<T = unknown>(key: string, value: T): Promise<void> {
+            getBrowserStorage(driver)?.setItem(key, JSON.stringify(value));
+        },
+        async remove(key: string): Promise<void> {
+            getBrowserStorage(driver)?.removeItem(key);
+        },
+    };
+}
+
+function getBrowserStorage(driver: "localStorage" | "sessionStorage"): Storage | undefined {
+    if (typeof window === "undefined") return undefined;
+    return driver === "sessionStorage" ? window.sessionStorage : window.localStorage;
+}
+
+function defaultErrorHandler(error: unknown): void {
+    if (typeof console !== "undefined") {
+        console.warn("[qortex-resource] Persist draft plugin failed:", error);
+    }
 }

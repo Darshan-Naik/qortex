@@ -35,9 +35,9 @@ describe('Resource Plugins', () => {
 
             expect(events).toEqual(['init:John', 'initial:John:John']);
 
-            resource.setField('name', 'Jane');
+            resource.set('name', 'Jane');
 
-            expect(resource.get().errors.name).toBe('Invalid value');
+            expect(resource.errors.name).toBe('Invalid value');
             expect(events).toEqual([
                 'init:John',
                 'initial:John:John',
@@ -46,7 +46,7 @@ describe('Resource Plugins', () => {
                 'subscribe',
             ]);
 
-            resource.touchField('name');
+            resource.touch('name');
 
             expect(events).toEqual([
                 'init:John',
@@ -58,7 +58,7 @@ describe('Resource Plugins', () => {
                 'subscribe',
             ]);
 
-            resource.setInitialData({ name: 'Server', age: 21 });
+            resource.syncSource({ data: { name: 'Server', age: 21 } });
 
             expect(events).toEqual([
                 'init:John',
@@ -78,7 +78,7 @@ describe('Resource Plugins', () => {
         });
 
         it('should allow sync onBeforeMutate to abort mutation', async () => {
-            const mutate = jest.fn();
+            const save = jest.fn();
             const resource = createResource({
                 initialData: { score: 10 },
                 plugins: [
@@ -87,14 +87,14 @@ describe('Resource Plugins', () => {
                         onBeforeMutate: () => false,
                     }
                 ],
-                mutate,
+                source: { save },
             });
 
-            const result = await resource.mutateAsync();
+            const result = await resource.save();
 
             expect(result.success).toBe(false);
             expect((result.error as Error).message).toBe('Mutation blocked by plugin.');
-            expect(mutate).not.toHaveBeenCalled();
+            expect(save).not.toHaveBeenCalled();
         });
     });
 
@@ -113,14 +113,14 @@ describe('Resource Plugins', () => {
             });
 
             // Initially valid
-            expect(resource.get().isValid).toBe(true);
-            expect(resource.get().errors).toEqual({});
+            expect(resource.isValid).toBe(true);
+            expect(resource.errors).toEqual({});
 
             // Trigger invalid state
-            resource.setField('age', 15);
+            resource.set('age', 15);
             
-            expect(resource.get().isValid).toBe(false);
-            expect(resource.get().errors.age).toBe('Must be at least 18');
+            expect(resource.isValid).toBe(false);
+            expect(resource.errors.age).toBe('Must be at least 18');
         });
     });
 
@@ -129,36 +129,39 @@ describe('Resource Plugins', () => {
             const resource = createResource({
                 initialData: { score: 10 },
                 plugins: [optimisticPlugin()],
-                mutate: async (initial, updated) => {
-                    return updated;
+                source: {
+                    save: async (draft) => {
+                        return draft;
+                    }
                 }
             });
 
-            const p = resource.mutateAsync();
+            const p = resource.save();
 
             await p;
             
-            expect(resource.get().mutationStatus).toBe('success');
+            expect(resource.mutation.status).toBe('success');
         });
 
         it('should rollback initialData and updatedData on error', async () => {
             const resource = createResource({
                 initialData: { score: 10 },
                 plugins: [optimisticPlugin()],
-                mutate: async () => {
-                    throw new Error('Failed');
+                source: {
+                    save: async () => {
+                        throw new Error('Failed');
+                    }
                 }
             });
 
-            resource.setField('score', 20); // user optimistically changes UI
+            resource.set('score', 20); // user optimistically changes UI
 
-            await resource.mutateAsync();
+            await resource.save();
 
-            const state = resource.get();
-            expect(state.mutationStatus).toBe('error');
+            expect(resource.mutation.status).toBe('error');
             // Ensure draft rolled back to 10
-            expect(state.updatedData.score).toBe(10);
-            expect(state.data.score).toBe(10);
+            expect(resource.draft.score).toBe(10);
+            expect(resource.data.score).toBe(10);
         });
     });
 

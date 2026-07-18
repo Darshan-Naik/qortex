@@ -23,23 +23,23 @@ export function useField<V = any>(resource: Resource<any>, path: string) {
     // Subscribe to ONLY this field's changes
     const state = useSyncExternalStore<FieldState<V>>(
         (listener) => resource.subscribeField(path, listener),
-        () => resource.getField(path),
+        () => resource.field<V>(path),
     );
 
     // Bound handlers
     const onChange = useCallback(
         (value: V | ((prev: V) => V)) => {
-            resource.setField(path, value);
+            resource.set(path, value);
         },
         [resource, path],
     );
 
     const onBlur = useCallback(() => {
-        resource.touchField(path);
+        resource.touch(path);
     }, [resource, path]);
 
     const reset = useCallback(() => {
-        resource.resetField(path);
+        resource.reset(path);
     }, [resource, path]);
 
     return {

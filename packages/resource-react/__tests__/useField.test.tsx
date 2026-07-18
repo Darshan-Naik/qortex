@@ -48,14 +48,11 @@ describe('useField Hook', () => {
             fireEvent.change(input, { target: { value: 'Bob' } });
         });
         
-        console.log('After change, resource draft value:', resource.get().updatedData.profile.name);
-        console.log('After change, field state:', resource.getField('profile.name'));
-
         expect((input as HTMLInputElement).value).toBe('Bob');
         expect(screen.getByTestId('dirty-profile.name').textContent).toBe('true');
         
         // Ensure the underlying resource was updated
-        expect(resource.get().updatedData.profile.name).toBe('Bob');
+        expect(resource.draft.profile.name).toBe('Bob');
     });
 
     it('should render multiple fields independently', () => {

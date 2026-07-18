@@ -2,8 +2,6 @@ import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useResource, createResourceHooks } from '../src/index';
-import { createResource } from 'qortex-resource';
-import type { Resource } from 'qortex-resource';
 
 describe('useResource Hook', () => {
     let resourceConfig: any;
@@ -11,7 +9,9 @@ describe('useResource Hook', () => {
     beforeEach(() => {
         resourceConfig = {
             initialData: { name: 'Alice', score: 10 },
-            mutate: async (initial, updated) => ({ ...updated, name: 'Bob' })
+            source: {
+                save: async (draft: any) => ({ ...draft, name: 'Bob' })
+            }
         };
     });
 
@@ -21,19 +21,19 @@ describe('useResource Hook', () => {
         return (
             <div>
                 <span data-testid="status">{state.status}</span>
-                <span data-testid="mutationStatus">{state.mutationStatus}</span>
-                <span data-testid="name">{state.updatedData?.name}</span>
-                <span data-testid="score">{state.updatedData?.score}</span>
+                <span data-testid="mutationStatus">{state.mutation.status}</span>
+                <span data-testid="name">{state.draft?.name}</span>
+                <span data-testid="score">{state.draft?.score}</span>
                 <span data-testid="isChanged">{state.isChanged ? 'true' : 'false'}</span>
                 <button 
                     data-testid="update-btn" 
-                    onClick={() => state.setField('score', 20)}
+                    onClick={() => state.set('score', 20)}
                 >
                     Update
                 </button>
                 <button 
                     data-testid="mutate-btn" 
-                    onClick={() => state.mutateAsync()}
+                    onClick={() => state.save()}
                 >
                     Mutate
                 </button>

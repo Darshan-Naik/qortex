@@ -7,6 +7,7 @@ import type {
     PluginContext,
 } from "./types";
 import { createResource } from "./resource";
+import { setByPath } from "./path";
 
 /**
  * Create a new collection instance.
@@ -152,9 +153,11 @@ class CollectionCore<T> {
 
         const resource = createResource<T>({
             initialData: this.entities.get(id),
-            mutate: async (_initial, updated, _meta) => {
-                this.updateOne(id, () => updated);
-                return updated;
+            source: {
+                save: async (draft: T) => {
+                    this.updateOne(id, () => draft);
+                    return draft;
+                },
             },
         });
 
@@ -236,6 +239,21 @@ class CollectionCore<T> {
             getData: this.selectAll,
             getUpdatedData: this.selectAll,
             getDraftOverrides: () => new Map(),
+            setField: (path, value) => {
+                const data = this.selectAll();
+                const currentValue = path.split(".").reduce<any>((current, key) => current?.[key], data);
+                const nextValue = typeof value === "function" ? value(currentValue) : value;
+                this.setAll(setByPath(data, path, nextValue));
+            },
+            setFields: (patches) => {
+                let data = this.selectAll();
+                for (const [path, value] of Object.entries(patches)) {
+                    const currentValue = path.split(".").reduce<any>((current, key) => current?.[key], data);
+                    const nextValue = typeof value === "function" ? value(currentValue) : value;
+                    data = setByPath(data, path, nextValue);
+                }
+                this.setAll(data);
+            },
             resetDrafts: () => { },
             setInitialData: this.setAll,
             setFieldError: () => { },
@@ -272,7 +290,7 @@ class CollectionCore<T> {
             this.ids.push(id);
         }
         this.entities.set(id, entity);
-        this.resourceCache.get(id)?.setInitialData(entity);
+        this.resourceCache.get(id)?.syncSource({ data: entity });
     }
 
     private destroyCachedResources(): void {

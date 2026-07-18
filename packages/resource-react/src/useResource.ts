@@ -13,19 +13,17 @@ import type { ResourceConfig, ResourceSnapshot, Resource } from "qortex-resource
  *
  * @example
  * ```tsx
- * const { updatedData, setField, mutate } = useResource({
+ * const { draft, set, save } = useResource({
  *   initialData: async () => api.getUser(id),
  *   fields: { name: { editable: true } },
- *   mutate: async (initial, updated) => api.updateUser(updated),
+ *   source: {
+ *     save: async (draft) => api.updateUser(draft)
+ *   }
  * });
  * ```
  */
-export function useResource<T>(config: ResourceConfig<T>) {
+export function useResource<T, R = T>(config: ResourceConfig<T, R>) {
     // 1. Create a stable resource instance for the lifetime of the component
-    // If the config structurally changes a lot, you might need memoization of the config
-    // or a mechanism to update the resource's config without recreating it.
-    // For simplicity in this implementation, we assume the initial config drives creation.
-    // In a production hook, you'd likely want to handle dynamic config changes carefully.
     const resource = useMemo(() => createResource(config), []);
 
     // Cleanup resource on unmount
@@ -36,24 +34,25 @@ export function useResource<T>(config: ResourceConfig<T>) {
     }, [resource]);
 
     // 2. Subscribe to the full snapshot
-    // Note: This causes a re-render on ANY field change.
-    // For fine-grained rendering, components should use `useField(resource, 'path')`.
-    const snapshot = useSyncExternalStore(
+    const snapshot = useSyncExternalStore<ResourceSnapshot<T, R>>(
         (listener) => resource.subscribe(listener),
-        () => resource.get(),
+        () => resource.snapshot,
     );
 
     // 3. Bind actions so they don't need `resource.` prefix
     const actions = useMemo(
         () => ({
-            setField: resource.setField.bind(resource),
-            setFields: resource.setFields.bind(resource),
-            resetField: resource.resetField.bind(resource),
-            resetAll: resource.resetAll.bind(resource),
-            mutate: resource.mutate.bind(resource),
-            mutateAsync: resource.mutateAsync.bind(resource),
+            set: resource.set.bind(resource),
+            setMany: resource.setMany.bind(resource),
+            reset: resource.reset.bind(resource),
+            resetDraft: resource.resetDraft.bind(resource),
+            fetch: resource.fetch.bind(resource),
+            refetch: resource.refetch.bind(resource),
+            save: resource.save.bind(resource),
             validate: resource.validate.bind(resource),
-            setInitialData: resource.setInitialData.bind(resource),
+            validateField: resource.validateField.bind(resource),
+            validateFields: resource.validateFields.bind(resource),
+            syncSource: resource.syncSource.bind(resource),
         }),
         [resource],
     );

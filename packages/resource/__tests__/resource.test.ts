@@ -12,149 +12,152 @@ describe('Resource Engine', () => {
 
     describe('Initialization', () => {
         it('should initialize with status ready', () => {
-            const state = resource.get();
-            expect(state.status).toBe('ready');
-            expect(state.isChanged).toBe(false);
-            expect(state.isMutating).toBe(false);
+            expect(resource.status).toBe('ready');
+            expect(resource.isChanged).toBe(false);
+            expect(resource.isSaving).toBe(false);
         });
 
         it('should correctly store initialData', () => {
-            const state = resource.get();
-            expect(state.data).toEqual({ name: 'John', age: 30 });
-            expect(state.updatedData).toEqual({ name: 'John', age: 30 });
+            expect(resource.data).toEqual({ name: 'John', age: 30 });
+            expect(resource.draft).toEqual({ name: 'John', age: 30 });
         });
     });
 
     describe('Field Mutators', () => {
         it('should set field and update draft state', () => {
-            resource.setField('name', 'Jane');
+            resource.set('name', 'Jane');
             
-            const state = resource.get();
-            expect(state.updatedData.name).toBe('Jane');
-            expect(state.isChanged).toBe(true);
-            expect(state.changedFields.includes('name')).toBe(true);
+            expect(resource.draft.name).toBe('Jane');
+            expect(resource.isChanged).toBe(true);
+            expect(resource.changedFields.includes('name')).toBe(true);
         });
 
         it('should reset field to initial data', () => {
-            resource.setField('name', 'Jane');
-            resource.resetField('name');
+            resource.set('name', 'Jane');
+            resource.reset('name');
             
-            const state = resource.get();
-            expect(state.updatedData.name).toBe('John');
-            expect(state.changedFields.includes('name')).toBe(false);
-            expect(state.isChanged).toBe(false);
+            expect(resource.draft.name).toBe('John');
+            expect(resource.changedFields.includes('name')).toBe(false);
+            expect(resource.isChanged).toBe(false);
         });
 
         it('should set multiple fields', () => {
-            resource.setFields({ name: 'Jane', age: 31 });
+            resource.setMany({ name: 'Jane', age: 31 });
             
-            const state = resource.get();
-            expect(state.updatedData).toEqual({ name: 'Jane', age: 31 });
-            expect(state.changedFields.includes('name')).toBe(true);
-            expect(state.changedFields.includes('age')).toBe(true);
+            expect(resource.draft).toEqual({ name: 'Jane', age: 31 });
+            expect(resource.changedFields.includes('name')).toBe(true);
+            expect(resource.changedFields.includes('age')).toBe(true);
         });
 
         it('should support destructured methods', () => {
-            const { setField, setFields, get, resetField } = resource;
+            const { set, setMany, reset } = resource;
 
-            setField('name', 'Jane');
-            setFields({ age: 31 });
+            set('name', 'Jane');
+            setMany({ age: 31 });
 
-            expect(get().updatedData).toEqual({ name: 'Jane', age: 31 });
+            expect(resource.draft).toEqual({ name: 'Jane', age: 31 });
 
-            resetField('name');
+            reset('name');
 
-            expect(get().updatedData).toEqual({ name: 'John', age: 31 });
+            expect(resource.draft).toEqual({ name: 'John', age: 31 });
         });
 
         it('should expose only the public resource API at runtime', () => {
             expect(Object.keys(resource).sort()).toEqual([
+                'array',
                 'changedFields',
+                'data',
                 'destroy',
+                'draft',
+                'error',
                 'errors',
+                'fetch',
+                'field',
                 'get',
-                'getData',
-                'getField',
-                'getUpdatedData',
+                'getInitial',
                 'isChanged',
+                'isFetching',
                 'isLoading',
-                'isMutating',
+                'isSaving',
                 'isValid',
-                'mutate',
-                'mutateAsync',
-                'mutationData',
-                'mutationError',
-                'mutationStatus',
-                'resetAll',
-                'resetField',
-                'setField',
-                'setFields',
-                'setInitialData',
+                'mutation',
+                'query',
+                'refetch',
+                'reset',
+                'resetDraft',
+                'save',
+                'set',
+                'setMany',
+                'snapshot',
                 'status',
                 'subscribe',
                 'subscribeField',
-                'touchField',
+                'syncSource',
+                'touch',
                 'touchedFields',
                 'validate',
+                'validateField',
+                'validateFields',
             ]);
             expect((resource as any).draftOverrides).toBeUndefined();
             expect((resource as any).pluginContext).toBeUndefined();
         });
         
         it('should reset all fields', () => {
-            resource.setFields({ name: 'Jane', age: 31 });
-            resource.resetAll();
+            resource.setMany({ name: 'Jane', age: 31 });
+            resource.resetDraft();
             
-            const state = resource.get();
-            expect(state.updatedData).toEqual(state.data);
-            expect(state.changedFields.length).toBe(0);
-            expect(state.isChanged).toBe(false);
+            expect(resource.draft).toEqual(resource.data);
+            expect(resource.changedFields.length).toBe(0);
+            expect(resource.isChanged).toBe(false);
         });
     });
 
     describe('Mutation Lifecycle', () => {
-        it('should transition through states during mutateAsync', async () => {
-            let mutationCalled = false;
+        it('should transition through states during save', async () => {
+            let saveCalled = false;
             
             const res = createResource({
                 initialData: { name: 'John', age: 30 },
-                mutate: async (initial, updated) => {
-                    mutationCalled = true;
-                    return { ...updated, updated: true };
+                source: {
+                    save: async (draft) => {
+                        saveCalled = true;
+                        return { ...draft, updated: true };
+                    }
                 }
             });
 
-            res.setField('name', 'Jane');
-            const mutationPromise = res.mutateAsync();
+            res.set('name', 'Jane');
+            const savePromise = res.save();
 
-            expect(res.get().isMutating).toBe(true);
-            expect(res.get().mutationStatus).toBe('mutating');
+            expect(res.isSaving).toBe(true);
+            expect(res.mutation.status).toBe('mutating');
 
-            await mutationPromise;
+            await savePromise;
 
-            const state = res.get();
-            expect(mutationCalled).toBe(true);
-            expect(state.mutationStatus).toBe('success');
-            expect(state.isMutating).toBe(false);
-            expect(state.isChanged).toBe(false);
-            expect(state.data.updated).toBe(true);
+            expect(saveCalled).toBe(true);
+            expect(res.mutation.status).toBe('success');
+            expect(res.isSaving).toBe(false);
+            expect(res.isChanged).toBe(false);
+            expect(res.data.updated).toBe(true);
         });
 
         it('should handle errors in mutation', async () => {
             const res = createResource({
                 initialData: { name: 'John' },
-                mutate: async () => {
-                    throw new Error('Network failed');
+                source: {
+                    save: async () => {
+                        throw new Error('Network failed');
+                    }
                 }
             });
 
-            await res.mutateAsync();
+            await res.save();
 
-            const state = res.get();
-            expect(state.mutationStatus).toBe('error');
-            expect(state.isMutating).toBe(false);
-            expect(state.mutationError).toBeInstanceOf(Error);
-            expect((state.mutationError as Error).message).toBe('Network failed');
+            expect(res.mutation.status).toBe('error');
+            expect(res.isSaving).toBe(false);
+            expect(res.mutation.error).toBeInstanceOf(Error);
+            expect((res.mutation.error as Error).message).toBe('Network failed');
         });
     });
 });

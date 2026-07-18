@@ -71,6 +71,7 @@ export function validatePlugin<T = any>(
     options: ValidatePluginOptions<T>,
 ): Plugin<T> {
     const { resolver, fields, validateOn = "blur" } = options;
+    const lastErrorPaths = new Set<string>();
 
     /**
      * Match a given concrete path against a pattern that might contain wildcards.
@@ -99,14 +100,10 @@ export function validatePlugin<T = any>(
     /**
      * Run all applicable validations for a specific field path.
      */
-    function runFieldValidation(path: string, ctx: PluginContext<T>) {
-        if (!fields) return;
+    function runFieldValidation(path: string, ctx: PluginContext<T>): boolean {
+        if (!fields) return true;
 
         const data = ctx.getUpdatedData();
-        // Since we don't have the exact value of the field from context easily without getUpdatedData + path resolution,
-        // we extract it directly here, but really the plugin system might pass it in `onFieldChange`.
-        // We'll rely on a manual deep get for simplicity if needed, but it's better to just pass the value if available.
-        // For general field validation, we'll traverse.
         const value = getByPath(data, path);
 
         let errorStr: string | undefined = undefined;
@@ -122,41 +119,58 @@ export function validatePlugin<T = any>(
         }
 
         ctx.setFieldError(path, errorStr);
+        if (errorStr) {
+            lastErrorPaths.add(path);
+        } else {
+            lastErrorPaths.delete(path);
+        }
+        return !errorStr;
     }
 
     /**
      * Run full schema validation and update all errors.
      */
     function runFullValidation(ctx: PluginContext<T>): boolean {
-        let hasErrors = false;
+        const newErrors: Record<string, string | undefined> = {};
         const data = ctx.getUpdatedData();
 
-        // 1. Run schema resolver if present
         if (resolver) {
             const errors = resolver(data);
-            if (errors && Object.keys(errors).length > 0) {
-                ctx.setFieldErrors(errors);
-                hasErrors = true;
-            } else {
-                // We need to clear all errors if valid.
-                // A better approach is setting a blank object, but ctx.setFieldErrors only updates provided keys.
-                // We might need a ctx.clearErrors() in real implementation, but for now we'll assume we know the fields or overwrite.
-                // For simplicity, we assume resolver returns {} for valid, which doesn't clear.
-                // In practice, the resource engine should probably clear on full validation success or accept a reset flag.
+            if (errors) {
+                Object.assign(newErrors, errors);
             }
         }
 
-        // 2. Run field-level validations if present
         if (fields) {
-            // Need to collect all paths in the data that match patterns.
-            // This is complex for wildcard arrays. A simpler approach for full validation
-            // is to iterate over draft overrides or touched fields, but that misses untouched invalid initial data.
-            // For now, we'll just evaluate fields that have explicit configs or overrides.
-            // A true deep validation would walk the `fields` config and evaluate.
-            // This is a simplified version for the proof of concept.
+            for (const [pattern, validator] of Object.entries(fields)) {
+                for (const path of resolvePatternPaths(data, pattern)) {
+                    const err = validator(getByPath(data, path), data);
+                    if (err) {
+                        newErrors[path] = err;
+                    } else if (!(path in newErrors)) {
+                        newErrors[path] = undefined;
+                    }
+                }
+            }
         }
 
-        return !hasErrors;
+        for (const path of lastErrorPaths) {
+            if (!(path in newErrors)) {
+                newErrors[path] = undefined;
+            }
+        }
+
+        lastErrorPaths.clear();
+        let isValid = true;
+        for (const [path, error] of Object.entries(newErrors)) {
+            if (error) {
+                isValid = false;
+                lastErrorPaths.add(path);
+            }
+        }
+
+        ctx.setFieldErrors(newErrors);
+        return isValid;
     }
 
     return {
@@ -190,30 +204,35 @@ export function validatePlugin<T = any>(
         },
 
         async onBeforeMutate(_data: T, ctx: PluginContext<T>) {
-            // Always run full validation before mutate
-            let isValid = true;
-            const data = ctx.getUpdatedData();
-
-            const newErrors: Record<string, string | undefined> = {};
-
-            if (resolver) {
-                const errors = resolver(data);
-                if (errors) {
-                    for (const [key, val] of Object.entries(errors)) {
-                        newErrors[key] = val;
-                        if (val) isValid = false;
-                    }
-                }
-            }
-
-            if (fields) {
-                // Here we would ideally evaluate all paths. For brevity, assuming simple flat evaluation.
-                // In a full implementation, you'd generate all concrete paths based on data shape and patterns.
-            }
-
-            ctx.setFieldErrors(newErrors);
-
-            return isValid;
+            return runFullValidation(ctx);
         },
     };
+}
+
+function resolvePatternPaths(data: any, pattern: string): string[] {
+    if (!pattern.includes("*")) return [pattern];
+
+    const results: string[] = [];
+    const segments = pattern.split(".");
+
+    function walk(current: any, index: number, path: string[]): void {
+        if (index === segments.length) {
+            results.push(path.join("."));
+            return;
+        }
+
+        const segment = segments[index];
+        if (segment === "*") {
+            if (current == null || typeof current !== "object") return;
+            for (const key of Object.keys(current)) {
+                walk(current[key], index + 1, [...path, key]);
+            }
+            return;
+        }
+
+        walk(current?.[segment], index + 1, [...path, segment]);
+    }
+
+    walk(data, 0, []);
+    return results;
 }

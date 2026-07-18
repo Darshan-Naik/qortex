@@ -32,6 +32,11 @@
       "types": "./dist/plugins/persist.d.ts",
       "require": "./dist/plugins/persist.js",
       "import": "./dist/plugins/persist.mjs"
+    },
+    "./store": {
+      "types": "./dist/plugins/store.d.ts",
+      "require": "./dist/plugins/store.js",
+      "import": "./dist/plugins/store.mjs"
     }
   },
   "files": [

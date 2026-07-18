@@ -1,4 +1,27 @@
 import type { Plugin, PluginContext } from "../types";
+import { getQueryData, setQueryData } from "qortex-query";
+import type { QueryKey, QueryOptions } from "qortex-query";
+
+export interface OptimisticQueryClientAdapter {
+    getQueryData<T = any>(key: QueryKey, opts?: QueryOptions<T>): T | undefined;
+    setQueryData<T = any>(key: QueryKey, dataOrUpdater: T | ((prevData: T | undefined) => T)): void;
+}
+
+export interface OptimisticPluginOptions<T = any> {
+    /** Query key to update optimistically in qortex-query. If omitted, only resource rollback is tracked. */
+    queryKey?: QueryKey;
+    /** Custom query client adapter. Defaults to the global qortex-query manager. */
+    client?: OptimisticQueryClientAdapter;
+    /** Build the optimistic query value from the resource draft and previous query data. */
+    updateQueryData?: (draft: T, previous: T | undefined) => T;
+    /** Store mutation result into query cache on success. Default: true when queryKey is provided. */
+    updateQueryOnSuccess?: boolean | ((result: any, previous: T | undefined) => T);
+}
+
+const defaultQueryClient: OptimisticQueryClientAdapter = {
+    getQueryData,
+    setQueryData,
+};
 
 /**
  * Optimistic UI Plugin.
@@ -18,47 +41,59 @@ import type { Plugin, PluginContext } from "../types";
  * });
  * ```
  */
-export function optimisticPlugin<T = any>(): Plugin<T> {
+export function optimisticPlugin<T = any>(options: OptimisticPluginOptions<T> = {}): Plugin<T> {
     // We store the snapshot of data before mutation to rollback if needed.
     let rollbackData: T | undefined;
+    let rollbackQueryData: T | undefined;
+    let hadQueryData = false;
+    const {
+        queryKey,
+        client = defaultQueryClient,
+        updateQueryData = (draft) => draft,
+        updateQueryOnSuccess = true,
+    } = options;
 
     return {
         name: "optimistic",
 
-        async onBeforeMutate(_draft: T, ctx: PluginContext<T>) {
+        async onBeforeMutate(draft: T, ctx: PluginContext<T>) {
             rollbackData = ctx.getData();
-            
-            // In a real implementation tightly coupled with qortex-query, 
-            // we would call setQueryData here if we knew the queryKey.
-            // Since this plugin operates on the resource, and queryPlugin handles the query,
-            // we could either have queryPlugin expose an API, or optimisticPlugin updates
-            // the resource's initialData directly as a fake optimistic update.
-            
-            // For now, let's optimistically set the initial data of the resource itself.
-            // When query fetches, it will overwrite this.
-            // Alternatively, it updates the query cache. We'll do a simple local optimistic update.
-            
-            // We don't want to call setInitialData because it clears drafts and fires events 
-            // in a way that might disrupt the ongoing mutation state.
-            // True optimistic UI usually updates the *cache* (qortex-query).
+
+            if (queryKey !== undefined) {
+                rollbackQueryData = client.getQueryData<T>(queryKey, { enabled: false });
+                hadQueryData = rollbackQueryData !== undefined;
+                client.setQueryData<T>(queryKey, (previous) => updateQueryData(draft, previous));
+            }
             
             return true; // allow mutation
         },
 
-        onAfterMutate(_result: any, _ctx: PluginContext<T>) {
-            // Success! The queryPlugin (if present) will invalidate the query,
-            // which will fetch the real updated data from the server.
+        onAfterMutate(result: any, _ctx: PluginContext<T>) {
+            if (queryKey !== undefined && result !== undefined && updateQueryOnSuccess) {
+                if (typeof updateQueryOnSuccess === "function") {
+                    client.setQueryData<T>(queryKey, (previous) => updateQueryOnSuccess(result, previous));
+                } else {
+                    client.setQueryData<T>(queryKey, result);
+                }
+            }
             rollbackData = undefined;
+            rollbackQueryData = undefined;
+            hadQueryData = false;
         },
 
         onMutateError(_error: unknown, ctx: PluginContext<T>) {
-            // Rollback on error
+            if (queryKey !== undefined && hadQueryData) {
+                client.setQueryData<T>(queryKey, rollbackQueryData as T);
+            }
+
             if (rollbackData !== undefined) {
-                // Also reset resource's view if we modified it
                 ctx.setInitialData(rollbackData);
                 ctx.resetDrafts();
-                rollbackData = undefined;
             }
+
+            rollbackData = undefined;
+            rollbackQueryData = undefined;
+            hadQueryData = false;
         },
     };
 }

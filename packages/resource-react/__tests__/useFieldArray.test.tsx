@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useFieldArray } from '../src/index';
 import { createResource } from 'qortex-resource';
@@ -48,7 +48,7 @@ describe('useFieldArray Hook', () => {
         });
 
         expect(screen.getByTestId('item-2')).toHaveTextContent('jest');
-        expect(resource.get().updatedData.tags).toEqual(['react', 'typescript', 'jest']);
+        expect(resource.draft.tags).toEqual(['react', 'typescript', 'jest']);
     });
 
     it('should remove items', () => {
@@ -61,7 +61,7 @@ describe('useFieldArray Hook', () => {
         // After removing index 0 ('react'), 'typescript' should be at index 0
         expect(screen.getByTestId('item-0')).toHaveTextContent('typescript');
         expect(screen.queryByTestId('item-1')).toBeNull();
-        expect(resource.get().updatedData.tags).toEqual(['typescript']);
+        expect(resource.draft.tags).toEqual(['typescript']);
     });
 
     it('should swap items', () => {
@@ -73,6 +73,6 @@ describe('useFieldArray Hook', () => {
 
         expect(screen.getByTestId('item-0')).toHaveTextContent('typescript');
         expect(screen.getByTestId('item-1')).toHaveTextContent('react');
-        expect(resource.get().updatedData.tags).toEqual(['typescript', 'react']);
+        expect(resource.draft.tags).toEqual(['typescript', 'react']);
     });
 });
