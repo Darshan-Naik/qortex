@@ -6,8 +6,6 @@ import type {
     FieldValidationResult,
     MutationResult,
     MutationStatus,
-    Plugin,
-    PluginContext,
     Resource,
     ResourceConfig,
     ResourceMutation,
@@ -18,6 +16,7 @@ import type {
     ResourceStorage,
     ValidationResult,
 } from "./types";
+import type { Plugin, PluginContext } from "./types/plugin";
 import { FieldConfig } from "./types";
 import { flattenFieldsConfig, isEditable } from "./field";
 import { applyOverrides, diffPaths, getByPath, setByPath } from "./path";
@@ -29,12 +28,17 @@ type FieldMeta = {
     error: string | undefined;
 };
 
+interface InternalResourceConfig<T, R = T> extends ResourceConfig<T, R> {
+    plugins?: Plugin<T>[];
+}
+
 export function createResource<T, R = T>(config: ResourceConfig<T, R>): Resource<T, R> {
     return new ResourceCore(config).api;
 }
 
 class ResourceCore<T, R = T> {
     api: Resource<T, R>;
+    private internalConfig: InternalResourceConfig<T, R>;
 
     private dataValue: T | undefined;
     private statusValue: ResourceStatus = "idle";
@@ -64,6 +68,7 @@ class ResourceCore<T, R = T> {
     private fieldStates = new Map<string, any>();
 
     constructor(private config: ResourceConfig<T, R>) {
+        this.internalConfig = config as InternalResourceConfig<T, R>;
         this.queryEnabled = config.query?.enabled !== false;
         this.staleTime = config.query?.staleTime ?? 0;
         this.fieldConfigs = flattenFieldsConfig(config.fields);
@@ -79,7 +84,7 @@ class ResourceCore<T, R = T> {
         // Notify plugins of the initial sync data
         this.pluginsInitialized = true;
         if (this.dataValue !== undefined) {
-            for (const plugin of this.config.plugins ?? []) {
+            for (const plugin of this.internalConfig.plugins ?? []) {
                 plugin.onInitialData?.(this.dataValue, this.pluginContext);
             }
         }
@@ -168,7 +173,7 @@ class ResourceCore<T, R = T> {
         }
 
         if (value !== undefined && this.pluginsInitialized) {
-            for (const plugin of this.config.plugins ?? []) {
+            for (const plugin of this.internalConfig.plugins ?? []) {
                 plugin.onInitialData?.(value, this.pluginContext);
             }
         }
@@ -364,7 +369,7 @@ class ResourceCore<T, R = T> {
             this.draftOverrides.set(path, nextValue);
         }
 
-        for (const plugin of this.config.plugins ?? []) {
+        for (const plugin of this.internalConfig.plugins ?? []) {
             plugin.onFieldChange?.(path, nextValue, this.pluginContext);
         }
 
@@ -391,7 +396,7 @@ class ResourceCore<T, R = T> {
                 this.draftOverrides.set(path, nextValue);
             }
 
-            for (const plugin of this.config.plugins ?? []) {
+            for (const plugin of this.internalConfig.plugins ?? []) {
                 plugin.onFieldChange?.(path, nextValue, this.pluginContext);
             }
         }
@@ -424,7 +429,7 @@ class ResourceCore<T, R = T> {
 
     touch = (path: string): void => {
         this.patchMeta(path, { touched: true });
-        for (const plugin of this.config.plugins ?? []) {
+        for (const plugin of this.internalConfig.plugins ?? []) {
             plugin.onFieldBlur?.(path, this.pluginContext);
         }
         if (this.config.validate?.on === "blur") {
@@ -492,7 +497,7 @@ class ResourceCore<T, R = T> {
             };
         }
 
-        for (const plugin of this.config.plugins ?? []) {
+        for (const plugin of this.internalConfig.plugins ?? []) {
             const result = await plugin.onBeforeMutate?.(this.draft, this.pluginContext);
             if (result === false) {
                 return {
@@ -527,7 +532,7 @@ class ResourceCore<T, R = T> {
             this.persistCache(nextData);
             this.clearPersistedDraft();
 
-            for (const plugin of this.config.plugins ?? []) {
+            for (const plugin of this.internalConfig.plugins ?? []) {
                 plugin.onAfterMutate?.(result, this.pluginContext);
             }
 
@@ -542,7 +547,7 @@ class ResourceCore<T, R = T> {
             this.mutationErrorValue = error;
             this.mutationDataValue = undefined;
 
-            for (const plugin of this.config.plugins ?? []) {
+            for (const plugin of this.internalConfig.plugins ?? []) {
                 plugin.onMutateError?.(error, this.pluginContext);
             }
 
@@ -683,7 +688,7 @@ class ResourceCore<T, R = T> {
     }
 
     private initializePlugins(): void {
-        for (const plugin of this.config.plugins ?? []) {
+        for (const plugin of this.internalConfig.plugins ?? []) {
             const cleanup = plugin.onInit?.(this.pluginContext);
             if (typeof cleanup === "function") {
                 this.pluginCleanups.push(cleanup);

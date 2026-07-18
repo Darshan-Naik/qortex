@@ -3,11 +3,14 @@ import type {
     Collection,
     Resource,
     ResourceStatus,
-    Plugin,
-    PluginContext,
 } from "./types";
+import type { Plugin, PluginContext } from "./types/plugin";
 import { createResource } from "./resource";
 import { setByPath } from "./path";
+
+interface InternalCollectionConfig<T> extends CollectionConfig<T> {
+    plugins?: Plugin<T[]>[];
+}
 
 /**
  * Create a new collection instance.
@@ -22,11 +25,10 @@ import { setByPath } from "./path";
  * @example
  * ```ts
  * const todos = createCollection<Todo>({
- *   getId: (t) => t.id,
- *   sortBy: (a, b) => a.title.localeCompare(b.title),
+ *   getId: (todo) => todo.id,
  * });
  *
- * todos.addOne({ id: '1', title: 'Buy milk', completed: false });
+ * todos.addOne({ id: '1', title: 'Buy milk' });
  * todos.selectAll(); // → [{ id: '1', ... }]
  * ```
  */
@@ -36,6 +38,7 @@ export function createCollection<T>(config: CollectionConfig<T>): Collection<T> 
 
 class CollectionCore<T> {
     api: Collection<T>;
+    private internalConfig: InternalCollectionConfig<T>;
 
     private ids: string[] = [];
     private entities = new Map<string, T>();
@@ -48,6 +51,7 @@ class CollectionCore<T> {
     private errorValue: unknown = undefined;
 
     constructor(private config: CollectionConfig<T>) {
+        this.internalConfig = config as InternalCollectionConfig<T>;
         this.pluginContext = this.createPluginContext();
         this.initializePlugins();
         this.api = this.createApi();
@@ -186,28 +190,25 @@ class CollectionCore<T> {
     destroy = (): void => {
         this.listeners.clear();
         this.entityListeners.clear();
-        this.ids = [];
-        this.entities.clear();
         this.destroyCachedResources();
-        for (const cleanup of this.pluginCleanups) cleanup();
-        this.pluginCleanups.length = 0;
+        this.pluginCleanups.forEach((cleanup) => cleanup());
+        this.pluginCleanups = [];
     };
 
-    get status(): ResourceStatus {
+    private get status(): ResourceStatus {
         return this.statusValue;
     }
 
-    get isLoading(): boolean {
+    private get isLoading(): boolean {
         return this.statusValue === "loading";
     }
 
-    get error(): unknown {
+    private get error(): unknown {
         return this.errorValue;
     }
 
     private createApi(): Collection<T> {
         const core = this;
-
         return {
             selectAll: core.selectAll,
             selectById: core.selectById,
@@ -239,13 +240,13 @@ class CollectionCore<T> {
             getData: this.selectAll,
             getUpdatedData: this.selectAll,
             getDraftOverrides: () => new Map(),
-            setField: (path, value) => {
+            setField: (path: string, value: any) => {
                 const data = this.selectAll();
                 const currentValue = path.split(".").reduce<any>((current, key) => current?.[key], data);
                 const nextValue = typeof value === "function" ? value(currentValue) : value;
                 this.setAll(setByPath(data, path, nextValue));
             },
-            setFields: (patches) => {
+            setFields: (patches: Record<string, any>) => {
                 let data = this.selectAll();
                 for (const [path, value] of Object.entries(patches)) {
                     const currentValue = path.split(".").reduce<any>((current, key) => current?.[key], data);
@@ -259,16 +260,16 @@ class CollectionCore<T> {
             setFieldError: () => { },
             setFieldErrors: () => { },
             getFieldMeta: () => ({ isTouched: false, error: undefined }),
-            setStatus: (s) => {
+            setStatus: (s: string) => {
                 this.statusValue = s as ResourceStatus;
                 this.emit();
             },
-            setError: (err) => {
+            setError: (err: unknown) => {
                 this.errorValue = err;
                 this.statusValue = "error";
                 this.emit();
             },
-            subscribe: (listener) => {
+            subscribe: (listener: any) => {
                 const collectionListener = listener as unknown as () => void;
                 this.listeners.add(collectionListener);
                 return () => this.listeners.delete(collectionListener);
@@ -277,7 +278,7 @@ class CollectionCore<T> {
     }
 
     private initializePlugins(): void {
-        for (const plugin of (this.config.plugins ?? []) as Plugin<T[]>[]) {
+        for (const plugin of this.internalConfig.plugins ?? []) {
             const cleanup = plugin.onInit?.(this.pluginContext);
             if (typeof cleanup === "function") {
                 this.pluginCleanups.push(cleanup);

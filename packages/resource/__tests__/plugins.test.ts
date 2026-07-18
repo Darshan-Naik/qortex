@@ -31,7 +31,7 @@ describe('Resource Plugins', () => {
                         },
                     }
                 ]
-            });
+            } as any);
 
             expect(events).toEqual(['init:John', 'initial:John:John']);
 
@@ -88,7 +88,7 @@ describe('Resource Plugins', () => {
                     }
                 ],
                 source: { save },
-            });
+            } as any);
 
             const result = await resource.save();
 
@@ -110,7 +110,7 @@ describe('Resource Plugins', () => {
             const resource = createResource({
                 initialData: { name: 'John', age: 20 },
                 plugins: [validatePlugin({ resolver: mockValidator, validateOn: 'change' })]
-            });
+            } as any);
 
             // Initially valid
             expect(resource.isValid).toBe(true);
@@ -134,7 +134,7 @@ describe('Resource Plugins', () => {
                         return draft;
                     }
                 }
-            });
+            } as any);
 
             const p = resource.save();
 
@@ -152,7 +152,7 @@ describe('Resource Plugins', () => {
                         throw new Error('Failed');
                     }
                 }
-            });
+            } as any);
 
             resource.set('score', 20); // user optimistically changes UI
 
@@ -180,7 +180,7 @@ describe('Resource Plugins', () => {
                         enabled: false // prevent actual fetch
                     })
                 ]
-            });
+            } as any);
 
             // It should have registered a query
             const query = queryManager.getQueryState('my-query');

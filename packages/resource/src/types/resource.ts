@@ -1,5 +1,4 @@
 import { FieldsConfig } from "./field";
-import { Plugin } from "./plugin";
 
 type Key = string | number | boolean | null | undefined;
 
@@ -121,105 +120,208 @@ export interface ResourceValidationConfig<T = any> {
 }
 
 export interface ResourceConfig<T, R = T> {
+    /** Unique cache key for query caching and persistence */
     key?: ResourceKey;
+    /** Local initial data or function/promise returning initial data */
     initialData?: T | (() => T) | (() => Promise<T>);
+    /** Data sources for declarative fetching and saving */
     source?: ResourceSource<T, R>;
+    /** Optional field definitions and read-only/editability controls */
     fields?: FieldsConfig;
+    /** 
+     * Determines whether field updates are restricted:
+     * - `"open"` (default): Any path is editable unless explicitly marked readonly.
+     * - `"strict"`: Only fields configured in `fields` with `editable: true` are editable.
+     */
     fieldMode?: "open" | "strict";
+    /** Fetching/query configuration rules (staleTime, cacheTime, etc.) */
     query?: ResourceQueryConfig<T>;
+    /** Save/mutation configuration rules (optimistic updates, cache invalidation) */
     mutation?: ResourceMutationConfig<T, R>;
+    /** Storage/persistence setup for caching or unsaved draft states */
     persist?: ResourcePersistConfig | boolean;
+    /** Resolver and field-level validation rules */
     validate?: ResourceValidationConfig<T>;
+    /** Strategy for updating the draft when source data changes */
     sourceUpdate?: SourceUpdateMode;
+    /** Event hook triggered on successful mutation save */
     onSaveSuccess?: (data: R) => void;
+    /** Event hook triggered when save mutation encounters an error */
     onSaveError?: (error: unknown) => void;
-    plugins?: Plugin<T>[];
 }
 
+/**
+ * Represents the fetching/query state of a Resource.
+ */
 export interface ResourceQuery<T = any> {
+    /** The original/source server data fetched */
     readonly data: T | undefined;
+    /** Fetch/query error if the operation failed */
     readonly error: unknown;
+    /** Current status of the query lifecycle */
     readonly status: ResourceQueryStatus;
+    /** True if fetching the query for the first time */
     readonly isLoading: boolean;
+    /** True if currently fetching data (both initial load and refetches) */
     readonly isFetching: boolean;
+    /** True if the data is marked as stale and needs refetching */
     readonly isStale: boolean;
+    /** Epoch timestamp of when data was last successfully fetched */
     readonly updatedAt: number | undefined;
+    /** Trigger a fetch request */
     fetch(): Promise<T | undefined>;
+    /** Trigger a refetch of source data, ignoring stale checks */
     refetch(): Promise<T | undefined>;
+    /** Mark cache data as stale */
     invalidate(): void;
+    /** Dynamically enable or disable automatic query fetching */
     setEnabled(enabled: boolean): void;
+    /** Update cache stale lifetime configuration */
     setStaleTime(staleTime: number): void;
 }
 
+/**
+ * Represents the save/mutation state of a Resource.
+ */
 export interface ResourceMutation<R = any> {
+    /** Current status of the save operation */
     readonly status: MutationStatus;
+    /** Error details if save mutation fails */
     readonly error: unknown;
+    /** The response data returned from a successful save mutation */
     readonly data: R | undefined;
+    /** True if the mutation save is currently in progress */
     readonly isSaving: boolean;
+    /** Reset the mutation state back to idle */
     reset(): void;
+    /** Retry the last attempted save mutation */
     retry(): Promise<MutationResult<R>>;
 }
 
+/**
+ * Controller for getting and setting properties of a single field.
+ */
 export interface FieldController<V = any> {
+    /** Dot-notation path of the field */
     readonly path: string;
+    /** Current value of the field (draft override or original data) */
     readonly value: V;
+    /** Initial value of the field before edits */
     readonly initialValue: V;
+    /** True if field's current value has changed from its initial value */
     readonly isChanged: boolean;
+    /** True if the field has been blurred/touched by the user */
     readonly isTouched: boolean;
+    /** Validation error message for this specific field */
     readonly error: string | undefined;
+    /** Update the field's draft value */
     set(value: V | ((prev: V) => V)): void;
+    /** Reset the field value and metadata back to its initial state */
     reset(): void;
+    /** Mark the field as blurred/touched */
     touch(): void;
+    /** Validate this specific field */
     validate(): Promise<FieldValidationResult>;
 }
 
+/**
+ * Array controller subclass offering helper methods for list operations.
+ */
 export interface ArrayFieldController<T = any> extends FieldController<T[]> {
+    /** The array items contained within this field */
     readonly items: T[];
+    /** Append an item to the end of the array list */
     append(item: T): void;
+    /** Prepend an item to the start of the array list */
     prepend(item: T): void;
+    /** Insert an item at a specific index */
     insert(index: number, item: T): void;
+    /** Remove an item at a specific index */
     remove(index: number): void;
+    /** Swap the positions of two items in the array list */
     swap(indexA: number, indexB: number): void;
+    /** Move an item from one index to another */
     move(from: number, to: number): void;
 }
 
+/**
+ * Read-only snapshot of the complete resource state.
+ */
 export interface ResourceSnapshot<T, R = any> {
+    /** The original fetched/synchronized server data */
     readonly data: T | undefined;
+    /** The current state of the data including all local modifications */
     readonly draft: T | undefined;
+    /** Overall status of the resource ("idle" | "loading" | "ready" | "error") */
     readonly status: ResourceStatus;
+    /** Source query fetch error, if any */
     readonly error: unknown;
+    /** Detailed query fetching state object */
     readonly query: ResourceQuery<T>;
+    /** Detailed save/mutation state object */
     readonly mutation: ResourceMutation<R>;
+    /** True if currently loading initial data */
     readonly isLoading: boolean;
+    /** True if currently fetching query data in the background */
     readonly isFetching: boolean;
+    /** True if save/mutation operation is currently in progress */
     readonly isSaving: boolean;
+    /** True if the draft contains unsaved changes relative to source data */
     readonly isChanged: boolean;
+    /** True if there are currently no validation errors */
     readonly isValid: boolean;
+    /** True if resource query or mutation failed */
     readonly isError: boolean;
+    /** List of dot-notation paths representing modified fields */
     readonly changedFields: string[];
+    /** List of dot-notation paths representing touched/blurred fields */
     readonly touchedFields: string[];
+    /** Record of current validation errors mapping path to error message */
     readonly errors: Record<string, string>;
 }
 
+/**
+ * A Resource instance managing state, query operations, and mutations.
+ */
 export interface Resource<T, R = any> extends ResourceSnapshot<T, R> {
+    /** Get a read-only snapshot of the current state */
     readonly snapshot: ResourceSnapshot<T, R>;
+    /** Get a single field controller by dot-notation path */
     field<V = any>(path: string): FieldController<V>;
+    /** Get an array list field controller by dot-notation path */
     array<I = any>(path: string): ArrayFieldController<I>;
+    /** Get the current draft value of a path */
     get<V = any>(path: string): V;
+    /** Get the initial value of a path */
     getInitial<V = any>(path: string): V;
+    /** Modify a draft value at a path */
     set(path: string, value: any | ((prev: any) => any)): void;
+    /** Batch edit multiple draft paths at once */
     setMany(patches: Record<string, any>): void;
+    /** Reset the draft override at a path */
     reset(path: string): void;
+    /** Clear all local draft edits, reverting to source data */
     resetDraft(): void;
+    /** Mark a path as touched/blurred */
     touch(path: string): void;
+    /** Declaratively fetch source data */
     fetch(): Promise<T | undefined>;
+    /** Force refetch data, bypassing cache configuration */
     refetch(): Promise<T | undefined>;
+    /** Save all local draft modifications using source.save */
     save(): Promise<MutationResult<R>>;
+    /** Run validation resolver and field checks for the entire resource */
     validate(): Promise<boolean>;
+    /** Run validation for a single field path */
     validateField(path: string): Promise<FieldValidationResult>;
+    /** Run validation for multiple path targets or pattern wildcards */
     validateFields(paths: string[] | string): Promise<ValidationResult>;
+    /** Subscribe to overall resource state changes */
     subscribe(listener: (snapshot: ResourceSnapshot<T, R>) => void): () => void;
+    /** Subscribe to state changes of a single field controller */
     subscribeField(path: string, listener: (field: FieldController) => void): () => void;
+    /** Synchronously apply server data updates to the resource */
     syncSource(source: ExistingQuery<T> | ExistingState<T> | { data?: T; value?: T }): void;
+    /** Destroy subscriptions, timers, and perform cleanup */
     destroy(): void;
 }

@@ -1,4 +1,3 @@
-import { Plugin } from "./plugin";
 import { Resource, ResourceStatus } from "./resource";
 
 /**
@@ -11,8 +10,6 @@ export interface CollectionConfig<T> {
     getId: (entity: T) => string;
     /** Optional sort comparator */
     sortBy?: (a: T, b: T) => number;
-    /** Plugins to extend collection behavior */
-    plugins?: Plugin<T[]>[];
 }
 
 /**

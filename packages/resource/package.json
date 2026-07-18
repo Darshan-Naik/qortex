@@ -12,31 +12,6 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
-    },
-    "./query": {
-      "types": "./dist/query.d.ts",
-      "require": "./dist/query.js",
-      "import": "./dist/query.mjs"
-    },
-    "./validate": {
-      "types": "./dist/validate.d.ts",
-      "require": "./dist/validate.js",
-      "import": "./dist/validate.mjs"
-    },
-    "./optimistic": {
-      "types": "./dist/optimistic.d.ts",
-      "require": "./dist/optimistic.js",
-      "import": "./dist/optimistic.mjs"
-    },
-    "./persist": {
-      "types": "./dist/persist.d.ts",
-      "require": "./dist/persist.js",
-      "import": "./dist/persist.mjs"
-    },
-    "./store": {
-      "types": "./dist/store.d.ts",
-      "require": "./dist/store.js",
-      "import": "./dist/store.mjs"
     }
   },
   "files": [

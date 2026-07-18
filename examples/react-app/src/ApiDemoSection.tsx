@@ -20,7 +20,7 @@ type UserData = z.infer<typeof UserSchema>;
 const zodResolver = (schema: z.ZodSchema) => (data: any) => {
   const result = schema.safeParse(data);
   if (result.success) return null;
-  
+
   const errors: Record<string, string> = {};
   for (const issue of result.error.issues) {
     const path = issue.path.join(".");
@@ -58,8 +58,8 @@ const { useResource, useField } = createResourceHooks<UserData>({
       });
       if (!res.ok) throw new Error("Server failed to update user profile");
       return res.json();
-    }
-  }
+    },
+  },
 });
 
 const ApiFormField = ({ path, label, type = "text" }: { path: string; label: string; type?: string }) => {
@@ -131,9 +131,9 @@ export default function ApiDemoSection() {
       </div>
 
       <div className="controls">
-        <button 
-          className="btn" 
-          disabled={isSaving || !isChanged} 
+        <button
+          className="btn"
+          disabled={isSaving || !isChanged}
           onClick={async () => {
             const res = await save();
             if (res.success) {
@@ -145,9 +145,9 @@ export default function ApiDemoSection() {
         >
           {isSaving ? "⏳ Mutating..." : "💾 Mutate Profile"}
         </button>
-        <button 
-          className="btn btn-outline" 
-          disabled={isSaving || !isChanged} 
+        <button
+          className="btn btn-outline"
+          disabled={isSaving || !isChanged}
           onClick={() => resetDraft()}
         >
           Reset Form
@@ -159,10 +159,10 @@ export default function ApiDemoSection() {
 
       <div style={{ marginTop: "20px", padding: "10px", background: "rgba(0,0,0,0.2)", borderRadius: "6px" }}>
         <pre style={{ fontSize: "11px", margin: 0 }}>
-          {JSON.stringify({ 
-            isChanged, 
-            isSaving, 
-            draft 
+          {JSON.stringify({
+            isChanged,
+            isSaving,
+            draft
           }, null, 2)}
         </pre>
       </div>

@@ -8,7 +8,6 @@ describe('Collection Engine', () => {
         collection = createCollection({
             getId: (entity: any) => entity.id,
             sortBy: undefined,
-            plugins: []
         });
     });
 
@@ -99,7 +98,7 @@ describe('Collection Engine', () => {
                     },
                 }
             ],
-        });
+        } as any);
 
         expect(pluginCollection.selectAll()).toEqual([{ id: 'user-1', name: 'Alice' }]);
 
