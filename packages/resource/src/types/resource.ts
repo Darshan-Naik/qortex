@@ -324,11 +324,25 @@ export interface FieldController<V = any> {
 }
 
 /**
+ * Stable identity entry for an item in an array field.
+ */
+export interface ArrayFieldEntry<T = any> {
+    /** Stable identity key for React lists (survives reorder) */
+    readonly id: string;
+    /** Current index in the array */
+    readonly index: number;
+    /** The item value at this index */
+    readonly item: T;
+}
+
+/**
  * Array controller subclass offering helper methods for list operations.
  */
 export interface ArrayFieldController<T = any> extends FieldController<T[]> {
     /** The array items contained within this field */
     readonly items: T[];
+    /** Items with stable identity keys for list rendering */
+    readonly fields: ArrayFieldEntry<T>[];
     /** Append an item to the end of the array list */
     append(item: T): void;
     /** Prepend an item to the start of the array list */

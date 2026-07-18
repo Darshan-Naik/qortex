@@ -1,12 +1,19 @@
-import { useSyncExternalStore, useMemo, useEffect } from "react";
+import { useSyncExternalStore, useMemo, useEffect, useRef } from "react";
 import { createResource } from "qortex-resource";
-import type { ResourceConfig, ResourceSnapshot, Resource } from "qortex-resource";
+import type { ResourceConfig, ResourceSnapshot, Resource, ResourceKey } from "qortex-resource";
+
+function serializeResourceKey(key: ResourceKey | undefined): string {
+    if (key == null) return "";
+    if (Array.isArray(key)) return key.map(String).join("#");
+    return String(key);
+}
 
 /**
  * React hook to create and manage a resource lifecycle.
  *
- * It automatically subscribes to the resource state and triggers
- * re-renders when the state changes.
+ * Creates a resource once per `config.key` (recreates when the key changes).
+ * Other config fields are read at creation time — pass a new `key` when the
+ * resource identity should change (e.g. different entity id).
  *
  * @param config - Resource configuration
  * @returns The full resource state and bound actions
@@ -14,8 +21,8 @@ import type { ResourceConfig, ResourceSnapshot, Resource } from "qortex-resource
  * @example
  * ```tsx
  * const { draft, set, save } = useResource({
- *   initialData: async () => api.getUser(id),
- *   fields: { name: { editable: true } },
+ *   key: userId,
+ *   initialData: async () => api.getUser(userId),
  *   source: {
  *     save: async (draft) => api.updateUser(draft)
  *   }
@@ -23,23 +30,26 @@ import type { ResourceConfig, ResourceSnapshot, Resource } from "qortex-resource
  * ```
  */
 export function useResource<T, R = T>(config: ResourceConfig<T, R>) {
-    // 1. Create a stable resource instance for the lifetime of the component
-    const resource = useMemo(() => createResource(config), []);
+    const keyStr = serializeResourceKey(config.key);
+    const configRef = useRef(config);
+    configRef.current = config;
 
-    // Cleanup resource on unmount
+    const resource = useMemo(
+        () => createResource(configRef.current),
+        [keyStr],
+    );
+
     useEffect(() => {
         return () => {
             resource.destroy();
         };
     }, [resource]);
 
-    // 2. Subscribe to the full snapshot
     const snapshot = useSyncExternalStore<ResourceSnapshot<T, R>>(
         (listener) => resource.subscribe(listener),
         () => resource.snapshot,
     );
 
-    // 3. Bind actions so they don't need `resource.` prefix
     const actions = useMemo(
         () => ({
             set: resource.set.bind(resource),
@@ -58,11 +68,8 @@ export function useResource<T, R = T>(config: ResourceConfig<T, R>) {
     );
 
     return {
-        // Return full snapshot state
         ...snapshot,
-        // Bound actions
         ...actions,
-        // The raw resource instance (for passing to useField, etc.)
         resource,
     };
 }

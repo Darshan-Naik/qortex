@@ -1,5 +1,6 @@
 import type {
     ArrayFieldController,
+    ArrayFieldEntry,
     ExistingQuery,
     ExistingState,
     FieldConfig,
@@ -19,9 +20,11 @@ import type {
     ValidationResult,
 } from "./types";
 import { flattenFieldsConfig, isEditable } from "./field";
-import { applyOverrides, diffPaths, getByPath } from "./path";
+import { applyOverrides, getByPath } from "./path";
 
 type FieldListener = (field: FieldController) => void;
+
+const DRAFT_UNSET = Symbol("draft-unset");
 
 export function createResource<T, R = T>(config: ResourceConfig<T, R>): Resource<T, R> {
     return new ResourceCore(config).api;
@@ -54,6 +57,13 @@ class ResourceCore<T, R = T> {
     private persistKey: string;
     private fieldControllers = new Map<string, FieldController>();
     private fieldStates = new Map<string, any>();
+    private arrayControllers = new Map<string, ArrayFieldController>();
+    private arrayKeys = new Map<string, string[]>();
+    private arrayKeyCounter = 0;
+    private draftCache: T | undefined | typeof DRAFT_UNSET = DRAFT_UNSET;
+    private changedFieldsCache: string[] | undefined;
+    private queryApi!: ResourceQuery<T>;
+    private mutationApi!: ResourceMutation<R>;
 
     constructor(config: ResourceConfig<T, R>) {
         this.config = config;
@@ -62,10 +72,37 @@ class ResourceCore<T, R = T> {
         this.fieldConfigs = flattenFieldsConfig(this.config.fields);
         this.persistKey = getPersistKey(this.config);
         this.storage = createStorage(this.config.persist);
+        this.initStableApis();
 
         this.initializeSource();
         this.api = this.createApi();
         this.initialize();
+    }
+
+    private initStableApis(): void {
+        const core = this;
+        this.queryApi = {
+            get data() { return core.dataValue; },
+            get error() { return core.errorValue; },
+            get status() { return core.queryStatus; },
+            get isLoading() { return core.statusValue === "loading"; },
+            get isFetching() { return core.queryStatus === "fetching"; },
+            get isStale() { return core.computeIsStale(); },
+            get updatedAt() { return core.updatedAt; },
+            fetch: core.fetch,
+            refetch: core.refetch,
+            invalidate: core.invalidate,
+            setEnabled: core.setEnabled,
+            setStaleTime: core.setStaleTime,
+        };
+        this.mutationApi = {
+            get status() { return core.mutationStatusValue; },
+            get error() { return core.mutationErrorValue; },
+            get data() { return core.mutationDataValue; },
+            get isSaving() { return core.mutationStatusValue === "mutating"; },
+            reset: core.resetMutation,
+            retry: async () => core.lastSave ? core.lastSave() : core.save(),
+        };
     }
 
     private async initialize(): Promise<void> {
@@ -135,17 +172,23 @@ class ResourceCore<T, R = T> {
 
     private applySourceValue(value: T | undefined, mode = this.config.sourceUpdate ?? "keepDirty"): void {
         const previousData = this.dataValue;
+        // Capture before mutating data — optimistic save passes the current draft by reference.
+        const currentDraft = this.draft;
         this.dataValue = value;
         this.updatedAt = value === undefined ? this.updatedAt : Date.now();
         this.statusValue = value === undefined ? this.statusValue : "ready";
         this.errorValue = undefined;
 
-        if (mode === "resetDraft" || previousData === undefined) {
+        if (mode === "resetDraft" || previousData === undefined || mode === "replaceAll") {
             this.draftOverrides.clear();
-        } else if (mode === "replaceAll") {
-            this.draftOverrides.clear();
+            this.arrayKeys.clear();
+        } else if (!Object.is(value, currentDraft)) {
+            // External source update: drop overrides that now match server data.
+            // Skip when applying the draft itself (optimistic updates).
+            this.pruneMatchingOverrides();
         }
 
+        this.invalidateDraftState();
         this.emitAllFields();
         this.emit();
     }
@@ -218,12 +261,16 @@ class ResourceCore<T, R = T> {
     private get draft(): T | undefined {
         if (this.dataValue === undefined) return undefined;
         if (this.draftOverrides.size === 0) return this.dataValue;
-        return applyOverrides(this.dataValue, this.draftOverrides);
+        if (this.draftCache !== DRAFT_UNSET) return this.draftCache as T;
+        this.draftCache = applyOverrides(this.dataValue, this.draftOverrides);
+        return this.draftCache;
     }
 
     private get changedFields(): string[] {
-        if (this.dataValue === undefined || this.draft === undefined) return [];
-        return diffPaths(this.dataValue, this.draft);
+        if (!this.changedFieldsCache) {
+            this.changedFieldsCache = [...this.draftOverrides.keys()];
+        }
+        return this.changedFieldsCache;
     }
 
     private get touchedFields(): string[] {
@@ -240,36 +287,6 @@ class ResourceCore<T, R = T> {
         return errors;
     }
 
-    private get queryApi(): ResourceQuery<T> {
-        const core = this;
-        return {
-            get data() { return core.dataValue; },
-            get error() { return core.errorValue; },
-            get status() { return core.queryStatus; },
-            get isLoading() { return core.statusValue === "loading"; },
-            get isFetching() { return core.queryStatus === "fetching"; },
-            get isStale() { return core.computeIsStale(); },
-            get updatedAt() { return core.updatedAt; },
-            fetch: core.fetch,
-            refetch: core.refetch,
-            invalidate: core.invalidate,
-            setEnabled: core.setEnabled,
-            setStaleTime: core.setStaleTime,
-        };
-    }
-
-    private get mutationApi(): ResourceMutation<R> {
-        const core = this;
-        return {
-            get status() { return core.mutationStatusValue; },
-            get error() { return core.mutationErrorValue; },
-            get data() { return core.mutationDataValue; },
-            get isSaving() { return core.mutationStatusValue === "mutating"; },
-            reset: core.resetMutation,
-            retry: async () => core.lastSave ? core.lastSave() : core.save(),
-        };
-    }
-
     private get queryStatus(): ResourceQueryStatus {
         if (this.config.source?.query) return normalizeQueryStatus(this.config.source.query);
         if (this.statusValue === "loading") return "fetching";
@@ -280,63 +297,13 @@ class ResourceCore<T, R = T> {
 
     field = <V = any>(path: string): FieldController<V> => this.createField(path) as FieldController<V>;
 
-    array = <I = any>(path: string): ArrayFieldController<I> => {
-        const core = this;
-        const field = this.createField<I[]>(path);
-        return {
-            ...field,
-            get items() { return field.value ?? []; },
-            append(item) { core.set(path, (prev: I[] = []) => [...prev, item]); },
-            prepend(item) { core.set(path, (prev: I[] = []) => [item, ...prev]); },
-            insert(index, item) {
-                core.set(path, (prev: I[] = []) => {
-                    const next = [...prev];
-                    next.splice(index, 0, item);
-                    return next;
-                });
-            },
-            remove(index) {
-                core.set(path, (prev: I[] = []) => {
-                    const next = [...prev];
-                    next.splice(index, 1);
-                    return next;
-                });
-            },
-            swap(indexA, indexB) {
-                core.set(path, (prev: I[] = []) => {
-                    const next = [...prev];
-                    [next[indexA], next[indexB]] = [next[indexB], next[indexA]];
-                    return next;
-                });
-            },
-            move(from, to) {
-                core.set(path, (prev: I[] = []) => {
-                    const next = [...prev];
-                    const [item] = next.splice(from, 1);
-                    next.splice(to, 0, item);
-                    return next;
-                });
-            },
-        };
-    };
+    array = <I = any>(path: string): ArrayFieldController<I> => this.createArray(path) as ArrayFieldController<I>;
 
     get = <V = any>(path: string): V => getByPath(this.draft, path);
     getInitial = <V = any>(path: string): V => getByPath(this.dataValue, path);
 
     set = (path: string, value: any | ((prev: any) => any)): void => {
-        if (!this.canEdit(path)) return;
-        const currentValue = this.draftOverrides.has(path)
-            ? this.draftOverrides.get(path)
-            : getByPath(this.dataValue, path);
-        const nextValue = typeof value === "function" ? value(currentValue) : value;
-        const initialValue = getByPath(this.dataValue, path);
-
-        if (Object.is(nextValue, initialValue)) {
-            this.draftOverrides.delete(path);
-        } else {
-            this.draftOverrides.set(path, nextValue);
-        }
-
+        if (!this.applyFieldPatch(path, value)) return;
         this.runFieldChangeValidation(path);
         this.scheduleDraftPersist();
         this.emitField(path);
@@ -346,18 +313,7 @@ class ResourceCore<T, R = T> {
     setMany = (patches: Record<string, any>): void => {
         const changedPaths: string[] = [];
         for (const [path, value] of Object.entries(patches)) {
-            if (!this.canEdit(path)) continue;
-            const currentValue = this.draftOverrides.has(path)
-                ? this.draftOverrides.get(path)
-                : getByPath(this.dataValue, path);
-            const nextValue = typeof value === "function" ? value(currentValue) : value;
-            const initialValue = getByPath(this.dataValue, path);
-            if (Object.is(nextValue, initialValue)) {
-                this.draftOverrides.delete(path);
-            } else {
-                this.draftOverrides.set(path, nextValue);
-            }
-            changedPaths.push(path);
+            if (this.applyFieldPatch(path, value)) changedPaths.push(path);
         }
         for (const path of changedPaths) {
             this.runFieldChangeValidation(path);
@@ -370,12 +326,17 @@ class ResourceCore<T, R = T> {
     reset = (path: string): void => {
         this.draftOverrides.delete(path);
         this.meta.delete(path);
+        this.arrayKeys.delete(path);
         for (const key of [...this.draftOverrides.keys()]) {
             if (key.startsWith(path + ".")) this.draftOverrides.delete(key);
         }
         for (const key of [...this.meta.keys()]) {
             if (key.startsWith(path + ".")) this.meta.delete(key);
         }
+        for (const key of [...this.arrayKeys.keys()]) {
+            if (key.startsWith(path + ".")) this.arrayKeys.delete(key);
+        }
+        this.invalidateDraftState();
         this.scheduleDraftPersist();
         this.emitField(path);
         this.emit();
@@ -384,6 +345,8 @@ class ResourceCore<T, R = T> {
     resetDraft = (): void => {
         this.draftOverrides.clear();
         this.meta.clear();
+        this.arrayKeys.clear();
+        this.invalidateDraftState();
         this.clearPersistedDraft();
         this.emitAllFields();
         this.emit();
@@ -593,6 +556,180 @@ class ResourceCore<T, R = T> {
         if (mode === "blur" && this.meta.get(path)?.error) {
             this.validateField(path);
         }
+    }
+
+    private applyFieldPatch(path: string, value: any | ((prev: any) => any)): boolean {
+        if (!this.canEdit(path)) return false;
+        const currentValue = this.draftOverrides.has(path)
+            ? this.draftOverrides.get(path)
+            : getByPath(this.dataValue, path);
+        const nextValue = typeof value === "function" ? value(currentValue) : value;
+        const initialValue = getByPath(this.dataValue, path);
+
+        if (Object.is(nextValue, initialValue)) {
+            this.draftOverrides.delete(path);
+        } else {
+            this.draftOverrides.set(path, nextValue);
+        }
+
+        if (Array.isArray(nextValue)) {
+            this.syncArrayKeysLength(path, nextValue.length);
+        }
+
+        this.invalidateDraftState();
+        return true;
+    }
+
+    private invalidateDraftState(): void {
+        this.draftCache = DRAFT_UNSET;
+        this.changedFieldsCache = undefined;
+    }
+
+    private pruneMatchingOverrides(): void {
+        for (const [path, value] of [...this.draftOverrides.entries()]) {
+            if (Object.is(value, getByPath(this.dataValue, path))) {
+                this.draftOverrides.delete(path);
+            }
+        }
+    }
+
+    private nextArrayKey(): string {
+        return `arr_${this.arrayKeyCounter++}`;
+    }
+
+    private syncArrayKeysLength(path: string, length: number): string[] {
+        let keys = this.arrayKeys.get(path);
+        if (!keys) {
+            keys = Array.from({ length }, () => this.nextArrayKey());
+            this.arrayKeys.set(path, keys);
+            return keys;
+        }
+        if (keys.length < length) {
+            while (keys.length < length) keys.push(this.nextArrayKey());
+        } else if (keys.length > length) {
+            keys.length = length;
+        }
+        return keys;
+    }
+
+    private getArrayFields<I>(path: string): ArrayFieldEntry<I>[] {
+        const items = (getByPath(this.draft, path) as I[] | undefined) ?? [];
+        const keys = this.syncArrayKeysLength(path, items.length);
+        return items.map((item, index) => ({ id: keys[index], index, item }));
+    }
+
+    private mutateArray<I>(
+        path: string,
+        updater: (prev: I[]) => I[],
+        syncKeys: (keys: string[], prev: I[]) => void,
+    ): void {
+        const prev = (getByPath(this.draft, path) as I[] | undefined) ?? [];
+        const keys = this.syncArrayKeysLength(path, prev.length);
+        syncKeys(keys, prev);
+        // Skip length re-sync inside applyFieldPatch — keys already updated.
+        const next = updater(prev);
+        if (!this.canEdit(path)) return;
+        const initialValue = getByPath(this.dataValue, path);
+        if (Object.is(next, initialValue)) {
+            this.draftOverrides.delete(path);
+        } else {
+            this.draftOverrides.set(path, next);
+        }
+        this.invalidateDraftState();
+        this.runFieldChangeValidation(path);
+        this.scheduleDraftPersist();
+        this.emitField(path);
+        this.emit();
+    }
+
+    private createArray<I = any>(path: string): ArrayFieldController<I> {
+        const existing = this.arrayControllers.get(path) as ArrayFieldController<I> | undefined;
+        if (existing) return existing;
+
+        const core = this;
+        const controller: ArrayFieldController<I> = {
+            get path() { return path; },
+            get value() { return getByPath(core.draft, path); },
+            get initialValue() { return getByPath(core.dataValue, path); },
+            get isChanged() {
+                return !Object.is(getByPath(core.draft, path), getByPath(core.dataValue, path));
+            },
+            get isTouched() { return core.meta.get(path)?.isTouched ?? false; },
+            get error() { return core.meta.get(path)?.error; },
+            get items() { return (getByPath(core.draft, path) as I[] | undefined) ?? []; },
+            get fields() { return core.getArrayFields<I>(path); },
+            set(val) { core.set(path, val); },
+            reset() { core.reset(path); },
+            touch() { core.touch(path); },
+            validate() { return core.validateField(path); },
+            append(item) {
+                core.mutateArray<I>(
+                    path,
+                    (prev) => [...prev, item],
+                    (keys) => { keys.push(core.nextArrayKey()); },
+                );
+            },
+            prepend(item) {
+                core.mutateArray<I>(
+                    path,
+                    (prev) => [item, ...prev],
+                    (keys) => { keys.unshift(core.nextArrayKey()); },
+                );
+            },
+            insert(index, item) {
+                core.mutateArray<I>(
+                    path,
+                    (prev) => {
+                        const next = [...prev];
+                        next.splice(index, 0, item);
+                        return next;
+                    },
+                    (keys) => { keys.splice(index, 0, core.nextArrayKey()); },
+                );
+            },
+            remove(index) {
+                core.mutateArray<I>(
+                    path,
+                    (prev) => {
+                        const next = [...prev];
+                        next.splice(index, 1);
+                        return next;
+                    },
+                    (keys) => { keys.splice(index, 1); },
+                );
+            },
+            swap(indexA, indexB) {
+                core.mutateArray<I>(
+                    path,
+                    (prev) => {
+                        const next = [...prev];
+                        [next[indexA], next[indexB]] = [next[indexB], next[indexA]];
+                        return next;
+                    },
+                    (keys) => {
+                        [keys[indexA], keys[indexB]] = [keys[indexB], keys[indexA]];
+                    },
+                );
+            },
+            move(from, to) {
+                core.mutateArray<I>(
+                    path,
+                    (prev) => {
+                        const next = [...prev];
+                        const [item] = next.splice(from, 1);
+                        next.splice(to, 0, item);
+                        return next;
+                    },
+                    (keys) => {
+                        const [key] = keys.splice(from, 1);
+                        keys.splice(to, 0, key);
+                    },
+                );
+            },
+        };
+
+        this.arrayControllers.set(path, controller);
+        return controller;
     }
 
     private createField<V = any>(path: string): FieldController<V> {

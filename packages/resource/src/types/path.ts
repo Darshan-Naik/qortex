@@ -27,6 +27,9 @@ export type Path<T, D extends number = 4> = [D] extends [never]
               }[keyof T & string]
             : never;
 
+/** Alias for `Path<T>` — preferred name for typed field paths. */
+export type PathOf<T> = Path<T>;
+
 /**
  * Resolves the value type at a given dot-notation path.
  *

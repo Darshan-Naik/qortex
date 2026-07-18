@@ -1,5 +1,6 @@
 import React from "react";
 import { z } from "zod";
+import { zodResolver } from "qortex-resource";
 import { createResourceHooks } from "qortex-resource-react";
 
 // 1. Define Zod schema for nested profile data validation
@@ -16,20 +17,7 @@ const UserSchema = z.object({
 
 type UserData = z.infer<typeof UserSchema>;
 
-// 2. Custom validation resolver helper translating Zod errors to Record<string, string>
-const zodResolver = (schema: z.ZodSchema) => (data: any) => {
-  const result = schema.safeParse(data);
-  if (result.success) return null;
-
-  const errors: Record<string, string> = {};
-  for (const issue of result.error.issues) {
-    const path = issue.path.join(".");
-    errors[path] = issue.message;
-  }
-  return errors;
-};
-
-// 3. Initialize resource hooks pre-bound to source query (fetch) & Zod schema validation
+// 2. Initialize resource hooks with source fetch + Zod validation
 const { useResource, useField } = createResourceHooks<UserData>({
   validate: {
     resolver: zodResolver(UserSchema)
