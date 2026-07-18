@@ -47,6 +47,25 @@ const packages = [
     dependencyTransforms: {
       'qortex-store': 'qortex-store' // workspace:* -> qortex-store (same version)
     }
+  },
+  {
+    name: 'qortex-resource',
+    path: 'packages/resource',
+    publishName: 'qortex-resource',
+    description: 'End-to-End Data Lifecycle Management for the qortex ecosystem',
+    subExports: ['query', 'validate', 'optimistic', 'persist'],
+    dependencyTransforms: {
+      'qortex-query': 'qortex-query'
+    }
+  },
+  {
+    name: 'qortex-resource-react',
+    path: 'packages/resource-react',
+    publishName: 'qortex-resource-react',
+    description: 'React bindings for qortex-resource',
+    dependencyTransforms: {
+      'qortex-resource': 'qortex-resource'
+    }
   }
 ];
 

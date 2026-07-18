@@ -1,0 +1,6 @@
+{
+  "name": "qortex-resource/validate",
+  "main": "../dist/validate.js",
+  "module": "../dist/validate.mjs",
+  "types": "../dist/validate.d.ts"
+}

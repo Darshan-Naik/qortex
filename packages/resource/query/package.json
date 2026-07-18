@@ -1,0 +1,6 @@
+{
+  "name": "qortex-resource/query",
+  "main": "../dist/query.js",
+  "module": "../dist/query.mjs",
+  "types": "../dist/query.d.ts"
+}

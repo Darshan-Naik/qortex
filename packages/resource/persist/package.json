@@ -1,0 +1,6 @@
+{
+  "name": "qortex-resource/persist",
+  "main": "../dist/persist.js",
+  "module": "../dist/persist.mjs",
+  "types": "../dist/persist.d.ts"
+}

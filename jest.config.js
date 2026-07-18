@@ -186,6 +186,72 @@ module.exports = {
       moduleNameMapper: {
         '^qortex-store$': '<rootDir>/packages/store/src/index.ts',
       },
+    },
+    {
+      displayName: 'qortex-resource',
+      testEnvironment: 'node',
+      roots: ['<rootDir>/packages/resource'],
+      testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+        '/coverage/'
+      ],
+      testMatch: [
+        '**/__tests__/**/*.test.js',
+        '**/__tests__/**/*.test.ts',
+        '**/?(*.)+(spec|test).js',
+        '**/?(*.)+(spec|test).ts'
+      ],
+      collectCoverageFrom: [
+        'packages/resource/src/**/*.ts',
+        '!packages/resource/src/**/*.d.ts',
+        '!packages/resource/src/**/*.test.ts',
+        '!packages/resource/src/**/*.spec.ts'
+      ],
+      coverageDirectory: 'coverage/resource',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      transform: {
+        '^.+\\.(js|ts)$': 'babel-jest',
+      },
+      moduleFileExtensions: ['js', 'ts', 'json'],
+      moduleNameMapper: {
+        '^qortex-query$': '<rootDir>/packages/query/src/index.ts',
+      },
+    },
+    {
+      displayName: 'qortex-resource-react',
+      testEnvironment: 'jsdom',
+      roots: ['<rootDir>/packages/resource-react'],
+      testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+        '/coverage/'
+      ],
+      testMatch: [
+        '**/__tests__/**/*.test.js',
+        '**/__tests__/**/*.test.jsx',
+        '**/__tests__/**/*.test.tsx',
+        '**/?(*.)+(spec|test).js',
+        '**/?(*.)+(spec|test).jsx',
+        '**/?(*.)+(spec|test).tsx'
+      ],
+      collectCoverageFrom: [
+        'packages/resource-react/src/**/*.{js,jsx,ts,tsx}',
+        '!packages/resource-react/src/**/*.d.ts',
+        '!packages/resource-react/src/**/*.test.{js,jsx,ts,tsx}',
+        '!packages/resource-react/src/**/*.spec.{js,jsx,ts,tsx}'
+      ],
+      coverageDirectory: 'coverage/resource-react',
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      transform: {
+        '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+      },
+      moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
+      moduleNameMapper: {
+        '^qortex-resource$': '<rootDir>/packages/resource/src/index.ts',
+      },
     }
   ]
 };

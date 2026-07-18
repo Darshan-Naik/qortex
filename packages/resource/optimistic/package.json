@@ -1,0 +1,6 @@
+{
+  "name": "qortex-resource/optimistic",
+  "main": "../dist/optimistic.js",
+  "module": "../dist/optimistic.mjs",
+  "types": "../dist/optimistic.d.ts"
+}

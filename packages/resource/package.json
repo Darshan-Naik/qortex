@@ -1,0 +1,52 @@
+{
+  "name": "qortex-resource",
+  "version": "1.0.0",
+  "description": "End-to-End Data Lifecycle Management for the qortex ecosystem",
+  "author": "Darshan Naik",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./query": {
+      "require": "./dist/plugins/query.js",
+      "import": "./dist/plugins/query.mjs",
+      "types": "./dist/plugins/query.d.ts"
+    },
+    "./validate": {
+      "require": "./dist/plugins/validate.js",
+      "import": "./dist/plugins/validate.mjs",
+      "types": "./dist/plugins/validate.d.ts"
+    },
+    "./optimistic": {
+      "require": "./dist/plugins/optimistic.js",
+      "import": "./dist/plugins/optimistic.mjs",
+      "types": "./dist/plugins/optimistic.d.ts"
+    },
+    "./persist": {
+      "require": "./dist/plugins/persist.js",
+      "import": "./dist/plugins/persist.mjs",
+      "types": "./dist/plugins/persist.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "qortex-query": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  }
+}
