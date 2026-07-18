@@ -1,4 +1,4 @@
-import { InternalResourceState } from "../types/state";
+import { InternalResourceState } from "../types/resource-internal";
 import { MutationResult } from "../types";
 import { isAllValid } from "../field";
 import { getChangedFields } from "./derive";

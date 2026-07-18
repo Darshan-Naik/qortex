@@ -1,4 +1,4 @@
-import { InternalResourceState } from "../types/state";
+import { InternalResourceState } from "../types/resource-internal";
 import { getByPath } from "../path";
 
 export function getChangedFields<T>(state: InternalResourceState<T>): string[] {

@@ -119,13 +119,10 @@ export interface ResourceValidationConfig<T = any> {
     fields?: Record<string, (value: any, data: T) => string | undefined | null | Promise<string | undefined | null>>;
 }
 
-export interface ResourceConfig<T, R = T> {
-    /** Unique cache key for query caching and persistence */
-    key?: ResourceKey;
-    /** Local initial data or function/promise returning initial data */
-    initialData?: T | (() => T) | (() => Promise<T>);
-    /** Data sources for declarative fetching and saving */
-    source?: ResourceSource<T, R>;
+/**
+ * Core configuration options that are always valid regardless of data source.
+ */
+export interface ResourceBaseConfig<T, R = T> {
     /** Optional field definitions and read-only/editability controls */
     fields?: FieldsConfig;
     /** 
@@ -134,12 +131,6 @@ export interface ResourceConfig<T, R = T> {
      * - `"strict"`: Only fields configured in `fields` with `editable: true` are editable.
      */
     fieldMode?: "open" | "strict";
-    /** Fetching/query configuration rules (staleTime, cacheTime, etc.) */
-    query?: ResourceQueryConfig<T>;
-    /** Save/mutation configuration rules (optimistic updates, cache invalidation) */
-    mutation?: ResourceMutationConfig<T, R>;
-    /** Storage/persistence setup for caching or unsaved draft states */
-    persist?: ResourcePersistConfig | boolean;
     /** Resolver and field-level validation rules */
     validate?: ResourceValidationConfig<T>;
     /** Strategy for updating the draft when source data changes */
@@ -149,6 +140,114 @@ export interface ResourceConfig<T, R = T> {
     /** Event hook triggered when save mutation encounters an error */
     onSaveError?: (error: unknown) => void;
 }
+
+/**
+ * Union type constraining valid combinations of source configurations and lifecycle rules.
+ */
+export type ResourceSourceConfigUnion<T, R = T> =
+    | {
+          /** Client-only state. No query operations are configured. */
+          source?: undefined;
+          /** Local initial data or function/promise returning initial data */
+          initialData?: T | (() => T) | (() => Promise<T>);
+          query?: undefined;
+          mutation?: undefined;
+      }
+    | {
+          /** Native asynchronous fetch and save config */
+          source: {
+              /** Fetch data asynchronously */
+              fetch?: () => Promise<T> | T;
+              /** Save data mutations asynchronously */
+              save?: (draft: T, meta: MutateMeta) => Promise<R> | R;
+              /** Integrated mutation state bridge */
+              mutation?: ExistingMutation<T, R>;
+          };
+          /** Local initial data before async fetch completes */
+          initialData?: T | (() => T);
+          /** Fetching/query configuration rules (staleTime, equalityFn, etc.) */
+          query?: ResourceQueryConfig<T>;
+          /** Save/mutation configuration rules (optimistic updates) */
+          mutation?: ResourceMutationConfig<T, R>;
+      }
+    | {
+          /** Integrated query bridge using an external ExistingQuery instance */
+          source: {
+              /** Synchronize with an existing query instance (e.g. from react-query or qortex-query) */
+              query: ExistingQuery<T>;
+              /** Save data mutations asynchronously */
+              save?: (draft: T, meta: MutateMeta) => Promise<R> | R;
+              /** Integrated mutation state bridge */
+              mutation?: ExistingMutation<T, R>;
+          };
+          initialData?: undefined;
+          /** Fetching/query configuration rules (staleTime, equalityFn, etc.) */
+          query?: ResourceQueryConfig<T>;
+          /** Save/mutation configuration rules (optimistic updates) */
+          mutation?: ResourceMutationConfig<T, R>;
+      }
+    | {
+          /** Integrated state synchronization using an external store or state instance */
+          source: {
+              /** Synchronize with an existing state instance (e.g. from qortex-store) */
+              state: ExistingState<T>;
+              /** Save data mutations asynchronously */
+              save?: (draft: T, meta: MutateMeta) => Promise<R> | R;
+              /** Integrated mutation state bridge */
+              mutation?: ExistingMutation<T, R>;
+          };
+          initialData?: undefined;
+          query?: undefined;
+          /** Save/mutation configuration rules (optimistic updates) */
+          mutation?: ResourceMutationConfig<T, R>;
+      }
+    | {
+          /** Controlled-value component state synchronization */
+          source: {
+              /** The current value representing the source data */
+              value: T;
+              /** Callback triggered whenever a field change is committed */
+              onChange?: (value: T) => void;
+              /** Save data mutations asynchronously */
+              save?: (draft: T, meta: MutateMeta) => Promise<R> | R;
+              /** Integrated mutation state bridge */
+              mutation?: ExistingMutation<T, R>;
+          };
+          initialData?: undefined;
+          query?: undefined;
+          /** Save/mutation configuration rules (optimistic updates) */
+          mutation?: ResourceMutationConfig<T, R>;
+      };
+
+/**
+ * Union type constraining valid persistence configuration structures (enforces keys when persistence is enabled).
+ */
+export type ResourcePersistConfigUnion =
+    | {
+          /** Storage/persistence setup is disabled */
+          persist?: false;
+          /** Optional unique cache key */
+          key?: ResourceKey;
+      }
+    | {
+          /** Storage/persistence setup for caching or unsaved draft states (enforces root-level key) */
+          persist: true | Omit<ResourcePersistConfig, "key">;
+          /** Unique cache key required for persistence */
+          key: ResourceKey;
+      }
+    | {
+          /** Storage/persistence setup specifying a key directly in persist configuration */
+          persist: ResourcePersistConfig & { key: string };
+          /** Optional cache key */
+          key?: ResourceKey;
+      };
+
+/**
+ * Configuration options for `createResource()`, typed to prevent conflicting configs.
+ */
+export type ResourceConfig<T, R = T> = ResourceBaseConfig<T, R> &
+    ResourceSourceConfigUnion<T, R> &
+    ResourcePersistConfigUnion;
 
 /**
  * Represents the fetching/query state of a Resource.

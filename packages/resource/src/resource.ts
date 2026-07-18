@@ -15,6 +15,15 @@ import type {
     ResourceStatus,
     ResourceStorage,
     ValidationResult,
+    FieldsConfig,
+    ResourceKey,
+    ResourceQueryConfig,
+    ResourceMutationConfig,
+    ResourcePersistConfig,
+    ResourceValidationConfig,
+    SourceUpdateMode,
+    ExistingMutation,
+    MutateMeta,
 } from "./types";
 import type { Plugin, PluginContext } from "./types/plugin";
 import { FieldConfig } from "./types";
@@ -28,9 +37,7 @@ type FieldMeta = {
     error: string | undefined;
 };
 
-interface InternalResourceConfig<T, R = T> extends ResourceConfig<T, R> {
-    plugins?: Plugin<T>[];
-}
+import type { InternalResourceConfig } from "./types/resource-internal";
 
 export function createResource<T, R = T>(config: ResourceConfig<T, R>): Resource<T, R> {
     return new ResourceCore(config).api;
@@ -38,7 +45,7 @@ export function createResource<T, R = T>(config: ResourceConfig<T, R>): Resource
 
 class ResourceCore<T, R = T> {
     api: Resource<T, R>;
-    private internalConfig: InternalResourceConfig<T, R>;
+    private config: InternalResourceConfig<T, R>;
 
     private dataValue: T | undefined;
     private statusValue: ResourceStatus = "idle";
@@ -67,13 +74,13 @@ class ResourceCore<T, R = T> {
     private fieldControllers = new Map<string, FieldController>();
     private fieldStates = new Map<string, any>();
 
-    constructor(private config: ResourceConfig<T, R>) {
-        this.internalConfig = config as InternalResourceConfig<T, R>;
-        this.queryEnabled = config.query?.enabled !== false;
-        this.staleTime = config.query?.staleTime ?? 0;
-        this.fieldConfigs = flattenFieldsConfig(config.fields);
-        this.persistKey = getPersistKey(config);
-        this.storage = createStorage(config.persist);
+    constructor(config: ResourceConfig<T, R>) {
+        this.config = config as unknown as InternalResourceConfig<T, R>;
+        this.queryEnabled = this.config.query?.enabled !== false;
+        this.staleTime = this.config.query?.staleTime ?? 0;
+        this.fieldConfigs = flattenFieldsConfig(this.config.fields);
+        this.persistKey = getPersistKey(this.config);
+        this.storage = createStorage(this.config.persist);
         this.pluginContext = this.createPluginContext();
         
         // Load synchronous source data first
@@ -84,7 +91,7 @@ class ResourceCore<T, R = T> {
         // Notify plugins of the initial sync data
         this.pluginsInitialized = true;
         if (this.dataValue !== undefined) {
-            for (const plugin of this.internalConfig.plugins ?? []) {
+            for (const plugin of this.config.plugins ?? []) {
                 plugin.onInitialData?.(this.dataValue, this.pluginContext);
             }
         }
@@ -173,7 +180,7 @@ class ResourceCore<T, R = T> {
         }
 
         if (value !== undefined && this.pluginsInitialized) {
-            for (const plugin of this.internalConfig.plugins ?? []) {
+            for (const plugin of this.config.plugins ?? []) {
                 plugin.onInitialData?.(value, this.pluginContext);
             }
         }
@@ -369,7 +376,7 @@ class ResourceCore<T, R = T> {
             this.draftOverrides.set(path, nextValue);
         }
 
-        for (const plugin of this.internalConfig.plugins ?? []) {
+        for (const plugin of this.config.plugins ?? []) {
             plugin.onFieldChange?.(path, nextValue, this.pluginContext);
         }
 
@@ -396,7 +403,7 @@ class ResourceCore<T, R = T> {
                 this.draftOverrides.set(path, nextValue);
             }
 
-            for (const plugin of this.internalConfig.plugins ?? []) {
+            for (const plugin of this.config.plugins ?? []) {
                 plugin.onFieldChange?.(path, nextValue, this.pluginContext);
             }
         }
@@ -429,7 +436,7 @@ class ResourceCore<T, R = T> {
 
     touch = (path: string): void => {
         this.patchMeta(path, { touched: true });
-        for (const plugin of this.internalConfig.plugins ?? []) {
+        for (const plugin of this.config.plugins ?? []) {
             plugin.onFieldBlur?.(path, this.pluginContext);
         }
         if (this.config.validate?.on === "blur") {
@@ -497,7 +504,7 @@ class ResourceCore<T, R = T> {
             };
         }
 
-        for (const plugin of this.internalConfig.plugins ?? []) {
+        for (const plugin of this.config.plugins ?? []) {
             const result = await plugin.onBeforeMutate?.(this.draft, this.pluginContext);
             if (result === false) {
                 return {
@@ -532,7 +539,7 @@ class ResourceCore<T, R = T> {
             this.persistCache(nextData);
             this.clearPersistedDraft();
 
-            for (const plugin of this.internalConfig.plugins ?? []) {
+            for (const plugin of this.config.plugins ?? []) {
                 plugin.onAfterMutate?.(result, this.pluginContext);
             }
 
@@ -547,7 +554,7 @@ class ResourceCore<T, R = T> {
             this.mutationErrorValue = error;
             this.mutationDataValue = undefined;
 
-            for (const plugin of this.internalConfig.plugins ?? []) {
+            for (const plugin of this.config.plugins ?? []) {
                 plugin.onMutateError?.(error, this.pluginContext);
             }
 
@@ -688,7 +695,7 @@ class ResourceCore<T, R = T> {
     }
 
     private initializePlugins(): void {
-        for (const plugin of this.internalConfig.plugins ?? []) {
+        for (const plugin of this.config.plugins ?? []) {
             const cleanup = plugin.onInit?.(this.pluginContext);
             if (typeof cleanup === "function") {
                 this.pluginCleanups.push(cleanup);
@@ -902,21 +909,21 @@ function isPromiseLike(value: unknown): value is Promise<any> {
     return !!value && typeof value === "object" && typeof (value as Promise<any>).then === "function";
 }
 
-function getPersistKey(config: ResourceConfig<any, any>): string {
+function getPersistKey(config: any): string {
     if (typeof config.persist === "object" && config.persist.key) return config.persist.key;
     if (Array.isArray(config.key)) return config.key.map(String).join("#");
     return config.key == null ? "resource" : String(config.key);
 }
 
-function shouldPersistDraft(persist: ResourceConfig<any, any>["persist"]): boolean {
+function shouldPersistDraft(persist: any): boolean {
     return persist === true || (typeof persist === "object" && persist.draft === true);
 }
 
-function shouldPersistCache(persist: ResourceConfig<any, any>["persist"]): boolean {
+function shouldPersistCache(persist: any): boolean {
     return persist === true || (typeof persist === "object" && persist.cache === true);
 }
 
-function createStorage(persist: ResourceConfig<any, any>["persist"]): ResourceStorage | undefined {
+function createStorage(persist: any): ResourceStorage | undefined {
     if (!persist) return undefined;
     if (typeof persist === "object") {
         if (persist.storage) return persist.storage;
