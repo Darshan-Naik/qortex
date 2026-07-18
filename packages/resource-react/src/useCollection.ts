@@ -1,23 +1,14 @@
-import { useSyncExternalStore, useMemo, useEffect, useRef } from "react";
+import { useSyncExternalStore, useMemo, useEffect } from "react";
 import { createCollection } from "qortex-resource";
 import type { CollectionConfig } from "qortex-resource";
-import { serializeResourceKey } from "./bindResourceActions";
 
 /**
- * React hook to create and manage a collection lifecycle.
+ * React hook for a collection that lives for the component lifetime.
  *
- * Recreates when `config.key` changes. Subscribes via `collection.version`
- * so list updates re-render even when `status` stays `"ready"`.
+ * To reset, remount the component (`key={…}` on the parent).
  */
 export function useCollection<T>(config: CollectionConfig<T>) {
-    const keyStr = serializeResourceKey(config.key);
-    const configRef = useRef(config);
-    configRef.current = config;
-
-    const collection = useMemo(
-        () => createCollection(configRef.current),
-        [keyStr],
-    );
+    const collection = useMemo(() => createCollection(config), []);
 
     useEffect(() => {
         return () => {

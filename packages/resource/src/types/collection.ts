@@ -10,11 +10,6 @@ export interface CollectionConfig<T> {
     getId: (entity: T) => string;
     /** Optional sort comparator */
     sortBy?: (a: T, b: T) => number;
-    /**
-     * Optional identity key for React hooks (`useCollection`).
-     * When it changes, the hook recreates the collection instance.
-     */
-    key?: string | number;
 }
 
 /**
