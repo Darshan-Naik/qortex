@@ -1,0 +1,42 @@
+{
+  "id": "useResource",
+  "title": "useResource",
+  "subtitle": "Own a Resource for the component lifetime",
+  "description": "Creates a resource, subscribes to its snapshot, recreates when config.key changes, destroys on unmount.",
+  "category": "React Hooks",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "useResource<T, R = T>(config: ResourceConfig<T, R>): ResourceSnapshot & Actions & { resource: Resource<T, R> }"
+  },
+  "parameters": {
+    "columns": ["Parameter", "Type", "Required", "Default", "Description"],
+    "rows": [
+      {
+        "name": "config",
+        "type": "ResourceConfig<T, R>",
+        "required": true,
+        "default": "-",
+        "description": "Same config as createResource. Identity changes when config.key changes."
+      }
+    ]
+  },
+  "returns": {
+    "type": "snapshot + actions + resource",
+    "description": "Spread snapshot fields plus bound actions",
+    "properties": [
+      { "name": "draft / data / errors / …", "type": "snapshot", "description": "All ResourceSnapshot fields" },
+      { "name": "set, save, fetch, validate, …", "type": "fn", "description": "Bound actions" },
+      { "name": "resource", "type": "Resource", "description": "Pass into useField / useFieldArray" }
+    ]
+  },
+  "examples": [
+    {
+      "title": "Entity editor",
+      "language": "tsx",
+      "code": "const { isLoading, isSaving, isChanged, save, resource } = useResource({\n  key: userId,\n  source: {\n    fetch: () => api.getUser(userId),\n    save: (d) => api.updateUser(userId, d),\n  },\n});\n\nif (isLoading) return <Spinner />;\nreturn (\n  <>\n    <EmailField resource={resource} />\n    <button disabled={!isChanged || isSaving} onClick={() => save()}>Save</button>\n  </>\n);"
+    }
+  ],
+  "relatedPages": ["/resource-react/docs/useField", "/resource/docs/createResource"]
+}

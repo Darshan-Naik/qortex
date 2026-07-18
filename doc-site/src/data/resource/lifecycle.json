@@ -1,0 +1,60 @@
+{
+  "id": "lifecycle",
+  "title": "Lifecycle",
+  "subtitle": "fetch → keep → update → validate → persist → save → feedback",
+  "description": "Map each production form stage to the Resource API.",
+  "category": "Getting Started",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "callouts": [
+    {
+      "type": "info",
+      "title": "Alpha coverage",
+      "content": "The happy path is implemented. See Alpha Limitations for concurrency, server errors, offline queue, and SSR gaps."
+    }
+  ],
+  "content": "This page is the checklist for wiring a production-style form against qortex-resource.",
+  "sections": [
+    {
+      "title": "1. Fetch",
+      "content": "Load initial entity data.",
+      "code": {
+        "language": "typescript",
+        "code": "createResource({\n  key: ['user', id],\n  source: {\n    fetch: () => api.getUser(id),\n    // or source.query = existingQueryAdapter\n  },\n  query: { enabled: true },\n});\n\n// snapshot: isLoading, isFetching, error, status"
+      }
+    },
+    {
+      "title": "2. Keep (source update policy)",
+      "content": "When source data changes while the user has edits, choose how drafts behave:",
+      "code": {
+        "language": "typescript",
+        "code": "// default: keepDirty — preserve overrides when source refreshes\nsourceUpdate: 'keepDirty' | 'resetDraft' | 'replaceAll'"
+      }
+    },
+    {
+      "title": "3. Update",
+      "content": "`set` / `setMany` / field helpers / array helpers. Track `isChanged`, `changedFields`, `touchedFields`."
+    },
+    {
+      "title": "4. Validate",
+      "content": "`validate.on`: change | blur | submit | manual. Field validators and/or `zodResolver`. `save()` always validates first."
+    },
+    {
+      "title": "5. Persist (local)",
+      "content": "Survive refresh mid-edit:",
+      "code": {
+        "language": "typescript",
+        "code": "persist: {\n  draft: true,\n  debounce: 400,\n  driver: 'localStorage', // or sessionStorage / custom storage | db\n}"
+      }
+    },
+    {
+      "title": "6. Save",
+      "content": "`source.save(draft, meta)` with `meta.changedFields`. Optional `mutation.optimistic`. Hooks: `onSaveSuccess`, `onSaveError`. Mutation API: `isSaving`, `mutation.status`, `retry()`, `reset()`."
+    },
+    {
+      "title": "7. Feedback",
+      "content": "Drive UI from snapshot flags — no built-in toasts. Bind `isLoading` / `isSaving` / `error` / `mutation.error` / `isValid` / `errors` to your design system."
+    }
+  ],
+  "relatedPages": ["/resource/docs/alpha-limitations", "/resource/docs/persistence"]
+}

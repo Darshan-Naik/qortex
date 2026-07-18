@@ -1,0 +1,39 @@
+{
+  "id": "product-form",
+  "title": "Product Form Example",
+  "subtitle": "Nested details, addresses, and variants",
+  "description": "A data-heavy catalog editor pattern using the core API (pair with React hooks docs).",
+  "category": "Guides",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "content": "Large forms should keep leaf inputs on field subscriptions. Arrays use stable row ids.",
+  "sections": [
+    {
+      "title": "Domain",
+      "code": {
+        "language": "typescript",
+        "code": "type Product = {\n  id: string;\n  name: string;\n  pricing: { currency: string; basePrice: number };\n  addresses: Array<{\n    label: string; line1: string; city: string;\n    state: string; postalCode: string; country: string;\n  }>;\n  variants: Array<{ sku: string; size: string; color: string; price: number; stock: number }>;\n};"
+      }
+    },
+    {
+      "title": "Resource config",
+      "code": {
+        "language": "typescript",
+        "code": "import { createResource, zodResolver } from 'qortex-resource';\n\nconst product = createResource<Product>({\n  key: ['product', productId],\n  validate: { resolver: zodResolver(ProductSchema), on: 'blur' },\n  persist: { draft: true, debounce: 400 },\n  mutation: { optimistic: true },\n  source: {\n    fetch: () => api.getProduct(productId),\n    save: (draft) => api.updateProduct(productId, draft),\n  },\n});"
+      }
+    },
+    {
+      "title": "Arrays",
+      "content": "Use `array('addresses')` for append/remove/move. Prefer React `useFieldArray` in UI. Nested fields: `addresses.0.city`.",
+      "code": {
+        "language": "typescript",
+        "code": "product.array('addresses').append({\n  label: 'Warehouse', line1: '', city: '', state: '', postalCode: '', country: 'US',\n});\n\nproduct.set('addresses.0.city', 'Austin');\nproduct.array('variants').move(2, 0);"
+      }
+    },
+    {
+      "title": "React wiring",
+      "content": "See qortex-resource-react: `createResourceHooks((productId) => config)` + section components with `useField('pricing.basePrice')` and `useFieldArray('addresses')`."
+    }
+  ],
+  "relatedPages": ["/resource-react/docs/createResourceHooks", "/resource-react/docs/useFieldArray"]
+}

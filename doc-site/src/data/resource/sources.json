@@ -1,0 +1,41 @@
+{
+  "id": "sources",
+  "title": "Sources",
+  "subtitle": "How data enters and leaves a resource",
+  "description": "fetch, query bridge, store bridge, and controlled value modes.",
+  "category": "Guides",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "content": "Pick one primary way to supply source data. Save always goes through `source.save` (or a mutation bridge).",
+  "sections": [
+    {
+      "title": "Native fetch + save",
+      "content": "Simplest for forms that own their network calls:",
+      "code": {
+        "language": "typescript",
+        "code": "source: {\n  fetch: () => api.getProduct(id),\n  save: (draft, meta) => api.updateProduct(id, draft),\n}"
+      }
+    },
+    {
+      "title": "Bridge an existing query",
+      "content": "Adapt qortex-query (or similar) via `source.query`. Resource reads `data` / status and can call `refetch`. Note: `query.staleTime` marks stale but does not auto-refetch in alpha.",
+      "code": {
+        "language": "typescript",
+        "code": "source: {\n  query: {\n    get data() { return query.data; },\n    get error() { return query.error; },\n    get status() { return query.status; },\n    subscribe: (cb) => query.subscribe(cb),\n    refetch: () => query.refetch(),\n  },\n  save: (draft) => api.save(draft),\n}"
+      }
+    },
+    {
+      "title": "Bridge a store",
+      "content": "`source.state` with get / set / subscribe keeps the resource in sync with qortex-store (or any similar store)."
+    },
+    {
+      "title": "Controlled value",
+      "content": "`source.value` + `onChange` for fully parent-controlled entities (rare for large forms)."
+    },
+    {
+      "title": "initialData",
+      "content": "Sync object or Promise. Useful for create-new flows without a fetch."
+    }
+  ],
+  "relatedPages": ["/resource/docs/createResource", "/resource/docs/lifecycle"]
+}

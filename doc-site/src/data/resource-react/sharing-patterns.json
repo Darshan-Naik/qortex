@@ -1,0 +1,39 @@
+{
+  "id": "sharing-patterns",
+  "title": "Sharing Patterns",
+  "subtitle": "Pass resource vs createResourceHooks — no Context",
+  "description": "Two supported ways to share a resource across components.",
+  "category": "Guides",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "content": "React Context is intentionally not used. Choose based on multi-instance needs.",
+  "sections": [
+    {
+      "title": "1. Pass `resource`",
+      "content": "Best when multiple instances can mount (lists, split panes). Shell owns `useResource`; children take `resource` prop into `useField` / `useFieldArray`."
+    },
+    {
+      "title": "2. Module bound hooks",
+      "content": "`createResourceHooks` creates a module singleton. Children call `useField('name')` with no prop. One active identity at a time.",
+      "code": {
+        "language": "typescript",
+        "code": "export const { useResource, useField, useFieldArray } =\n  createResourceHooks((productId: string) => ({\n    key: ['product', productId],\n    source: {\n      fetch: () => api.getProduct(productId),\n      save: (d) => api.updateProduct(productId, d),\n    },\n  }));"
+      }
+    },
+    {
+      "title": "3. Collections",
+      "content": "For many rows: `useCollection` + `getResource(id)` per row. Remount boards with React `key={workspaceId}` when the list identity changes."
+    }
+  ],
+  "bestPractices": {
+    "dos": [
+      "Use bound hooks for a single editor route",
+      "Pass resource (or use collection) when many entities edit in parallel"
+    ],
+    "donts": [
+      "Don't mount two bound useResource calls with different ids in the same tree",
+      "Don't wrap the app in a custom Context just to avoid props — use the patterns above"
+    ]
+  },
+  "relatedPages": ["/resource-react/docs/createResourceHooks", "/resource-react/docs/dynamic-identity"]
+}

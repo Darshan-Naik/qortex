@@ -1,0 +1,39 @@
+{
+  "id": "dynamic-identity",
+  "title": "Dynamic Identity",
+  "subtitle": "Composite keys and factory params",
+  "description": "Drive recreate + persist identity from route params without losing bound-hook DX.",
+  "category": "Guides",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "callouts": [
+    {
+      "type": "warning",
+      "title": "One active key",
+      "content": "createResourceHooks still shares one module instance. Switching params recreates it. Parallel editors need pass-resource or useCollection."
+    }
+  ],
+  "content": "Resource keys can be tuples. Factory hooks take one params argument (object or tuple) that builds key + closures.",
+  "sections": [
+    {
+      "title": "useResource(config) recreate",
+      "content": "Plain `useResource` recreates when `serialize(config.key)` changes. Other config is captured at create time — put fetch closures that close over the latest id inside the config used for that key.",
+      "code": {
+        "language": "tsx",
+        "code": "const { resource, save } = useResource({\n  key: ['product', workspaceId, productId],\n  source: {\n    fetch: () => api.get(workspaceId, productId),\n    save: (d) => api.save(workspaceId, productId, d),\n  },\n});"
+      }
+    },
+    {
+      "title": "Factory bound hooks",
+      "code": {
+        "language": "tsx",
+        "code": "const { useResource, useField } = createResourceHooks(\n  ({ workspaceId, productId }: { workspaceId: string; productId: string }) => ({\n    key: ['product', workspaceId, productId],\n    persist: { draft: true },\n    source: {\n      fetch: () => api.get(workspaceId, productId),\n      save: (d) => api.save(workspaceId, productId, d),\n    },\n  }),\n);\n\n// shell\nuseResource({ workspaceId, productId });\n// child\nuseField('name');"
+      }
+    },
+    {
+      "title": "Multiple args?",
+      "content": "Pass one object or tuple to `useResource(params)` — not `useResource(a, b)`. Put a composite `key` array in the returned config."
+    }
+  ],
+  "relatedPages": ["/resource-react/docs/createResourceHooks", "/resource/docs/concepts"]
+}

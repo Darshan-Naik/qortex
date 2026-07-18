@@ -1,0 +1,49 @@
+{
+  "id": "quick-start",
+  "title": "Quick Start",
+  "subtitle": "A resource in under five minutes",
+  "description": "Create a resource, edit a draft, validate, and save.",
+  "category": "Getting Started",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "content": "A Resource owns server/source data plus a draft built from path overrides. You edit the draft, validate, optionally persist locally, then save back to the source.",
+  "sections": [
+    {
+      "title": "1. Create a resource",
+      "content": "Pass initial data and a save function:",
+      "code": {
+        "language": "typescript",
+        "code": "import { createResource } from 'qortex-resource';\n\nconst profile = createResource({\n  initialData: { name: '', email: '' },\n  validate: {\n    on: 'blur',\n    fields: {\n      name: (v) => (!v ? 'Required' : null),\n      email: (v) => (!v?.includes('@') ? 'Invalid email' : null),\n    },\n  },\n  source: {\n    save: async (draft) => {\n      await api.saveProfile(draft);\n      return draft;\n    },\n  },\n});"
+      }
+    },
+    {
+      "title": "2. Edit the draft",
+      "content": "Writes go into path overrides. Source `data` stays until save succeeds:",
+      "code": {
+        "language": "typescript",
+        "code": "profile.set('name', 'Ada');\nprofile.set('email', 'ada@example.com');\n\nprofile.snapshot.draft;      // { name: 'Ada', email: 'ada@example.com' }\nprofile.snapshot.isChanged;  // true\nprofile.snapshot.changedFields; // ['name', 'email']"
+      }
+    },
+    {
+      "title": "3. Validate and save",
+      "content": "`save()` runs validation first. On success, source updates and the draft clears:",
+      "code": {
+        "language": "typescript",
+        "code": "const ok = await profile.validate();\nif (!ok) {\n  console.log(profile.snapshot.errors);\n}\n\nconst result = await profile.save();\n// result.ok === true → draft synced to source, isChanged false"
+      }
+    },
+    {
+      "title": "4. Subscribe (vanilla)",
+      "content": "Listen to the full snapshot or a single field path:",
+      "code": {
+        "language": "typescript",
+        "code": "const unsub = profile.subscribe((snap) => {\n  console.log(snap.isSaving, snap.isChanged);\n});\n\nconst unsubField = profile.subscribeField('email', () => {\n  console.log(profile.field('email').value);\n});"
+      }
+    },
+    {
+      "title": "Next: React",
+      "content": "For components, use `useResource` / `useField` from qortex-resource-react — see the React package docs."
+    }
+  ],
+  "relatedPages": ["/resource/docs/concepts", "/resource-react/docs/quick-start"]
+}

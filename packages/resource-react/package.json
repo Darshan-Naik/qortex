@@ -1,7 +1,7 @@
 {
   "name": "qortex-resource-react",
-  "version": "1.0.0",
-  "description": "React bindings for qortex-resource",
+  "version": "0.1.0-alpha.0",
+  "description": "Alpha: React bindings for qortex-resource",
   "author": "Darshan Naik",
   "license": "MIT",
   "main": "dist/index.js",
@@ -23,9 +23,11 @@
     "dev": "tsup --watch",
     "clean": "rm -rf dist"
   },
-  "peerDependencies": {
-    "react": "^18.2.0",
+  "dependencies": {
     "qortex-resource": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
   },
   "devDependencies": {
     "react": "^18.2.0",

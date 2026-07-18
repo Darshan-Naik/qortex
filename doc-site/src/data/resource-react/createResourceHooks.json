@@ -1,0 +1,36 @@
+{
+  "id": "createResourceHooks",
+  "title": "createResourceHooks",
+  "subtitle": "Module-scoped bound hooks (no Context)",
+  "description": "Static config or factory(params) for dynamic keys. One active identity per module.",
+  "category": "React Hooks",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "// static\ncreateResourceHooks(config) => { useResource(), useField, useFieldArray, destroy }\n\n// dynamic\ncreateResourceHooks((params: P) => config) => { useResource(params), useField, useFieldArray, destroy }"
+  },
+  "examples": [
+    {
+      "title": "Static form",
+      "language": "typescript",
+      "code": "export const { useResource, useField } = createResourceHooks({\n  initialData: { name: '' },\n  source: { save: (d) => api.save(d) },\n});\n\n// useResource(); useField('name');"
+    },
+    {
+      "title": "Dynamic product id",
+      "language": "tsx",
+      "code": "export const { useResource, useField, useFieldArray } =\n  createResourceHooks((productId: string) => ({\n    key: ['product', productId],\n    persist: { draft: true },\n    source: {\n      fetch: () => api.getProduct(productId),\n      save: (d) => api.updateProduct(productId, d),\n    },\n  }));\n\nfunction Editor({ productId }) {\n  const { save, isChanged } = useResource(productId);\n  return (\n    <>\n      <Name />\n      <button disabled={!isChanged} onClick={() => save()}>Save</button>\n    </>\n  );\n}\n\nfunction Name() {\n  const { value, onChange, onBlur } = useField('name');\n  return <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} onBlur={onBlur} />;\n}"
+    }
+  ],
+  "bestPractices": {
+    "dos": [
+      "Put key + fetch/save closures inside the factory",
+      "Call destroy() in tests"
+    ],
+    "donts": [
+      "Don't use for two products open side-by-side",
+      "Don't call factory useResource() without params"
+    ]
+  },
+  "relatedPages": ["/resource-react/docs/dynamic-identity", "/resource-react/docs/sharing-patterns"]
+}

@@ -1,0 +1,58 @@
+{
+  "id": "createCollection",
+  "title": "createCollection",
+  "subtitle": "Normalized list of entities with per-id resources",
+  "description": "Local collection store. Each item can expose a Resource via getResource(id) for row editing.",
+  "category": "API",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "createCollection<T>(config: CollectionConfig<T>): Collection<T>"
+  },
+  "parameters": {
+    "columns": ["Parameter", "Type", "Required", "Default", "Description"],
+    "rows": [
+      {
+        "name": "config.getId",
+        "type": "(item: T) => string",
+        "required": true,
+        "default": "-",
+        "description": "Stable id extractor for normalization."
+      },
+      {
+        "name": "config.initialData",
+        "type": "T[]",
+        "required": false,
+        "default": "[]",
+        "description": "Seed items."
+      }
+    ]
+  },
+  "returns": {
+    "type": "Collection<T>",
+    "description": "Normalized collection API",
+    "properties": [
+      { "name": "items", "type": "T[]", "description": "Current list" },
+      { "name": "version", "type": "number", "description": "Bumps on structural changes (React re-render signal)" },
+      { "name": "addOne / setAll / updateOne / removeOne", "type": "fn", "description": "CRUD" },
+      { "name": "getResource(id)", "type": "Resource<T>", "description": "In-memory resource; save writes back into the collection" },
+      { "name": "subscribe / destroy", "type": "fn", "description": "Lifecycle" }
+    ]
+  },
+  "examples": [
+    {
+      "title": "Basic collection",
+      "language": "typescript",
+      "code": "import { createCollection } from 'qortex-resource';\n\nconst todos = createCollection<Todo>({\n  getId: (t) => t.id,\n  initialData: [],\n});\n\ntodos.addOne({ id: '1', title: 'Ship alpha', done: false });\n\nconst row = todos.getResource('1');\nrow.set('title', 'Ship alpha docs');\nawait row.save(); // updates collection item"
+    }
+  ],
+  "callouts": [
+    {
+      "type": "info",
+      "title": "Local only (alpha)",
+      "content": "Collections do not fetch/page from the network. Load remotely yourself, then setAll."
+    }
+  ],
+  "relatedPages": ["/resource-react/docs/useCollection", "/resource/docs/createResource"]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "optimistic",
+  "title": "Optimistic Updates",
+  "subtitle": "Instant UI with rollback on failure",
+  "description": "Flip source early on save; restore previous source if the mutation fails (draft kept).",
+  "category": "Guides",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "content": "Enable with `mutation.optimistic`. Useful for snappy admin UIs; pair with clear error feedback.",
+  "sections": [
+    {
+      "title": "Boolean optimistic",
+      "content": "Applies the current draft as the new source immediately, then calls `source.save`:",
+      "code": {
+        "language": "typescript",
+        "code": "createResource({\n  mutation: { optimistic: true },\n  source: { fetch, save },\n  onSaveError: (err) => toast.error(err.message),\n});"
+      }
+    },
+    {
+      "title": "Custom mapper",
+      "content": "Derive optimistic source from draft + previous:",
+      "code": {
+        "language": "typescript",
+        "code": "mutation: {\n  optimistic: (draft, previous) => ({\n    ...draft,\n    updatedAt: previous.updatedAt, // keep server fields\n  }),\n}"
+      }
+    },
+    {
+      "title": "Failure behavior",
+      "content": "On error, source rolls back to the previous value. Draft overrides are kept so the user does not lose edits. Check `mutation.error` / `onSaveError`."
+    }
+  ],
+  "relatedPages": ["/resource/docs/createResource", "/resource/docs/lifecycle"]
+}

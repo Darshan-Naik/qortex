@@ -1,0 +1,33 @@
+{
+  "id": "useField",
+  "title": "useField",
+  "subtitle": "Fine-grained field subscription",
+  "description": "Subscribe to one path. Ideal for leaf inputs in large forms.",
+  "category": "React Hooks",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "useField(resource, path): {\n  value, error, isChanged, isTouched,\n  onChange, onBlur, set, reset, validate\n}"
+  },
+  "examples": [
+    {
+      "title": "Nested path",
+      "language": "tsx",
+      "code": "function CityField({ resource }) {\n  const { value, error, onChange, onBlur } = useField(resource, 'addresses.0.city');\n  return (\n    <label>\n      City\n      <input\n        value={value ?? ''}\n        onChange={(e) => onChange(e.target.value)}\n        onBlur={onBlur}\n      />\n      {error}\n    </label>\n  );\n}"
+    },
+    {
+      "title": "Bound hooks variant",
+      "language": "tsx",
+      "code": "// after createResourceHooks(...)\nconst { value, onChange, onBlur, error } = useField('pricing.basePrice');"
+    }
+  ],
+  "behavior": [
+    {
+      "title": "onBlur touches",
+      "description": "Calls resource.touch(path) so blur-mode validation can run.",
+      "icon": "hand"
+    }
+  ],
+  "relatedPages": ["/resource-react/docs/useFieldArray", "/resource-react/docs/quick-start"]
+}

@@ -1,7 +1,7 @@
 {
   "name": "qortex-resource",
-  "version": "1.0.0",
-  "description": "End-to-End Data Lifecycle Management for the qortex ecosystem",
+  "version": "0.1.0-alpha.0",
+  "description": "Alpha: end-to-end entity/form lifecycle (fetch → draft → validate → persist → save)",
   "author": "Darshan Naik",
   "license": "MIT",
   "main": "dist/index.js",

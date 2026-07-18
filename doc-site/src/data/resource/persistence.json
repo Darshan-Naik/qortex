@@ -1,0 +1,40 @@
+{
+  "id": "persistence",
+  "title": "Persistence",
+  "subtitle": "Local draft and cache survival",
+  "description": "Debounced localStorage/sessionStorage (or custom db) for mid-edit drafts.",
+  "category": "Guides",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "callouts": [
+    {
+      "type": "warning",
+      "title": "Requires a key",
+      "content": "When persist is enabled, provide a stable `key` (or `persist.key`) so drafts from different entities do not collide."
+    }
+  ],
+  "content": "Persist is for local survival — not an offline mutation queue.",
+  "sections": [
+    {
+      "title": "Draft persist",
+      "content": "Writes overrides to storage while dirty; clears on successful save; hydrates on create:",
+      "code": {
+        "language": "typescript",
+        "code": "createResource({\n  key: ['product', productId],\n  persist: {\n    draft: true,\n    debounce: 400,\n    driver: 'localStorage', // | 'sessionStorage'\n  },\n  source: { fetch, save },\n});"
+      }
+    },
+    {
+      "title": "Cache persist",
+      "content": "`persist: true` enables both draft and source cache. Cache stores successful fetch/save payloads under `{key}:cache`."
+    },
+    {
+      "title": "Custom storage",
+      "content": "Pass `storage` (get/set/remove) or `db` (get/set/del, e.g. qortex-db) plus `onError` for quota failures."
+    },
+    {
+      "title": "What it is not",
+      "content": "• Not multi-tab sync\n• Not encrypted\n• Not a retry queue for failed saves\n• Hydration is async — no dedicated `hydrating` status in alpha"
+    }
+  ],
+  "relatedPages": ["/resource/docs/lifecycle", "/resource/docs/alpha-limitations"]
+}

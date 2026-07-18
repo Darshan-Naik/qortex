@@ -1,0 +1,21 @@
+{
+  "id": "useCollection",
+  "title": "useCollection",
+  "subtitle": "React wrapper around createCollection",
+  "description": "Normalized list for the component lifetime. Remount with React key to reset identity.",
+  "category": "React Hooks",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "useCollection<T>(config: CollectionConfig<T>): Collection API + items"
+  },
+  "examples": [
+    {
+      "title": "Board with per-row resources",
+      "language": "tsx",
+      "code": "function TodoBoard({ workspaceId }) {\n  return <TodoList key={workspaceId} />;\n}\n\nfunction TodoList() {\n  const { items, addOne, removeOne, getResource } = useCollection<Todo>({\n    getId: (t) => t.id,\n  });\n\n  return (\n    <ul>\n      {items.map((t) => (\n        <TodoRow\n          key={t.id}\n          resource={getResource(t.id)}\n          onRemove={() => removeOne(t.id)}\n        />\n      ))}\n    </ul>\n  );\n}"
+    }
+  ],
+  "relatedPages": ["/resource/docs/createCollection", "/resource-react/docs/sharing-patterns"]
+}

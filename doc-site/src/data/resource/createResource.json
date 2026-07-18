@@ -1,0 +1,147 @@
+{
+  "id": "createResource",
+  "title": "createResource",
+  "subtitle": "Create a lifecycle-aware entity resource",
+  "description": "Factory for a Resource instance: draft editing, validation, persist, fetch/save, and subscriptions.",
+  "category": "API",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "tags": ["createResource", "Resource", "draft"],
+  "badges": [
+    { "text": "0.1.0-alpha.0", "variant": "warning" },
+    { "text": "core", "variant": "info" }
+  ],
+  "callouts": [
+    {
+      "type": "info",
+      "title": "Destroy when done",
+      "content": "Call `resource.destroy()` when the instance is no longer needed (tests, route teardown, HMR). React `useResource` does this on unmount."
+    }
+  ],
+  "signature": {
+    "language": "typescript",
+    "code": "createResource<T, R = T>(config: ResourceConfig<T, R>): Resource<T, R>"
+  },
+  "parameters": {
+    "columns": ["Parameter", "Type", "Required", "Default", "Description"],
+    "rows": [
+      {
+        "name": "config.key",
+        "type": "ResourceKey",
+        "required": false,
+        "default": "-",
+        "description": "Identity for persist/React recreate. String/number or tuple, e.g. ['product', id]."
+      },
+      {
+        "name": "config.initialData",
+        "type": "T | Promise<T>",
+        "required": false,
+        "default": "-",
+        "description": "Initial source value (sync or async)."
+      },
+      {
+        "name": "config.source",
+        "type": "SourceConfig",
+        "required": false,
+        "default": "{}",
+        "description": "fetch / save / query / state / value+onChange."
+      },
+      {
+        "name": "config.validate",
+        "type": "ValidateConfig",
+        "required": false,
+        "default": "-",
+        "description": "on, resolver, fields validators."
+      },
+      {
+        "name": "config.persist",
+        "type": "true | PersistConfig",
+        "required": false,
+        "default": "-",
+        "description": "Local draft/cache. Requires key when enabled."
+      },
+      {
+        "name": "config.mutation",
+        "type": "{ optimistic?: ... }",
+        "required": false,
+        "default": "-",
+        "description": "Optimistic save behavior."
+      },
+      {
+        "name": "config.sourceUpdate",
+        "type": "'keepDirty' | 'resetDraft' | 'replaceAll'",
+        "required": false,
+        "default": "keepDirty",
+        "description": "How drafts behave when source refreshes."
+      },
+      {
+        "name": "config.fields / fieldMode",
+        "type": "FieldsConfig / 'open' | 'strict'",
+        "required": false,
+        "default": "open",
+        "description": "Editable/readonly field tree."
+      }
+    ]
+  },
+  "returns": {
+    "type": "Resource<T, R>",
+    "description": "Subscribeable resource with draft APIs and snapshot",
+    "properties": [
+      { "name": "snapshot", "type": "ResourceSnapshot", "description": "Current data, draft, flags, errors, query/mutation" },
+      { "name": "set / setMany", "type": "fn", "description": "Write draft path overrides" },
+      { "name": "field / array", "type": "fn", "description": "Field and array helpers" },
+      { "name": "validate*", "type": "fn", "description": "Full or path validation" },
+      { "name": "fetch / refetch / save", "type": "fn", "description": "Lifecycle actions" },
+      { "name": "reset / resetDraft", "type": "fn", "description": "Clear overrides" },
+      { "name": "subscribe / subscribeField", "type": "fn", "description": "Listeners" },
+      { "name": "destroy", "type": "fn", "description": "Cleanup" }
+    ]
+  },
+  "examples": [
+    {
+      "title": "Fetch + save + Zod",
+      "language": "typescript",
+      "code": "import { createResource, zodResolver } from 'qortex-resource';\nimport { z } from 'zod';\n\nconst User = z.object({\n  name: z.string().min(1),\n  email: z.string().email(),\n});\n\nconst user = createResource({\n  key: ['user', userId],\n  validate: { resolver: zodResolver(User), on: 'blur' },\n  persist: { draft: true },\n  mutation: { optimistic: true },\n  source: {\n    fetch: () => api.getUser(userId),\n    save: (draft) => api.updateUser(userId, draft),\n  },\n  onSaveSuccess: () => console.log('saved'),\n  onSaveError: (e) => console.error(e),\n});"
+    },
+    {
+      "title": "Field & array edits",
+      "language": "typescript",
+      "code": "user.set('name', 'Ada');\nuser.array('tags').append('admin');\n\nconst city = user.field('profile.address.city');\ncity.set('London');\nawait city.validate();"
+    },
+    {
+      "title": "Read snapshot",
+      "language": "typescript",
+      "code": "const {\n  draft, data, isChanged, isValid, errors,\n  isLoading, isSaving, mutation,\n} = user.snapshot;"
+    }
+  ],
+  "behavior": [
+    {
+      "title": "Draft = source + overrides",
+      "description": "Edits never mutate source until save success (unless optimistic).",
+      "icon": "layers"
+    },
+    {
+      "title": "save() validates first",
+      "description": "Failed validation skips source.save and returns a failure result.",
+      "icon": "shield"
+    },
+    {
+      "title": "Config enables features",
+      "description": "No public plugins — validate, persist, optimistic activate from config only.",
+      "icon": "zap"
+    }
+  ],
+  "bestPractices": {
+    "dos": [
+      "Use a stable composite key for persist and multi-entity routes",
+      "Prefer zodResolver for large nested schemas",
+      "Subscribe at field grain for hot inputs"
+    ],
+    "donts": [
+      "Don't share one Resource across unrelated entities without key changes",
+      "Don't treat draft persist as an offline write queue",
+      "Don't forget destroy() outside React hooks"
+    ]
+  },
+  "relatedPages": ["/resource/docs/concepts", "/resource/docs/createCollection", "/resource-react/docs/useResource"]
+}

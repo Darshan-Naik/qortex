@@ -1,0 +1,39 @@
+{
+  "id": "installation",
+  "title": "Installation",
+  "subtitle": "Install qortex-resource-react (alpha)",
+  "description": "React hooks for qortex-resource. Requires React 18+ and the core package.",
+  "category": "Getting Started",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "badges": [
+    { "text": "0.1.0-alpha.0", "variant": "warning" },
+    { "text": "React 18+", "variant": "info" }
+  ],
+  "callouts": [
+    {
+      "type": "warning",
+      "title": "Alpha",
+      "content": "Install exact alpha versions. APIs may change before 1.0."
+    }
+  ],
+  "content": "React bindings for qortex-resource. Installing this package pulls in `qortex-resource` automatically. React 18+ is a peer dependency.",
+  "sections": [
+    {
+      "title": "Install",
+      "code": {
+        "language": "bash",
+        "code": "# npm\nnpm install qortex-resource-react@0.1.0-alpha.0\n\n# yarn\nyarn add qortex-resource-react@0.1.0-alpha.0\n\n# pnpm\npnpm add qortex-resource-react@0.1.0-alpha.0\n\n# peer: react ^18.2 (qortex-resource is a dependency — installed for you)"
+      }
+    },
+    {
+      "title": "Imports",
+      "content": "Hooks come from the React package. Core helpers like `zodResolver` still import from `qortex-resource` (available after install).",
+      "code": {
+        "language": "typescript",
+        "code": "import {\n  useResource,\n  useField,\n  useFieldArray,\n  useCollection,\n  createResourceHooks,\n} from 'qortex-resource-react';\n\nimport { zodResolver } from 'qortex-resource';"
+      }
+    }
+  ],
+  "relatedPages": ["/resource-react/docs/quick-start", "/resource/docs/installation"]
+}

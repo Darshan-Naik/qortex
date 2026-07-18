@@ -1,0 +1,44 @@
+{
+  "id": "installation",
+  "title": "Installation",
+  "subtitle": "Install qortex-resource (alpha)",
+  "description": "Add the core package (vanilla / non-React). For React, install only qortex-resource-react — it depends on this package.",
+  "category": "Getting Started",
+  "version": "0.1.0-alpha.0",
+  "status": "alpha",
+  "badges": [
+    { "text": "0.1.0-alpha.0", "variant": "warning" },
+    { "text": "framework-agnostic", "variant": "info" }
+  ],
+  "callouts": [
+    {
+      "type": "warning",
+      "title": "Alpha",
+      "content": "APIs may change before 1.0. Pin exact versions in production pilots. Feedback welcome."
+    }
+  ],
+  "content": "qortex-resource is the framework-agnostic core for entity/form lifecycle: fetch → draft edit → validate → local persist → save → feedback.",
+  "sections": [
+    {
+      "title": "Install",
+      "content": "Add the core package with your package manager:",
+      "code": {
+        "language": "bash",
+        "code": "# npm\nnpm install qortex-resource@0.1.0-alpha.0\n\n# yarn\nyarn add qortex-resource@0.1.0-alpha.0\n\n# pnpm\npnpm add qortex-resource@0.1.0-alpha.0"
+      }
+    },
+    {
+      "title": "React apps",
+      "content": "Install only the React package — it depends on `qortex-resource` and installs it for you:",
+      "code": {
+        "language": "bash",
+        "code": "pnpm add qortex-resource-react@0.1.0-alpha.0\n# peer: react ^18.2"
+      }
+    },
+    {
+      "title": "Optional peers",
+      "content": "• **Zod** — use `zodResolver` for schema validation\n• **qortex-db** — custom persist `db` adapter\n• **qortex-query / store** — bridge via `source.query` or `source.state`"
+    }
+  ],
+  "relatedPages": ["/resource/docs/quick-start", "/resource-react/docs/installation"]
+}
