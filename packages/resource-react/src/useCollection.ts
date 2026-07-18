@@ -3,9 +3,23 @@ import { createCollection } from "qortex-resource";
 import type { CollectionConfig } from "qortex-resource";
 
 /**
- * React hook for a collection that lives for the component lifetime.
+ * Create a collection for the component lifetime and subscribe to its version.
  *
- * To reset, remount the component (`key={…}` on the parent).
+ * Updates re-render even when `status` stays `"ready"`. To reset the list,
+ * remount the component (`key={…}` on the parent).
+ *
+ * @param config - Collection configuration (`getId`, optional `sortBy`)
+ * @returns Items, status flags, CRUD actions, and the raw `collection`
+ *
+ * @example
+ * ```tsx
+ * function TodoList() {
+ *   const { items, addOne, removeOne } = useCollection<Todo>({
+ *     getId: (t) => t.id,
+ *   });
+ *   // …
+ * }
+ * ```
  */
 export function useCollection<T>(config: CollectionConfig<T>) {
     const collection = useMemo(() => createCollection(config), []);

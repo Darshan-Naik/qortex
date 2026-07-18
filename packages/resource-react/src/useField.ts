@@ -2,9 +2,25 @@ import { useSyncExternalStore, useCallback } from "react";
 import type { Resource, FieldState, PathOf, PathValue } from "qortex-resource";
 
 /**
- * React hook for fine-grained field subscription.
+ * Subscribe to a single field with fine-grained updates.
  *
- * Uses `getFieldState` for a stable snapshot identity when value/meta are unchanged.
+ * Re-renders only when this path's value or meta changes (including when a
+ * child path under it changes). Uses `getFieldState` so the snapshot is
+ * referentially stable while unchanged.
+ *
+ * @param resource - Resource instance
+ * @param path - Dot-notation path (typed via {@link PathOf} when `T` is known)
+ * @returns Field state plus `onChange` / `onBlur` / `reset` helpers
+ *
+ * @example
+ * ```tsx
+ * function NameInput({ resource }: { resource: Resource<User> }) {
+ *   const { value, error, onChange, onBlur } = useField(resource, "name");
+ *   return (
+ *     <input value={value ?? ""} onChange={(e) => onChange(e.target.value)} onBlur={onBlur} />
+ *   );
+ * }
+ * ```
  */
 export function useField<T, P extends PathOf<T>>(
     resource: Resource<T>,

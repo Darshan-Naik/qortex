@@ -1,8 +1,9 @@
 import type { Resource } from "qortex-resource";
 
 /**
- * Bind resource mutation methods for hook return values.
- * Shared by `useResource` and `createResourceHooks`.
+ * Bound action methods returned alongside resource snapshots in React hooks.
+ *
+ * @internal Shared by `useResource` and `createResourceHooks`.
  */
 export function bindResourceActions<T, R = T>(resource: Resource<T, R>) {
     return {
@@ -20,6 +21,13 @@ export function bindResourceActions<T, R = T>(resource: Resource<T, R>) {
     };
 }
 
+/**
+ * Normalize a resource `key` (string | number | tuple) for React memoization
+ * and persist key derivation.
+ *
+ * @param key - Resource config key
+ * @returns Stable string form (`""` when absent)
+ */
 export function serializeResourceKey(key: unknown): string {
     if (key == null) return "";
     if (Array.isArray(key)) return key.map(String).join("#");

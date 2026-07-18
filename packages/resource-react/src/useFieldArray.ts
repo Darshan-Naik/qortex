@@ -4,10 +4,23 @@ import type { Resource, PathOf, PathValue, ArrayFieldEntry } from "qortex-resour
 type ArrayItem<T, P extends string> = PathValue<T, P> extends readonly (infer I)[] ? I : any;
 
 /**
- * React hook for array fields.
+ * Subscribe to an array field and expose list helpers.
  *
- * Subscribes to the array path and delegates mutations to `resource.array()`.
- * Stable item ids come from the resource core (survive reorder / duplicate primitives).
+ * Item `id`s are owned by the resource core and stay stable across reorder /
+ * duplicate primitives. Prefer nested `useField(resource, \`${path}.${i}.…\`)`
+ * for item fields.
+ *
+ * @param resource - Resource instance
+ * @param path - Path to an array value
+ * @returns `fields` (with stable ids) and append/remove/swap/move helpers
+ *
+ * @example
+ * ```tsx
+ * const { fields, append, remove } = useFieldArray(resource, "tags");
+ * return fields.map((f) => (
+ *   <li key={f.id}>{f.item}<button onClick={() => remove(f.index)}>×</button></li>
+ * ));
+ * ```
  */
 export function useFieldArray<T, P extends PathOf<T>>(
     resource: Resource<T>,

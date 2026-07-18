@@ -2,8 +2,13 @@ import type { ValidationResolver } from "./types";
 
 /**
  * Minimal Zod-compatible schema surface (avoids a hard Zod dependency).
+ * Any library with `safeParse` returning `{ success, error.issues }` works.
  */
 export interface ZodLikeSchema {
+    /**
+     * Parse unknown data without throwing.
+     * On failure, `error.issues` must include `path` segments and `message`.
+     */
     safeParse(data: unknown):
         | { success: true }
         | {
@@ -19,6 +24,22 @@ export interface ZodLikeSchema {
  *
  * When called in field mode with a `path`, only errors under that path
  * (exact or descendant) are returned.
+ *
+ * @param schema - Zod schema or compatible `safeParse` object
+ * @returns A {@link ValidationResolver} for `createResource({ validate: { resolver } })`
+ *
+ * @example
+ * ```ts
+ * import { z } from "zod";
+ * import { createResource, zodResolver } from "qortex-resource";
+ *
+ * const schema = z.object({ name: z.string().min(1) });
+ *
+ * createResource({
+ *   initialData: { name: "" },
+ *   validate: { resolver: zodResolver(schema) },
+ * });
+ * ```
  */
 export function zodResolver<T = any>(schema: ZodLikeSchema): ValidationResolver<T> {
     return (data, context) => {

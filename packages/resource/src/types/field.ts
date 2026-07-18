@@ -35,12 +35,15 @@ export interface FieldsConfig {
  * Internal metadata tracked per field path.
  */
 export interface FieldMeta {
+    /** Whether the user has blurred / touched this field */
     isTouched: boolean;
+    /** Current validation error message, if any */
     error: string | undefined;
 }
 
 /**
- * Public field state returned by `getField()` and `useField()`.
+ * Plain field snapshot returned by `getFieldState()` and `useField()`.
+ * Referentially stable while value/meta are unchanged.
  *
  * @template V - The value type of the field
  */
@@ -49,7 +52,7 @@ export interface FieldState<V = any> {
     value: V;
     /** Original value from initial/server data */
     initialValue: V;
-    /** Whether the value differs from initialValue */
+    /** Whether the draft value differs from initialValue */
     isChanged: boolean;
     /** Whether the user has interacted with this field */
     isTouched: boolean;

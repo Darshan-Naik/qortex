@@ -15,6 +15,10 @@ export function isFieldConfig(value: unknown): value is FieldConfig {
 
 /**
  * Flatten a potentially-nested FieldsConfig into a flat Map of dot-notation path → FieldConfig.
+ *
+ * @param config - Nested or flat fields config
+ * @param prefix - Internal recursion prefix
+ * @returns Map of full path → leaf FieldConfig
  */
 export function flattenFieldsConfig(
     config: FieldsConfig | undefined,
@@ -51,6 +55,11 @@ export const DEFAULT_FIELD_META: FieldMeta = {
 
 /**
  * Compute the public FieldState for a given path (draft-aware).
+ *
+ * @param path - Dot-notation field path
+ * @param initialData - Source / server data
+ * @param draftOverrides - Path → value override map
+ * @param fieldMetaMap - Path → touch/error metadata
  */
 export function computeFieldState<V = any>(
     path: string,
@@ -76,7 +85,11 @@ export function computeFieldState<V = any>(
 }
 
 /**
- * Check if a field (or any of its descendants) is editable.
+ * Check if a field (or any of its descendants / editable parents) is editable
+ * under strict field mode.
+ *
+ * @param path - Path to check
+ * @param fieldConfigs - Flattened field config map
  */
 export function isEditable(
     path: string,
@@ -103,6 +116,9 @@ export function isEditable(
 
 /**
  * Collect all errors from field metadata into a flat record.
+ *
+ * @param fieldMetaMap - Path → FieldMeta map
+ * @returns Path → error message (only entries with errors)
  */
 export function collectErrors(
     fieldMetaMap: Map<string, FieldMeta>,
@@ -118,6 +134,8 @@ export function collectErrors(
 
 /**
  * Check if all fields are valid (no errors in metadata).
+ *
+ * @param fieldMetaMap - Path → FieldMeta map
  */
 export function isAllValid(fieldMetaMap: Map<string, FieldMeta>): boolean {
     for (const meta of fieldMetaMap.values()) {

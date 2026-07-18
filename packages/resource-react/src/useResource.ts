@@ -4,11 +4,25 @@ import type { ResourceConfig, ResourceSnapshot, Resource } from "qortex-resource
 import { bindResourceActions, serializeResourceKey } from "./bindResourceActions";
 
 /**
- * React hook to create and manage a resource lifecycle.
+ * Create a resource for the lifetime of the component and subscribe to its snapshot.
  *
- * Creates a resource once per `config.key` (recreates when the key changes).
- * Other config fields are read at creation time — pass a new `key` when the
- * resource identity should change (e.g. different entity id).
+ * Recreates when `config.key` changes (same key used for persist/cache identity).
+ * Other config values are captured at creation — remount or change `key` to apply
+ * a new identity (e.g. different entity id).
+ *
+ * @param config - Resource configuration
+ * @returns Snapshot fields, bound actions, and the raw `resource` instance
+ *
+ * @example
+ * ```tsx
+ * const { draft, isSaving, set, save } = useResource({
+ *   key: userId,
+ *   source: {
+ *     fetch: () => api.getUser(userId),
+ *     save: (draft) => api.updateUser(draft),
+ *   },
+ * });
+ * ```
  */
 export function useResource<T, R = T>(config: ResourceConfig<T, R>) {
     const keyStr = serializeResourceKey(config.key);

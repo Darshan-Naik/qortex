@@ -3,35 +3,68 @@ import type { PathOf, PathValue } from "./path";
 
 type Key = string | number | boolean | null | undefined;
 
+/** Cache / persist identity. Prefer a stable string or tuple (e.g. `["user", id]`). */
 export type ResourceKey = Key | readonly Key[];
+
+/** Overall resource lifecycle status. */
 export type ResourceStatus = "idle" | "loading" | "ready" | "error";
+
+/** Save / mutation lifecycle status. */
 export type MutationStatus = "idle" | "mutating" | "success" | "error";
+
+/** Fetch / query lifecycle status. */
 export type ResourceQueryStatus = "idle" | "fetching" | "success" | "error";
+
+/**
+ * When field validation runs automatically.
+ * - `"change"` — after each `set`
+ * - `"blur"` — after `touch` / blur
+ * - `"submit"` — only during `save` / `validate`
+ * - `"manual"` — only when you call `validate*` explicitly
+ */
 export type ValidationMode = "change" | "blur" | "submit" | "manual";
+
+/**
+ * How draft overrides behave when source data is replaced.
+ * - `"keepDirty"` — keep local overrides that still differ from the new source
+ * - `"resetDraft"` — clear overrides and field meta
+ * - `"replaceAll"` — same as resetDraft today (full replace)
+ */
 export type SourceUpdateMode = "keepDirty" | "resetDraft" | "replaceAll";
 
+/** Metadata passed to `source.save`. */
 export interface MutateMeta {
+    /** Paths with explicit draft overrides */
     changedFields: string[];
+    /** True when there is at least one override */
     isChanged: boolean;
 }
 
+/** Result of `resource.save()` / mutation retry. */
 export interface MutationResult<R = any> {
     success: boolean;
     data: R | undefined;
     error: unknown;
 }
 
+/** Result of form / multi-field validation. */
 export interface ValidationResult {
     valid: boolean;
+    /** Path → message; cleared paths may be present as `undefined` */
     errors: Record<string, string | undefined>;
 }
 
+/** Result of validating a single field path. */
 export interface FieldValidationResult {
     path: string;
     valid: boolean;
     error: string | undefined;
 }
 
+/**
+ * Adapter for an external query client (e.g. qortex-query / React Query).
+ * Wire via `source.query`.
+ */
 export interface ExistingQuery<T = any> {
     data?: T;
     error?: unknown;
@@ -41,9 +74,14 @@ export interface ExistingQuery<T = any> {
     isStale?: boolean;
     updatedAt?: number;
     refetch?: () => Promise<T> | T;
+    /** Notify the resource when external query state changes */
     subscribe?: (listener: () => void) => () => void;
 }
 
+/**
+ * Adapter for an external mutation client.
+ * Prefer `mutateAsync` when available.
+ */
 export interface ExistingMutation<T = any, R = any> {
     mutate?: (data: T) => void;
     mutateAsync?: (data: T) => Promise<R>;
@@ -53,6 +91,10 @@ export interface ExistingMutation<T = any, R = any> {
     reset?: () => void;
 }
 
+/**
+ * Adapter for an external store / atom.
+ * Wire via `source.state`.
+ */
 export interface ExistingState<T = any> {
     get?: () => T | undefined;
     value?: T;
@@ -60,48 +102,83 @@ export interface ExistingState<T = any> {
     subscribe?: (listener: (value: T | undefined) => void) => () => void;
 }
 
+/**
+ * Loose description of all possible source fields.
+ * Prefer the constrained unions on `ResourceConfig` when configuring a resource.
+ */
 export interface ResourceSource<T = any, R = T> {
+    /** Native async loader */
     fetch?: () => Promise<T> | T;
+    /** Native async saver; receives draft + change meta */
     save?: (draft: T, meta: MutateMeta) => Promise<R> | R;
+    /** Bridge an existing query instance */
     query?: ExistingQuery<T>;
+    /** Bridge an existing mutation instance */
     mutation?: ExistingMutation<T, R>;
+    /** Bridge an existing store */
     state?: ExistingState<T>;
+    /** Controlled value (pair with `onChange`) */
     value?: T;
+    /** Called after a successful save when using controlled / state sources */
     onChange?: (value: T) => void;
 }
 
+/** Query behavior when using `source.fetch` (or bridged queries). */
 export interface ResourceQueryConfig<T = any> {
+    /** When false, skip automatic initial fetch. Default: true */
     enabled?: boolean;
+    /** Milliseconds before cached data is considered stale. Default: 0 */
     staleTime?: number;
 }
 
+/** Mutation behavior for `save`. */
 export interface ResourceMutationConfig<T = any, R = any> {
+    /**
+     * Apply draft to source immediately while saving.
+     * Pass `true` to use the draft as-is, or a function to map draft → optimistic data.
+     * On failure, source rolls back; draft overrides are kept.
+     */
     optimistic?: boolean | ((draft: T, previous: T | undefined) => T);
 }
 
+/** Async key/value storage used by persist. */
 export interface ResourceStorage {
     get<T = unknown>(key: string): Promise<T | undefined | null>;
     set<T = unknown>(key: string, value: T): Promise<void>;
     remove(key: string): Promise<void>;
 }
 
+/** qortex-db–style storage adapter (`del` instead of `remove`). */
 export interface ResourceDBStorage {
     get<T = unknown>(key: string): Promise<T | undefined>;
     set<T = unknown>(key: string, value: T): Promise<void>;
     del(key: string): Promise<void>;
 }
 
+/** Persistence options for draft overrides and/or source cache. */
 export interface ResourcePersistConfig {
+    /** Persist unsaved draft overrides. Default: false unless `persist: true` */
     draft?: boolean;
+    /** Persist last successful source payload. Default: false unless `persist: true` */
     cache?: boolean;
+    /** Storage key segment; falls back to root `key` on the resource config */
     key?: string;
+    /** Browser storage backend when no custom `storage` / `db` is provided */
     driver?: "localStorage" | "sessionStorage";
+    /** Debounce for draft writes in ms. Default: 300 */
     debounce?: number;
+    /** Custom storage adapter */
     storage?: ResourceStorage;
+    /** qortex-db adapter (takes precedence over `driver`) */
     db?: ResourceDBStorage;
+    /** Called when persistence read/write fails */
     onError?: (error: unknown) => void;
 }
 
+/**
+ * Schema-style validator returning a flat path → message map.
+ * Return `null` / `undefined` / `{}` when valid.
+ */
 export type ValidationResolver<T = any> = (
     data: T,
     context: { path?: string; mode: "field" | "form" },
@@ -111,9 +188,16 @@ export type ValidationResolver<T = any> = (
     | undefined
     | Promise<Record<string, string | undefined> | null | undefined>;
 
+/** Validation configuration for a resource. */
 export interface ResourceValidationConfig<T = any> {
+    /** When to auto-validate. Default behavior depends on call sites; typically `"blur"` or `"change"`. */
     on?: ValidationMode;
+    /** Full-form / schema resolver (e.g. from `zodResolver`) */
     resolver?: ValidationResolver<T>;
+    /**
+     * Per-path validators. Keys support wildcards (`contacts.*.email`).
+     * Return a string message, or null/undefined when valid.
+     */
     fields?: Record<string, (value: any, data: T) => string | undefined | null | Promise<string | undefined | null>>;
 }
 

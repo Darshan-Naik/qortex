@@ -28,6 +28,27 @@ type FieldListener = (field: FieldController) => void;
 
 const DRAFT_UNSET = Symbol("draft-unset");
 
+/**
+ * Create a resource that manages source data, draft edits, validation, and save.
+ *
+ * @typeParam T - Entity / form data shape
+ * @typeParam R - Save result type (defaults to `T`)
+ * @param config - Typed configuration (source, validate, persist, …)
+ * @returns A subscribeable {@link Resource} instance — call `destroy()` when done
+ *
+ * @example
+ * ```ts
+ * const user = createResource({
+ *   initialData: { name: "" },
+ *   validate: { fields: { name: (v) => (!v ? "Required" : null) } },
+ *   source: { save: async (draft) => api.updateUser(draft) },
+ * });
+ *
+ * user.set("name", "Ada");
+ * await user.save();
+ * user.destroy();
+ * ```
+ */
 export function createResource<T, R = T>(config: ResourceConfig<T, R>): Resource<T, R> {
     return new ResourceCore(config).api;
 }

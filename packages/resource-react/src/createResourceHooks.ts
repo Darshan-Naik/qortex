@@ -6,16 +6,24 @@ import { bindResourceActions } from "./bindResourceActions";
 import type { ResourceConfig, Resource } from "qortex-resource";
 
 /**
- * Factory to create module-level bound hooks for a specific resource configuration.
+ * Create module-level bound hooks that share one resource instance.
  *
- * Returns pre-bound hooks that share one module-scoped resource instance
- * (no React Context). Call `destroy()` if you need to tear it down (HMR/tests).
+ * Avoids React Context and prop drilling. The instance is a module singleton —
+ * suitable for a single form/screen. Call `destroy()` in tests or HMR cleanup.
+ *
+ * @param config - Resource configuration captured once at module init
+ * @returns Bound `useResource` / `useField` / `useFieldArray`, plus `resource` and `destroy`
  *
  * @example
  * ```ts
- * export const { useResource, useField, destroy } = createResourceHooks({
- *   fields: { name: { editable: true } },
+ * // userForm.ts
+ * export const { useResource, useField, useFieldArray, destroy } = createResourceHooks({
+ *   initialData: { name: "", tags: [] as string[] },
+ *   source: { save: (draft) => api.save(draft) },
  * });
+ *
+ * // NameField.tsx
+ * const { value, onChange, onBlur } = useField("name");
  * ```
  */
 export function createResourceHooks<T, R = T>(config: ResourceConfig<T, R>) {

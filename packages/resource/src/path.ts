@@ -206,6 +206,8 @@ export function diffPaths(a: any, b: any, prefix: string = ""): string[] {
  * Apply a map of path → value overrides onto a base object.
  * Returns a new object with all overrides applied (immutable).
  *
+ * Paths are applied shallowest-first so leaf overrides win after parent writes.
+ *
  * @param base - The base object
  * @param overrides - Map of dot-notation path → value
  * @returns A new object with overrides applied
