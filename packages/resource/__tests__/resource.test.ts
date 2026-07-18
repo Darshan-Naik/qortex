@@ -74,6 +74,7 @@ describe('Resource Engine', () => {
                 'fetch',
                 'field',
                 'get',
+                'getFieldState',
                 'getInitial',
                 'isChanged',
                 'isError',

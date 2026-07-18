@@ -10,6 +10,11 @@ export interface CollectionConfig<T> {
     getId: (entity: T) => string;
     /** Optional sort comparator */
     sortBy?: (a: T, b: T) => number;
+    /**
+     * Optional identity key for React hooks (`useCollection`).
+     * When it changes, the hook recreates the collection instance.
+     */
+    key?: string | number;
 }
 
 /**
@@ -64,6 +69,12 @@ export interface Collection<T> {
     readonly isLoading: boolean;
     /** Last error */
     readonly error: unknown;
+    /**
+     * Monotonic version bumped on every collection change.
+     * Use with `useSyncExternalStore` so React re-renders when data changes
+     * even if `status` stays `"ready"`.
+     */
+    readonly version: number;
 
     // ── Reactivity ──
     /** Subscribe to collection changes */

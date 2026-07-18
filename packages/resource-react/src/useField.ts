@@ -1,34 +1,35 @@
-import { useSyncExternalStore, useMemo, useCallback } from "react";
-import type { Resource, FieldState } from "qortex-resource";
+import { useSyncExternalStore, useCallback } from "react";
+import type { Resource, FieldState, PathOf, PathValue } from "qortex-resource";
 
 /**
  * React hook for fine-grained field subscription.
  *
- * Only re-renders when this specific field's value, meta, or error changes.
- * Avoids re-rendering the whole form on every keystroke.
- *
- * @param resource - The resource instance
- * @param path - Dot-notation path to the field
- * @returns Field state and bound event handlers (onChange, onBlur)
- *
- * @example
- * ```tsx
- * function NameField({ resource }) {
- *   const { value, error, onChange, onBlur } = useField(resource, 'name');
- *   return <input value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} />;
- * }
- * ```
+ * Uses `getFieldState` for a stable snapshot identity when value/meta are unchanged.
  */
-export function useField<V = any>(resource: Resource<any>, path: string) {
-    // Subscribe to ONLY this field's changes
-    const state = useSyncExternalStore<FieldState<V>>(
+export function useField<T, P extends PathOf<T>>(
+    resource: Resource<T>,
+    path: P,
+): FieldState<PathValue<T, P>> & {
+    onChange: (value: PathValue<T, P> | ((prev: PathValue<T, P>) => PathValue<T, P>)) => void;
+    onBlur: () => void;
+    reset: () => void;
+};
+export function useField<V = any>(
+    resource: Resource<any>,
+    path: string,
+): FieldState<V> & {
+    onChange: (value: V | ((prev: V) => V)) => void;
+    onBlur: () => void;
+    reset: () => void;
+};
+export function useField(resource: Resource<any>, path: string) {
+    const state = useSyncExternalStore(
         (listener) => resource.subscribeField(path, listener),
-        () => resource.field<V>(path),
+        () => resource.getFieldState(path),
     );
 
-    // Bound handlers
     const onChange = useCallback(
-        (value: V | ((prev: V) => V)) => {
+        (value: any) => {
             resource.set(path, value);
         },
         [resource, path],

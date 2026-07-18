@@ -1,30 +1,45 @@
 import { useSyncExternalStore } from "react";
-import type { Resource } from "qortex-resource";
+import type { Resource, PathOf, PathValue, ArrayFieldEntry } from "qortex-resource";
+
+type ArrayItem<T, P extends string> = PathValue<T, P> extends readonly (infer I)[] ? I : any;
 
 /**
  * React hook for array fields.
  *
  * Subscribes to the array path and delegates mutations to `resource.array()`.
  * Stable item ids come from the resource core (survive reorder / duplicate primitives).
- *
- * @param resource - The resource instance
- * @param path - Dot-notation path to the array field
- * @returns Stable fields array and mutation helpers
- *
- * @example
- * ```tsx
- * const { fields, append, remove } = useFieldArray(resource, 'contacts');
- * return fields.map((field) => <div key={field.id}>...</div>);
- * ```
  */
-export function useFieldArray<T = any>(resource: Resource<any>, path: string) {
-    // Subscribe via field controller identity (new ref when value/meta changes).
+export function useFieldArray<T, P extends PathOf<T>>(
+    resource: Resource<T>,
+    path: P,
+): {
+    fields: ArrayFieldEntry<ArrayItem<T, P & string>>[];
+    append: (item: ArrayItem<T, P & string>) => void;
+    prepend: (item: ArrayItem<T, P & string>) => void;
+    remove: (index: number) => void;
+    insert: (index: number, item: ArrayItem<T, P & string>) => void;
+    swap: (indexA: number, indexB: number) => void;
+    move: (from: number, to: number) => void;
+};
+export function useFieldArray<T = any>(
+    resource: Resource<any>,
+    path: string,
+): {
+    fields: ArrayFieldEntry<T>[];
+    append: (item: T) => void;
+    prepend: (item: T) => void;
+    remove: (index: number) => void;
+    insert: (index: number, item: T) => void;
+    swap: (indexA: number, indexB: number) => void;
+    move: (from: number, to: number) => void;
+};
+export function useFieldArray(resource: Resource<any>, path: string) {
     useSyncExternalStore(
         (listener) => resource.subscribeField(path, listener),
         () => resource.field(path),
     );
 
-    const array = resource.array<T>(path);
+    const array = resource.array(path);
 
     return {
         fields: array.fields,

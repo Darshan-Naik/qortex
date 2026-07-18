@@ -17,21 +17,11 @@ export interface ZodLikeSchema {
 /**
  * Build a `validate.resolver` from a Zod (or Zod-compatible) schema.
  *
- * @example
- * ```ts
- * import { z } from "zod";
- * import { createResource, zodResolver } from "qortex-resource";
- *
- * const schema = z.object({ name: z.string().min(1) });
- *
- * createResource({
- *   initialData: { name: "" },
- *   validate: { resolver: zodResolver(schema) },
- * });
- * ```
+ * When called in field mode with a `path`, only errors under that path
+ * (exact or descendant) are returned.
  */
 export function zodResolver<T = any>(schema: ZodLikeSchema): ValidationResolver<T> {
-    return (data) => {
+    return (data, context) => {
         const result = schema.safeParse(data);
         if (result.success) return null;
 
@@ -42,6 +32,17 @@ export function zodResolver<T = any>(schema: ZodLikeSchema): ValidationResolver<
                 errors[path] = issue.message;
             }
         }
+
+        if (context.mode === "field" && context.path) {
+            const target = context.path;
+            const prefix = target + ".";
+            return Object.fromEntries(
+                Object.entries(errors).filter(
+                    ([path]) => path === target || path.startsWith(prefix),
+                ),
+            );
+        }
+
         return errors;
     };
 }

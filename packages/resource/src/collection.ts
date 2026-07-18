@@ -40,6 +40,7 @@ class CollectionCore<T> {
     private resourceCache = new Map<string, Resource<T>>();
     private statusValue: ResourceStatus = "idle";
     private errorValue: unknown = undefined;
+    private versionValue = 0;
 
     constructor(private config: CollectionConfig<T>) {
         this.api = this.createApi();
@@ -193,6 +194,10 @@ class CollectionCore<T> {
         return this.errorValue;
     }
 
+    private get version(): number {
+        return this.versionValue;
+    }
+
     private createApi(): Collection<T> {
         const core = this;
         return {
@@ -215,6 +220,7 @@ class CollectionCore<T> {
             get status() { return core.status; },
             get isLoading() { return core.isLoading; },
             get error() { return core.error; },
+            get version() { return core.version; },
             subscribe: core.subscribe,
             subscribeOne: core.subscribeOne,
             destroy: core.destroy,
@@ -237,6 +243,7 @@ class CollectionCore<T> {
     }
 
     private emit(): void {
+        this.versionValue += 1;
         if (this.listeners.size === 0) return;
         queueMicrotask(() => {
             for (const listener of this.listeners) listener();

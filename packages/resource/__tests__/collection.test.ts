@@ -78,6 +78,7 @@ describe('Collection Engine', () => {
             'updateOne',
             'upsertMany',
             'upsertOne',
+            'version',
         ]);
         expect((collection as any).entities).toBeUndefined();
     });

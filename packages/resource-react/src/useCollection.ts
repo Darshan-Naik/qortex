@@ -1,15 +1,23 @@
-import { useSyncExternalStore, useMemo, useEffect } from "react";
+import { useSyncExternalStore, useMemo, useEffect, useRef } from "react";
 import { createCollection } from "qortex-resource";
-import type { CollectionConfig, Collection } from "qortex-resource";
+import type { CollectionConfig } from "qortex-resource";
+import { serializeResourceKey } from "./bindResourceActions";
 
 /**
  * React hook to create and manage a collection lifecycle.
  *
- * @param config - Collection configuration
- * @returns The collection state and bound CRUD actions
+ * Recreates when `config.key` changes. Subscribes via `collection.version`
+ * so list updates re-render even when `status` stays `"ready"`.
  */
 export function useCollection<T>(config: CollectionConfig<T>) {
-    const collection = useMemo(() => createCollection(config), []);
+    const keyStr = serializeResourceKey(config.key);
+    const configRef = useRef(config);
+    configRef.current = config;
+
+    const collection = useMemo(
+        () => createCollection(configRef.current),
+        [keyStr],
+    );
 
     useEffect(() => {
         return () => {
@@ -17,14 +25,12 @@ export function useCollection<T>(config: CollectionConfig<T>) {
         };
     }, [collection]);
 
-    // We subscribe to the collection's overall state
-    // Note: A real implementation might want selective subscription to specific entities
-    // or just the ID list to avoid re-rendering the whole list when one entity changes.
-    // For this design, we keep it simple.
-    useSyncExternalStore(
+    const version = useSyncExternalStore(
         (listener) => collection.subscribe(listener),
-        () => collection.status, // We just need something to trigger the read
+        () => collection.version,
     );
+
+    const items = useMemo(() => collection.selectAll(), [collection, version]);
 
     const actions = useMemo(
         () => ({
@@ -45,17 +51,13 @@ export function useCollection<T>(config: CollectionConfig<T>) {
     );
 
     return {
-        // State
-        items: collection.selectAll(),
-        count: collection.selectCount(),
+        items,
+        count: items.length,
         status: collection.status,
         isLoading: collection.isLoading,
         error: collection.error,
-
-        // Actions
+        version,
         ...actions,
-
-        // Raw
         collection,
     };
 }

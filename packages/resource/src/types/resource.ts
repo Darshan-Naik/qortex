@@ -1,4 +1,5 @@
-import { FieldsConfig } from "./field";
+import { FieldState, FieldsConfig } from "./field";
+import type { PathOf, PathValue } from "./path";
 
 type Key = string | number | boolean | null | undefined;
 
@@ -72,13 +73,10 @@ export interface ResourceSource<T = any, R = T> {
 export interface ResourceQueryConfig<T = any> {
     enabled?: boolean;
     staleTime?: number;
-    placeholderData?: T;
-    equalityFn?: (a: T | undefined, b: T | undefined) => boolean;
 }
 
 export interface ResourceMutationConfig<T = any, R = any> {
     optimistic?: boolean | ((draft: T, previous: T | undefined) => T);
-    updateSource?: boolean | ((result: R, previous: T | undefined) => T);
 }
 
 export interface ResourceStorage {
@@ -385,7 +383,11 @@ export interface ResourceSnapshot<T, R = any> {
     readonly isValid: boolean;
     /** True if resource query or mutation failed */
     readonly isError: boolean;
-    /** List of dot-notation paths representing modified fields */
+    /**
+     * Dot-notation paths with explicit draft overrides.
+     * A nested leaf can be visually changed via an ancestor override without
+     * appearing here — use `field(path).isChanged` for per-path draft vs data.
+     */
     readonly changedFields: string[];
     /** List of dot-notation paths representing touched/blurred fields */
     readonly touchedFields: string[];
@@ -399,15 +401,33 @@ export interface ResourceSnapshot<T, R = any> {
 export interface Resource<T, R = any> extends ResourceSnapshot<T, R> {
     /** Get a read-only snapshot of the current state */
     readonly snapshot: ResourceSnapshot<T, R>;
-    /** Get a single field controller by dot-notation path */
+    /** Get a single field controller by typed path */
+    field<P extends PathOf<T>>(path: P): FieldController<PathValue<T, P>>;
+    /** Get a single field controller by dynamic string path */
     field<V = any>(path: string): FieldController<V>;
-    /** Get an array list field controller by dot-notation path */
+    /**
+     * Stable plain field snapshot for React `useSyncExternalStore` getSnapshot.
+     * Referentially equal when value/meta are unchanged.
+     */
+    getFieldState<V = any>(path: string): FieldState<V>;
+    /** Get an array list field controller by typed path */
+    array<P extends PathOf<T>>(path: P): ArrayFieldController<PathValue<T, P> extends readonly (infer I)[] ? I : any>;
+    /** Get an array list field controller by dynamic string path */
     array<I = any>(path: string): ArrayFieldController<I>;
-    /** Get the current draft value of a path */
+    /** Get the current draft value of a typed path */
+    get<P extends PathOf<T>>(path: P): PathValue<T, P>;
+    /** Get the current draft value of a dynamic path */
     get<V = any>(path: string): V;
-    /** Get the initial value of a path */
+    /** Get the initial value of a typed path */
+    getInitial<P extends PathOf<T>>(path: P): PathValue<T, P>;
+    /** Get the initial value of a dynamic path */
     getInitial<V = any>(path: string): V;
-    /** Modify a draft value at a path */
+    /** Modify a draft value at a typed path */
+    set<P extends PathOf<T>>(
+        path: P,
+        value: PathValue<T, P> | ((prev: PathValue<T, P>) => PathValue<T, P>),
+    ): void;
+    /** Modify a draft value at a dynamic path */
     set(path: string, value: any | ((prev: any) => any)): void;
     /** Batch edit multiple draft paths at once */
     setMany(patches: Record<string, any>): void;

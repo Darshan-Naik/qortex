@@ -211,8 +211,13 @@ export function diffPaths(a: any, b: any, prefix: string = ""): string[] {
  * @returns A new object with overrides applied
  */
 export function applyOverrides<T>(base: T, overrides: Map<string, any>): T {
+    if (overrides.size === 0) return base;
+    // Parents before children so leaf overrides win after parent object writes.
+    const entries = [...overrides.entries()].sort(
+        (a, b) => a[0].split(".").length - b[0].split(".").length,
+    );
     let result = base;
-    for (const [path, value] of overrides) {
+    for (const [path, value] of entries) {
         result = setByPath(result, path, value);
     }
     return result;

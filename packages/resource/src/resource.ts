@@ -6,6 +6,7 @@ import type {
     FieldConfig,
     FieldController,
     FieldMeta,
+    FieldState,
     FieldValidationResult,
     MutationResult,
     MutationStatus,
@@ -20,7 +21,7 @@ import type {
     ValidationResult,
 } from "./types";
 import type { InternalResourceConfig } from "./types/resource-internal";
-import { flattenFieldsConfig, isEditable } from "./field";
+import { flattenFieldsConfig, isAllValid, isEditable, collectErrors } from "./field";
 import { applyOverrides, getByPath } from "./path";
 
 type FieldListener = (field: FieldController) => void;
@@ -61,8 +62,13 @@ class ResourceCore<T, R = T> {
     private arrayControllers = new Map<string, ArrayFieldController>();
     private arrayKeys = new Map<string, string[]>();
     private arrayKeyCounter = 0;
+    private arrayFieldsCache = new Map<string, ArrayFieldEntry[]>();
+    private fieldStateCache = new Map<string, FieldState>();
     private draftCache: T | undefined | typeof DRAFT_UNSET = DRAFT_UNSET;
     private changedFieldsCache: string[] | undefined;
+    private errorsCache: Record<string, string> | undefined;
+    private touchedFieldsCache: string[] | undefined;
+    private isValidCache: boolean | undefined;
     private queryApi!: ResourceQuery<T>;
     private mutationApi!: ResourceMutation<R>;
 
@@ -184,6 +190,8 @@ class ResourceCore<T, R = T> {
         if (mode === "resetDraft" || previousData === undefined || mode === "replaceAll") {
             this.draftOverrides.clear();
             this.arrayKeys.clear();
+            this.meta.clear();
+            this.invalidateMetaCaches();
         } else if (!Object.is(value, currentDraft)) {
             // External source update: drop overrides that now match server data.
             // Skip when applying the draft itself (optimistic updates).
@@ -209,12 +217,13 @@ class ResourceCore<T, R = T> {
             get isFetching() { return core.queryApi.isFetching; },
             get isSaving() { return core.mutationStatusValue === "mutating"; },
             get isChanged() { return core.changedFields.length > 0; },
-            get isValid() { return Object.keys(core.errors).length === 0; },
+            get isValid() { return core.isValid; },
             get isError() { return core.statusValue === "error"; },
             get changedFields() { return core.changedFields; },
             get touchedFields() { return core.touchedFields; },
             get errors() { return core.errors; },
             field: core.field,
+            getFieldState: core.getFieldState,
             array: core.array,
             get: core.get,
             getInitial: core.getInitial,
@@ -250,7 +259,7 @@ class ResourceCore<T, R = T> {
                 isFetching: this.queryApi.isFetching,
                 isSaving: this.mutationStatusValue === "mutating",
                 isChanged: this.changedFields.length > 0,
-                isValid: Object.keys(this.errors).length === 0,
+                isValid: this.isValid,
                 isError: this.statusValue === "error",
                 changedFields: this.changedFields,
                 touchedFields: this.touchedFields,
@@ -276,17 +285,26 @@ class ResourceCore<T, R = T> {
     }
 
     private get touchedFields(): string[] {
-        return [...this.meta.entries()]
-            .filter(([, meta]) => meta.isTouched)
-            .map(([path]) => path);
+        if (!this.touchedFieldsCache) {
+            this.touchedFieldsCache = [...this.meta.entries()]
+                .filter(([, meta]) => meta.isTouched)
+                .map(([path]) => path);
+        }
+        return this.touchedFieldsCache;
     }
 
     private get errors(): Record<string, string> {
-        const errors: Record<string, string> = {};
-        for (const [path, meta] of this.meta) {
-            if (meta.error) errors[path] = meta.error;
+        if (!this.errorsCache) {
+            this.errorsCache = collectErrors(this.meta);
         }
-        return errors;
+        return this.errorsCache;
+    }
+
+    private get isValid(): boolean {
+        if (this.isValidCache === undefined) {
+            this.isValidCache = isAllValid(this.meta);
+        }
+        return this.isValidCache;
     }
 
     private get queryStatus(): ResourceQueryStatus {
@@ -298,6 +316,24 @@ class ResourceCore<T, R = T> {
     }
 
     field = <V = any>(path: string): FieldController<V> => this.createField(path) as FieldController<V>;
+
+    getFieldState = <V = any>(path: string): FieldState<V> => {
+        const cached = this.fieldStateCache.get(path);
+        if (cached) return cached as FieldState<V>;
+
+        const value = getByPath(this.draft, path);
+        const initialValue = getByPath(this.dataValue, path);
+        const meta = this.meta.get(path);
+        const state: FieldState<V> = {
+            value,
+            initialValue,
+            isChanged: !Object.is(value, initialValue),
+            isTouched: meta?.isTouched ?? false,
+            error: meta?.error,
+        };
+        this.fieldStateCache.set(path, state);
+        return state;
+    };
 
     array = <I = any>(path: string): ArrayFieldController<I> => this.createArray(path) as ArrayFieldController<I>;
 
@@ -321,7 +357,9 @@ class ResourceCore<T, R = T> {
             this.runFieldChangeValidation(path);
         }
         this.scheduleDraftPersist();
-        this.emitAllFields();
+        for (const path of changedPaths) {
+            this.emitField(path);
+        }
         this.emit();
     };
 
@@ -339,6 +377,7 @@ class ResourceCore<T, R = T> {
             if (key.startsWith(path + ".")) this.arrayKeys.delete(key);
         }
         this.invalidateDraftState();
+        this.invalidateMetaCaches();
         this.scheduleDraftPersist();
         this.emitField(path);
         this.emit();
@@ -349,6 +388,7 @@ class ResourceCore<T, R = T> {
         this.meta.clear();
         this.arrayKeys.clear();
         this.invalidateDraftState();
+        this.invalidateMetaCaches();
         this.clearPersistedDraft();
         this.emitAllFields();
         this.emit();
@@ -507,9 +547,13 @@ class ResourceCore<T, R = T> {
         }
 
         let valid = true;
+        const affectedPaths: string[] = [];
         for (const [path, error] of Object.entries(errors)) {
             this.patchMeta(path, { error });
             if (error) valid = false;
+            affectedPaths.push(path);
+        }
+        for (const path of affectedPaths) {
             this.emitField(path);
         }
         this.emit();
@@ -562,29 +606,47 @@ class ResourceCore<T, R = T> {
 
     private applyFieldPatch(path: string, value: any | ((prev: any) => any)): boolean {
         if (!this.canEdit(path)) return false;
-        const currentValue = this.draftOverrides.has(path)
-            ? this.draftOverrides.get(path)
-            : getByPath(this.dataValue, path);
-        const nextValue = typeof value === "function" ? value(currentValue) : value;
-        const initialValue = getByPath(this.dataValue, path);
 
-        if (Object.is(nextValue, initialValue)) {
-            this.draftOverrides.delete(path);
-        } else {
-            this.draftOverrides.set(path, nextValue);
-        }
+        const currentValue = getByPath(this.draft, path);
+        const nextValue = typeof value === "function" ? value(currentValue) : value;
+        if (Object.is(nextValue, currentValue)) return false;
+
+        this.commitOverride(path, nextValue);
 
         if (Array.isArray(nextValue)) {
             this.syncArrayKeysLength(path, nextValue.length);
         }
 
-        this.invalidateDraftState();
         return true;
+    }
+
+    /** Write a concrete next value into the override map (draft-aware). */
+    private commitOverride(path: string, nextValue: any): void {
+        const initialValue = getByPath(this.dataValue, path);
+        if (Object.is(nextValue, initialValue)) {
+            this.draftOverrides.delete(path);
+            this.invalidateDraftState();
+            if (!Object.is(getByPath(this.draft, path), initialValue)) {
+                this.draftOverrides.set(path, nextValue);
+            }
+        } else {
+            this.draftOverrides.set(path, nextValue);
+        }
+        this.invalidateDraftState();
     }
 
     private invalidateDraftState(): void {
         this.draftCache = DRAFT_UNSET;
         this.changedFieldsCache = undefined;
+        this.fieldStateCache.clear();
+        this.arrayFieldsCache.clear();
+    }
+
+    private invalidateMetaCaches(): void {
+        this.errorsCache = undefined;
+        this.touchedFieldsCache = undefined;
+        this.isValidCache = undefined;
+        this.fieldStateCache.clear();
     }
 
     private pruneMatchingOverrides(): void {
@@ -615,9 +677,14 @@ class ResourceCore<T, R = T> {
     }
 
     private getArrayFields<I>(path: string): ArrayFieldEntry<I>[] {
+        const cached = this.arrayFieldsCache.get(path);
+        if (cached) return cached as ArrayFieldEntry<I>[];
+
         const items = (getByPath(this.draft, path) as I[] | undefined) ?? [];
         const keys = this.syncArrayKeysLength(path, items.length);
-        return items.map((item, index) => ({ id: keys[index], index, item }));
+        const fields = items.map((item, index) => ({ id: keys[index], index, item }));
+        this.arrayFieldsCache.set(path, fields);
+        return fields;
     }
 
     private mutateArray<I>(
@@ -625,19 +692,15 @@ class ResourceCore<T, R = T> {
         updater: (prev: I[]) => I[],
         syncKeys: (keys: string[], prev: I[]) => void,
     ): void {
+        if (!this.canEdit(path)) return;
+
         const prev = (getByPath(this.draft, path) as I[] | undefined) ?? [];
         const keys = this.syncArrayKeysLength(path, prev.length);
         syncKeys(keys, prev);
-        // Skip length re-sync inside applyFieldPatch — keys already updated.
         const next = updater(prev);
-        if (!this.canEdit(path)) return;
-        const initialValue = getByPath(this.dataValue, path);
-        if (Object.is(next, initialValue)) {
-            this.draftOverrides.delete(path);
-        } else {
-            this.draftOverrides.set(path, next);
-        }
-        this.invalidateDraftState();
+        if (Object.is(next, prev)) return;
+
+        this.commitOverride(path, next);
         this.runFieldChangeValidation(path);
         this.scheduleDraftPersist();
         this.emitField(path);
@@ -784,6 +847,7 @@ class ResourceCore<T, R = T> {
     private patchMeta(path: string, patch: Partial<FieldMeta>): void {
         const current = this.meta.get(path) ?? { isTouched: false, error: undefined };
         this.meta.set(path, { ...current, ...patch });
+        this.invalidateMetaCaches();
     }
 
     private emit(): void {
@@ -793,15 +857,40 @@ class ResourceCore<T, R = T> {
     }
 
     private emitField(path: string): void {
-        const listeners = this.fieldListeners.get(path);
-        if (!listeners) return;
-        const field = this.field(path);
-        for (const listener of listeners) listener(field);
+        const notified = new Set<string>();
+        const notify = (target: string) => {
+            if (notified.has(target)) return;
+            notified.add(target);
+            const listeners = this.fieldListeners.get(target);
+            if (!listeners?.size) return;
+            const field = this.field(target);
+            for (const listener of listeners) listener(field);
+        };
+
+        notify(path);
+
+        // Ancestor paths (parent useField must refresh when a child changes).
+        let cursor = path;
+        let dot = cursor.lastIndexOf(".");
+        while (dot !== -1) {
+            cursor = cursor.slice(0, dot);
+            notify(cursor);
+            dot = cursor.lastIndexOf(".");
+        }
+
+        // Descendant paths (parent object replace must refresh leaf subscribers).
+        const prefix = path + ".";
+        for (const listenerPath of this.fieldListeners.keys()) {
+            if (listenerPath.startsWith(prefix)) notify(listenerPath);
+        }
     }
 
     private emitAllFields(): void {
         for (const path of this.fieldListeners.keys()) {
-            this.emitField(path);
+            const listeners = this.fieldListeners.get(path);
+            if (!listeners?.size) continue;
+            const field = this.field(path);
+            for (const listener of listeners) listener(field);
         }
     }
 
@@ -868,10 +957,24 @@ class ResourceCore<T, R = T> {
         this.storage.get<Record<string, any>>(this.persistKey + ":draft")
             .then((draft) => {
                 if (draft && typeof draft === "object") {
-                    this.setMany(draft);
+                    this.applyPatchesSilent(draft);
                 }
             })
             .catch((error) => this.handlePersistError(error));
+    }
+
+    /** Restore overrides without running validation (used by persist hydrate). */
+    private applyPatchesSilent(patches: Record<string, any>): void {
+        const changedPaths: string[] = [];
+        for (const [path, value] of Object.entries(patches)) {
+            if (this.applyFieldPatch(path, value)) changedPaths.push(path);
+        }
+        if (changedPaths.length === 0) return;
+        this.scheduleDraftPersist();
+        for (const path of changedPaths) {
+            this.emitField(path);
+        }
+        this.emit();
     }
 
     private hydrateCache(): void {
