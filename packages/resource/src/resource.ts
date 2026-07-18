@@ -1,6 +1,14 @@
 import type {
     ResourceConfig,
     Resource,
+    ResourceStatus,
+    MutationStatus,
+    MutationResult,
+    ResourceSnapshot,
+    FieldMeta,
+    FieldState,
+    FieldConfig,
+    PluginContext,
 } from "./types";
 import { InternalResourceState } from "./types/state";
 import { getSnapshotInternal } from "./resource/snapshot";
@@ -26,355 +34,368 @@ import {
  * @returns A `Resource<T>` instance
  */
 export function createResource<T>(config: ResourceConfig<T>): Resource<T> {
-    const state: InternalResourceState<T> = {
-        config,
-        initialData: undefined,
-        status: "idle",
-        statusError: undefined,
+    return new ResourceCore(config).api;
+}
 
-        draftOverrides: new Map(),
-        fieldMetaMap: new Map(),
-        fieldStateCache: new Map(),
+class ResourceCore<T> implements InternalResourceState<T> {
+    api: Resource<T>;
 
-        mutationStatus: "idle",
-        mutationError: undefined,
-        mutationData: undefined,
+    initialData: T | undefined = undefined;
+    status: ResourceStatus = "idle";
+    statusError: unknown = undefined;
 
-        listeners: new Set(),
-        fieldListeners: new Map(),
+    draftOverrides = new Map<string, any>();
+    fieldMetaMap = new Map<string, FieldMeta>();
+    fieldStateCache = new Map<string, FieldState>();
 
-        fieldConfigs: flattenFieldsConfig(config.fields),
-        pluginCleanups: [],
+    mutationStatus: MutationStatus = "idle";
+    mutationError: unknown = undefined;
+    mutationData: any = undefined;
 
-        snapshotCache: undefined,
-        pluginContext: undefined,
+    listeners = new Set<(snapshot: ResourceSnapshot<T>) => void>();
+    fieldListeners = new Map<string, Set<(state: FieldState) => void>>();
 
-        emit: () => {
-            state.fieldStateCache.clear();
-            state.snapshotCache = undefined;
-            if (state.listeners.size === 0 && state.fieldListeners.size === 0) return;
-            const snapshot = getSnapshotInternal(state);
-            for (const listener of state.listeners) listener(snapshot);
-        },
-        emitField: (path: string) => {
-            state.fieldStateCache.delete(path);
-            const set = state.fieldListeners.get(path);
-            if (set && set.size > 0) {
-                const fieldState = state.getFieldCached(path);
-                for (const listener of set) listener(fieldState);
-            }
-            state.emit();
-        },
-        getUpdatedDataInternal: () => {
-            if (state.initialData === undefined) return undefined as any;
-            if (state.draftOverrides.size === 0) return state.initialData;
-            return applyOverrides(state.initialData, state.draftOverrides);
-        },
-        getFieldCached: (path: string) => {
-            let fieldState = state.fieldStateCache.get(path);
-            if (!fieldState) {
-                fieldState = computeFieldState(path, state.initialData, state.draftOverrides, state.fieldMetaMap);
-                state.fieldStateCache.set(path, fieldState);
-            }
-            return fieldState;
-        }
+    fieldConfigs: Map<string, FieldConfig>;
+    pluginCleanups: Array<() => void> = [];
+
+    snapshotCache: ResourceSnapshot<T> | undefined = undefined;
+    pluginContext: PluginContext<T> | undefined = undefined;
+
+    constructor(public config: ResourceConfig<T>) {
+        this.fieldConfigs = flattenFieldsConfig(config.fields);
+        this.pluginContext = this.createPluginContext();
+
+        this.initializeData();
+        this.initializePlugins();
+        this.notifyInitialDataPlugins();
+        this.api = this.createApi();
+    }
+
+    emit = (): void => {
+        this.fieldStateCache.clear();
+        this.snapshotCache = undefined;
+        if (this.listeners.size === 0 && this.fieldListeners.size === 0) return;
+
+        const snapshot = getSnapshotInternal(this);
+        for (const listener of this.listeners) listener(snapshot);
     };
 
-    // ─────────────────────────────────────────
-    // Plugin Context
-    // ─────────────────────────────────────────
+    emitField = (path: string): void => {
+        this.fieldStateCache.delete(path);
+        const set = this.fieldListeners.get(path);
+        if (set && set.size > 0) {
+            const fieldState = this.getFieldCached(path);
+            for (const listener of set) listener(fieldState);
+        }
+        this.emit();
+    };
 
-    state.pluginContext = {
-        getData: () => state.initialData,
-        getUpdatedData: state.getUpdatedDataInternal,
-        getDraftOverrides: () => state.draftOverrides,
-        setInitialData: (data: T) => {
-            state.initialData = data;
-            state.status = "ready";
-            state.statusError = undefined;
-            state.emit();
-        },
-        resetDrafts: () => {
-            state.draftOverrides.clear();
-            state.fieldMetaMap.clear();
-            state.emit();
-        },
-        setFieldError: (path: string, error: string | undefined) => {
-            const existing = state.fieldMetaMap.get(path) ?? {
-                ...DEFAULT_FIELD_META,
-            };
-            state.fieldMetaMap.set(path, { ...existing, error });
-            state.emitField(path);
-        },
-        setFieldErrors: (errors: Record<string, string | undefined>) => {
-            for (const [path, error] of Object.entries(errors)) {
-                const existing = state.fieldMetaMap.get(path) ?? {
+    getUpdatedDataInternal = (): T => {
+        if (this.initialData === undefined) return undefined as any;
+        if (this.draftOverrides.size === 0) return this.initialData;
+        return applyOverrides(this.initialData, this.draftOverrides);
+    };
+
+    getFieldCached = (path: string): FieldState => {
+        let fieldState = this.fieldStateCache.get(path);
+        if (!fieldState) {
+            fieldState = computeFieldState(path, this.initialData, this.draftOverrides, this.fieldMetaMap);
+            this.fieldStateCache.set(path, fieldState);
+        }
+        return fieldState;
+    };
+
+    get = (): ResourceSnapshot<T> => getSnapshotInternal(this);
+    getData = (): T | undefined => this.initialData;
+    getUpdatedData = (): T => this.getUpdatedDataInternal();
+    getField = (path: string): FieldState => this.getFieldCached(path);
+
+    setField = (path: string, value: any): void => {
+        if (!this.applyFieldPatch(path, value)) {
+            return;
+        }
+
+        this.emitField(path);
+    };
+
+    setFields = (patches: Record<string, any>): void => {
+        for (const [path, value] of Object.entries(patches)) {
+            this.applyFieldPatch(path, value);
+        }
+        this.emit();
+    };
+
+    resetField = (path: string): void => {
+        this.draftOverrides.delete(path);
+        for (const key of this.draftOverrides.keys()) {
+            if (key.startsWith(path + ".")) {
+                this.draftOverrides.delete(key);
+            }
+        }
+        this.fieldMetaMap.delete(path);
+        for (const key of this.fieldMetaMap.keys()) {
+            if (key.startsWith(path + ".")) {
+                this.fieldMetaMap.delete(key);
+            }
+        }
+        this.emitField(path);
+    };
+
+    resetAll = (): void => {
+        this.draftOverrides.clear();
+        this.fieldMetaMap.clear();
+        this.mutationStatus = "idle";
+        this.mutationError = undefined;
+        this.mutationData = undefined;
+        this.emit();
+    };
+
+    setInitialData = (data: T): void => {
+        this.initialData = data;
+        this.status = "ready";
+        this.statusError = undefined;
+        this.notifyInitialDataPlugins(data);
+        this.emit();
+    };
+
+    touchField = (path: string): void => {
+        const existing = this.fieldMetaMap.get(path) ?? {
+            ...DEFAULT_FIELD_META,
+        };
+        if (!existing.isTouched) {
+            this.fieldMetaMap.set(path, { ...existing, isTouched: true });
+        }
+        for (const plugin of this.config.plugins ?? []) {
+            plugin.onFieldBlur?.(path, this.pluginContext!);
+        }
+        this.emitField(path);
+    };
+
+    mutate = (): void => {
+        mutateAsyncInternal(this).catch(() => { });
+    };
+
+    mutateAsync = (): Promise<MutationResult> => mutateAsyncInternal(this);
+
+    validate = (): Promise<boolean> => validate(this);
+
+    subscribe = (listener: (snapshot: ResourceSnapshot<T>) => void): (() => void) => {
+        this.listeners.add(listener);
+        return () => this.listeners.delete(listener);
+    };
+
+    subscribeField = (path: string, listener: (state: FieldState) => void): (() => void) => {
+        let set = this.fieldListeners.get(path);
+        if (!set) {
+            set = new Set();
+            this.fieldListeners.set(path, set);
+        }
+        set.add(listener);
+        return () => {
+            set!.delete(listener);
+            if (set!.size === 0) this.fieldListeners.delete(path);
+        };
+    };
+
+    destroy = (): void => {
+        this.listeners.clear();
+        this.fieldListeners.clear();
+        this.draftOverrides.clear();
+        this.fieldMetaMap.clear();
+
+        for (const cleanup of this.pluginCleanups) {
+            cleanup();
+        }
+        this.pluginCleanups.length = 0;
+    };
+
+    get isChanged(): boolean {
+        for (const [path, value] of this.draftOverrides) {
+            if (!Object.is(value, getByPath(this.initialData, path))) return true;
+        }
+        return false;
+    }
+
+    get isValid(): boolean {
+        return isAllValid(this.fieldMetaMap);
+    }
+
+    get isMutating(): boolean {
+        return this.mutationStatus === "mutating";
+    }
+
+    get isLoading(): boolean {
+        return this.status === "loading";
+    }
+
+    get changedFields(): string[] {
+        return [...this.draftOverrides.keys()].filter((path) => {
+            return !Object.is(this.draftOverrides.get(path), getByPath(this.initialData, path));
+        });
+    }
+
+    get touchedFields(): string[] {
+        const touched: string[] = [];
+        for (const [path, meta] of this.fieldMetaMap) {
+            if (meta.isTouched) touched.push(path);
+        }
+        return touched;
+    }
+
+    get errors(): Record<string, string> {
+        return collectErrors(this.fieldMetaMap);
+    }
+
+    private createApi(): Resource<T> {
+        const core = this;
+
+        return {
+            get: core.get,
+            getData: core.getData,
+            getUpdatedData: core.getUpdatedData,
+            getField: core.getField,
+            setField: core.setField,
+            setFields: core.setFields,
+            resetField: core.resetField,
+            resetAll: core.resetAll,
+            setInitialData: core.setInitialData,
+            get status() { return core.status; },
+            get isChanged() { return core.isChanged; },
+            get isValid() { return core.isValid; },
+            get isMutating() { return core.isMutating; },
+            get isLoading() { return core.isLoading; },
+            get changedFields() { return core.changedFields; },
+            get touchedFields() { return core.touchedFields; },
+            get errors() { return core.errors; },
+            mutate: core.mutate,
+            mutateAsync: core.mutateAsync,
+            validate: core.validate,
+            get mutationStatus() { return core.mutationStatus; },
+            get mutationError() { return core.mutationError; },
+            get mutationData() { return core.mutationData; },
+            subscribe: core.subscribe,
+            subscribeField: core.subscribeField,
+            touchField: core.touchField,
+            destroy: core.destroy,
+        };
+    }
+
+    private createPluginContext(): PluginContext<T> {
+        return {
+            getData: () => this.initialData,
+            getUpdatedData: this.getUpdatedDataInternal,
+            getDraftOverrides: () => this.draftOverrides,
+            setInitialData: (data: T) => {
+                this.initialData = data;
+                this.status = "ready";
+                this.statusError = undefined;
+                this.emit();
+            },
+            resetDrafts: () => {
+                this.draftOverrides.clear();
+                this.fieldMetaMap.clear();
+                this.emit();
+            },
+            setFieldError: (path: string, error: string | undefined) => {
+                const existing = this.fieldMetaMap.get(path) ?? {
                     ...DEFAULT_FIELD_META,
                 };
-                state.fieldMetaMap.set(path, { ...existing, error });
-            }
-            state.emit();
-        },
-        getFieldMeta: (path: string) =>
-            state.fieldMetaMap.get(path) ?? { ...DEFAULT_FIELD_META },
-        setStatus: (s: any) => {
-            state.status = s;
-            state.emit();
-        },
-        setError: (error: unknown) => {
-            state.statusError = error;
-            state.status = "error";
-            state.emit();
-        },
-        subscribe: (listener) => {
-            state.listeners.add(listener);
-            return () => state.listeners.delete(listener);
-        },
-    };
+                this.fieldMetaMap.set(path, { ...existing, error });
+                this.emitField(path);
+            },
+            setFieldErrors: (errors: Record<string, string | undefined>) => {
+                for (const [path, error] of Object.entries(errors)) {
+                    const existing = this.fieldMetaMap.get(path) ?? {
+                        ...DEFAULT_FIELD_META,
+                    };
+                    this.fieldMetaMap.set(path, { ...existing, error });
+                }
+                this.emit();
+            },
+            getFieldMeta: (path: string) =>
+                this.fieldMetaMap.get(path) ?? { ...DEFAULT_FIELD_META },
+            setStatus: (s: ResourceStatus) => {
+                this.status = s;
+                this.emit();
+            },
+            setError: (error: unknown) => {
+                this.statusError = error;
+                this.status = "error";
+                this.emit();
+            },
+            subscribe: this.subscribe,
+        };
+    }
 
-    // ─────────────────────────────────────────
-    // Public Methods
-    // ─────────────────────────────────────────
-
-    function applyFieldPatch(path: string, value: any): boolean {
-        if (state.fieldConfigs.size > 0 && !isEditable(path, state.fieldConfigs)) {
+    private applyFieldPatch(path: string, value: any): boolean {
+        if (this.fieldConfigs.size > 0 && !isEditable(path, this.fieldConfigs)) {
             return false;
         }
 
-        const currentValue = state.draftOverrides.has(path)
-            ? state.draftOverrides.get(path)
-            : getByPath(state.initialData, path);
+        const currentValue = this.draftOverrides.has(path)
+            ? this.draftOverrides.get(path)
+            : getByPath(this.initialData, path);
         const nextValue = typeof value === "function" ? value(currentValue) : value;
 
-        const initialVal = getByPath(state.initialData, path);
+        const initialVal = getByPath(this.initialData, path);
         if (Object.is(nextValue, initialVal)) {
-            state.draftOverrides.delete(path);
+            this.draftOverrides.delete(path);
         } else {
-            state.draftOverrides.set(path, nextValue);
+            this.draftOverrides.set(path, nextValue);
         }
 
-        for (const plugin of state.config.plugins ?? []) {
-            plugin.onFieldChange?.(path, nextValue, state.pluginContext!);
+        for (const plugin of this.config.plugins ?? []) {
+            plugin.onFieldChange?.(path, nextValue, this.pluginContext!);
         }
         return true;
     }
 
-    function setField(path: string, value: any): void {
-        if (!applyFieldPatch(path, value)) {
-            return;
+    private initializeData(): void {
+        if (typeof this.config.initialData === "function") {
+            this.status = "loading";
+            try {
+                const result = (this.config.initialData as Function)();
+                if (result && typeof result === "object" && typeof result.then === "function") {
+                    (result as Promise<T>)
+                        .then((data) => {
+                            this.initialData = data;
+                            this.status = "ready";
+                            this.notifyInitialDataPlugins(data);
+                            this.emit();
+                        })
+                        .catch((err) => {
+                            this.statusError = err;
+                            this.status = "error";
+                            this.emit();
+                        });
+                } else {
+                    this.initialData = result as T;
+                    this.status = "ready";
+                }
+            } catch (err) {
+                this.statusError = err;
+                this.status = "error";
+            }
+        } else if (this.config.initialData !== undefined) {
+            this.initialData = this.config.initialData as T;
+            this.status = "ready";
         }
-
-        state.emitField(path);
     }
 
-    function setFields(patches: Record<string, any>): void {
-        for (const [path, value] of Object.entries(patches)) {
-            applyFieldPatch(path, value);
-        }
-        state.emit();
-    }
-
-    function resetField(path: string): void {
-        state.draftOverrides.delete(path);
-        for (const key of state.draftOverrides.keys()) {
-            if (key.startsWith(path + ".")) {
-                state.draftOverrides.delete(key);
+    private initializePlugins(): void {
+        for (const plugin of this.config.plugins ?? []) {
+            const cleanup = plugin.onInit?.(this.pluginContext!);
+            if (typeof cleanup === "function") {
+                this.pluginCleanups.push(cleanup);
             }
         }
-        state.fieldMetaMap.delete(path);
-        for (const key of state.fieldMetaMap.keys()) {
-            if (key.startsWith(path + ".")) {
-                state.fieldMetaMap.delete(key);
-            }
-        }
-        state.emitField(path);
     }
 
-    function resetAll(): void {
-        state.draftOverrides.clear();
-        state.fieldMetaMap.clear();
-        state.mutationStatus = "idle";
-        state.mutationError = undefined;
-        state.mutationData = undefined;
-        state.emit();
-    }
+    private notifyInitialDataPlugins(data = this.initialData): void {
+        if (data === undefined || this.status !== "ready") return;
 
-    function setInitialData(data: T): void {
-        state.initialData = data;
-        state.status = "ready";
-        state.statusError = undefined;
-        for (const plugin of state.config.plugins ?? []) {
-            plugin.onInitialData?.(data, state.pluginContext!);
-        }
-        state.emit();
-    }
-
-    function touchField(path: string): void {
-        const existing = state.fieldMetaMap.get(path) ?? {
-            ...DEFAULT_FIELD_META,
-        };
-        if (!existing.isTouched) {
-            state.fieldMetaMap.set(path, { ...existing, isTouched: true });
-        }
-        for (const plugin of state.config.plugins ?? []) {
-            plugin.onFieldBlur?.(path, state.pluginContext!);
-        }
-        state.emitField(path);
-    }
-
-    function destroy(): void {
-        state.listeners.clear();
-        state.fieldListeners.clear();
-        state.draftOverrides.clear();
-        state.fieldMetaMap.clear();
-
-        for (const cleanup of state.pluginCleanups) {
-            cleanup();
-        }
-        state.pluginCleanups.length = 0;
-    }
-
-    // Handle initialData
-    if (typeof config.initialData === "function") {
-        state.status = "loading";
-        try {
-            const result = (config.initialData as Function)();
-            if (result && typeof result === "object" && typeof result.then === "function") {
-                (result as Promise<T>)
-                    .then((data) => {
-                        state.initialData = data;
-                        state.status = "ready";
-                        for (const plugin of config.plugins ?? []) {
-                            plugin.onInitialData?.(data, state.pluginContext!);
-                        }
-                        state.emit();
-                    })
-                    .catch((err) => {
-                        state.statusError = err;
-                        state.status = "error";
-                        state.emit();
-                    });
-            } else {
-                state.initialData = result as T;
-                state.status = "ready";
-            }
-        } catch (err) {
-            state.statusError = err;
-            state.status = "error";
-        }
-    } else if (config.initialData !== undefined) {
-        state.initialData = config.initialData as T;
-        state.status = "ready";
-    }
-
-    // Initialize plugins
-    for (const plugin of config.plugins ?? []) {
-        const cleanup = plugin.onInit?.(state.pluginContext!);
-        if (typeof cleanup === "function") {
-            state.pluginCleanups.push(cleanup);
+        for (const plugin of this.config.plugins ?? []) {
+            plugin.onInitialData?.(data, this.pluginContext!);
         }
     }
-
-    if (state.initialData !== undefined && state.status === "ready") {
-        for (const plugin of config.plugins ?? []) {
-            plugin.onInitialData?.(state.initialData, state.pluginContext!);
-        }
-    }
-
-    // ─────────────────────────────────────────
-    // Build Resource Instance
-    // ─────────────────────────────────────────
-
-    const resource: Resource<T> = {
-        /** Get the full resource snapshot */
-        get: () => getSnapshotInternal(state),
-        /** Get the initial/server data (unmodified) */
-        getData: () => state.initialData,
-        /** Get data with user edits merged */
-        getUpdatedData: state.getUpdatedDataInternal,
-        /** Get the state of a specific field */
-        getField: state.getFieldCached,
-
-        /** Set a field value (direct or functional update) */
-        setField,
-        /** Set multiple fields at once */
-        setFields,
-        /** Reset a field to its initial value */
-        resetField,
-        /** Reset all fields to initial values */
-        resetAll,
-        /** Manually set the initial data */
-        setInitialData,
-
-        /** Overall resource status */
-        get status() { return state.status; },
-        /** Whether any field has changed */
-        get isChanged() {
-            for (const [path, value] of state.draftOverrides) {
-                if (!Object.is(value, getByPath(state.initialData, path))) return true;
-            }
-            return false;
-        },
-        /** Whether all validations pass */
-        get isValid() { return isAllValid(state.fieldMetaMap); },
-        /** Whether a mutation is in progress */
-        get isMutating() { return state.mutationStatus === "mutating"; },
-        /** Whether initial data is loading */
-        get isLoading() { return state.status === "loading"; },
-        /** List of changed field paths */
-        get changedFields() {
-            return [...state.draftOverrides.keys()].filter((path) => {
-                return !Object.is(state.draftOverrides.get(path), getByPath(state.initialData, path));
-            });
-        },
-        /** List of touched field paths */
-        get touchedFields() {
-            const touched: string[] = [];
-            for (const [path, meta] of state.fieldMetaMap) {
-                if (meta.isTouched) touched.push(path);
-            }
-            return touched;
-        },
-        /** Map of field path → error message */
-        get errors() { return collectErrors(state.fieldMetaMap); },
-
-        /** Fire-and-forget mutation (errors tracked in state) */
-        mutate: () => { mutateAsyncInternal(state).catch(() => { }); },
-        /** Async mutation that returns result */
-        mutateAsync: () => mutateAsyncInternal(state),
-        /** Run validation only (populate errors) */
-        validate: () => validate(state),
-
-        /** Mutation lifecycle status */
-        get mutationStatus() { return state.mutationStatus; },
-        /** Last mutation error */
-        get mutationError() { return state.mutationError; },
-        /** Last successful mutation return value */
-        get mutationData() { return state.mutationData; },
-
-        /** Subscribe to all state changes */
-        subscribe: (listener) => {
-            state.listeners.add(listener);
-            return () => state.listeners.delete(listener);
-        },
-        /** Subscribe to a specific field's changes (supports nested paths) */
-        subscribeField: (path, listener) => {
-            let set = state.fieldListeners.get(path);
-            if (!set) {
-                set = new Set();
-                state.fieldListeners.set(path, set);
-            }
-            set.add(listener);
-            return () => {
-                set!.delete(listener);
-                if (set!.size === 0) state.fieldListeners.delete(path);
-            };
-        },
-        /** Notify plugins of a field blur event */
-        touchField,
-        /** Clean up all subscriptions and plugin resources */
-        destroy,
-    };
-
-    return resource;
 }

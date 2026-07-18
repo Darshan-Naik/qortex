@@ -53,6 +53,53 @@ describe('Resource Engine', () => {
             expect(state.changedFields.includes('name')).toBe(true);
             expect(state.changedFields.includes('age')).toBe(true);
         });
+
+        it('should support destructured methods', () => {
+            const { setField, setFields, get, resetField } = resource;
+
+            setField('name', 'Jane');
+            setFields({ age: 31 });
+
+            expect(get().updatedData).toEqual({ name: 'Jane', age: 31 });
+
+            resetField('name');
+
+            expect(get().updatedData).toEqual({ name: 'John', age: 31 });
+        });
+
+        it('should expose only the public resource API at runtime', () => {
+            expect(Object.keys(resource).sort()).toEqual([
+                'changedFields',
+                'destroy',
+                'errors',
+                'get',
+                'getData',
+                'getField',
+                'getUpdatedData',
+                'isChanged',
+                'isLoading',
+                'isMutating',
+                'isValid',
+                'mutate',
+                'mutateAsync',
+                'mutationData',
+                'mutationError',
+                'mutationStatus',
+                'resetAll',
+                'resetField',
+                'setField',
+                'setFields',
+                'setInitialData',
+                'status',
+                'subscribe',
+                'subscribeField',
+                'touchField',
+                'touchedFields',
+                'validate',
+            ]);
+            expect((resource as any).draftOverrides).toBeUndefined();
+            expect((resource as any).pluginContext).toBeUndefined();
+        });
         
         it('should reset all fields', () => {
             resource.setFields({ name: 'Jane', age: 31 });

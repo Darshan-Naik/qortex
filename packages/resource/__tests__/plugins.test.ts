@@ -5,6 +5,99 @@ import { queryPlugin } from '../src/plugins/query';
 import { queryManager } from 'qortex-query';
 
 describe('Resource Plugins', () => {
+    describe('plugin contract', () => {
+        it('should preserve hook order, context methods, and cleanup', () => {
+            const events: string[] = [];
+
+            const resource = createResource({
+                initialData: { name: 'John', age: 20 },
+                plugins: [
+                    {
+                        name: 'contract',
+                        onInit: (ctx) => {
+                            events.push(`init:${ctx.getData()?.name}`);
+                            ctx.subscribe(() => events.push('subscribe'));
+                            return () => events.push('cleanup');
+                        },
+                        onInitialData: (data, ctx) => {
+                            events.push(`initial:${data.name}:${ctx.getUpdatedData().name}`);
+                        },
+                        onFieldChange: (path, value, ctx) => {
+                            events.push(`change:${path}:${value}`);
+                            ctx.setFieldError(path, 'Invalid value');
+                        },
+                        onFieldBlur: (path, ctx) => {
+                            events.push(`blur:${path}:${ctx.getFieldMeta(path).error}`);
+                        },
+                    }
+                ]
+            });
+
+            expect(events).toEqual(['init:John', 'initial:John:John']);
+
+            resource.setField('name', 'Jane');
+
+            expect(resource.get().errors.name).toBe('Invalid value');
+            expect(events).toEqual([
+                'init:John',
+                'initial:John:John',
+                'change:name:Jane',
+                'subscribe',
+                'subscribe',
+            ]);
+
+            resource.touchField('name');
+
+            expect(events).toEqual([
+                'init:John',
+                'initial:John:John',
+                'change:name:Jane',
+                'subscribe',
+                'subscribe',
+                'blur:name:Invalid value',
+                'subscribe',
+            ]);
+
+            resource.setInitialData({ name: 'Server', age: 21 });
+
+            expect(events).toEqual([
+                'init:John',
+                'initial:John:John',
+                'change:name:Jane',
+                'subscribe',
+                'subscribe',
+                'blur:name:Invalid value',
+                'subscribe',
+                'initial:Server:Jane',
+                'subscribe',
+            ]);
+
+            resource.destroy();
+
+            expect(events.at(-1)).toBe('cleanup');
+        });
+
+        it('should allow sync onBeforeMutate to abort mutation', async () => {
+            const mutate = jest.fn();
+            const resource = createResource({
+                initialData: { score: 10 },
+                plugins: [
+                    {
+                        name: 'blocker',
+                        onBeforeMutate: () => false,
+                    }
+                ],
+                mutate,
+            });
+
+            const result = await resource.mutateAsync();
+
+            expect(result.success).toBe(false);
+            expect((result.error as Error).message).toBe('Mutation blocked by plugin.');
+            expect(mutate).not.toHaveBeenCalled();
+        });
+    });
+
     describe('validatePlugin', () => {
         it('should validate fields and populate error state', () => {
             const mockValidator = (data: any) => {

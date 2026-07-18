@@ -47,8 +47,8 @@ export interface Plugin<T = any> {
     onFieldChange?(path: string, value: any, ctx: PluginContext<T>): void;
     /** Called when a field loses focus */
     onFieldBlur?(path: string, ctx: PluginContext<T>): void;
-    /** Called before mutation. Return false to abort. */
-    onBeforeMutate?(updatedData: T, ctx: PluginContext<T>): Promise<boolean | void>;
+    /** Called before mutation. Return false, sync or async, to abort. */
+    onBeforeMutate?(updatedData: T, ctx: PluginContext<T>): boolean | void | Promise<boolean | void>;
     /** Called after successful mutation */
     onAfterMutate?(result: any, ctx: PluginContext<T>): void;
     /** Called when mutation fails */
