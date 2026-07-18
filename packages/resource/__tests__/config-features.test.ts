@@ -45,6 +45,29 @@ describe('Config-driven resource features', () => {
             expect(save).not.toHaveBeenCalled();
             expect(resource.errors.name).toBe('Name is required');
         });
+
+        it('clears field errors after a successful save resetDraft', async () => {
+            const resource = createResource({
+                initialData: { name: '' },
+                validate: {
+                    fields: {
+                        name: (v) => (!v ? 'Required' : null),
+                    },
+                },
+                source: {
+                    save: async (draft) => draft,
+                },
+            });
+
+            await resource.validateField('name');
+            expect(resource.errors.name).toBe('Required');
+
+            resource.set('name', 'Ada');
+            const result = await resource.save();
+            expect(result.success).toBe(true);
+            expect(resource.errors).toEqual({});
+            expect(resource.isValid).toBe(true);
+        });
     });
 
     describe('mutation.optimistic config', () => {
@@ -151,6 +174,40 @@ describe('Config-driven resource features', () => {
             await new Promise((resolve) => setTimeout(resolve, 10));
             expect(restored.draft?.name).toBe('Jane');
             restored.destroy();
+        });
+
+        it('restores drafts without running change validation', async () => {
+            const store = new Map<string, unknown>();
+            store.set('user:draft', { name: 'Hydrated' });
+
+            const storage = {
+                async get<T>(key: string): Promise<T | undefined> {
+                    return store.get(key) as T | undefined;
+                },
+                async set<T>(key: string, value: T): Promise<void> {
+                    store.set(key, value);
+                },
+                async remove(key: string): Promise<void> {
+                    store.delete(key);
+                },
+            };
+
+            const resource = createResource({
+                key: 'user',
+                initialData: { name: '' },
+                persist: { draft: true, storage },
+                validate: {
+                    on: 'change',
+                    fields: {
+                        name: (v) => (!v ? 'Required' : null),
+                    },
+                },
+            });
+
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            expect(resource.draft?.name).toBe('Hydrated');
+            expect(resource.errors).toEqual({});
+            resource.destroy();
         });
     });
 });

@@ -161,4 +161,144 @@ describe('Resource Engine', () => {
             expect((res.mutation.error as Error).message).toBe('Network failed');
         });
     });
+
+    describe('Nested draft overrides', () => {
+        it('functional set uses draft value after a parent override', () => {
+            const nested = createResource({
+                initialData: { profile: { name: 'Ada', city: 'NY' } },
+            });
+
+            nested.set('profile', { name: 'Grace', city: 'SF' });
+            nested.set('profile.name', (prev: string) => prev + '!');
+
+            expect(nested.get('profile.name')).toBe('Grace!');
+            expect(nested.draft?.profile).toEqual({ name: 'Grace!', city: 'SF' });
+        });
+
+        it('tracks changedFields from override paths', () => {
+            const nested = createResource({
+                initialData: { profile: { name: 'Ada', city: 'NY' } },
+            });
+
+            nested.set('profile.name', 'Grace');
+            expect(nested.changedFields).toEqual(['profile.name']);
+            expect(nested.isChanged).toBe(true);
+
+            nested.set('profile.name', 'Ada');
+            expect(nested.changedFields).toEqual([]);
+            expect(nested.isChanged).toBe(false);
+        });
+
+        it('does not emit when set is a no-op', () => {
+            let emits = 0;
+            resource.subscribe(() => {
+                emits += 1;
+            });
+
+            resource.set('name', 'John');
+            expect(emits).toBe(0);
+            expect(resource.isChanged).toBe(false);
+        });
+    });
+
+    describe('Field subscriptions', () => {
+        it('notifies parent field subscribers when a child path changes', () => {
+            const nested = createResource({
+                initialData: { profile: { name: 'Ada' } },
+            });
+
+            let parentSees: string | undefined;
+            nested.subscribeField('profile', (field) => {
+                parentSees = (field.value as { name: string }).name;
+            });
+
+            nested.set('profile.name', 'Grace');
+            expect(parentSees).toBe('Grace');
+        });
+
+        it('returns a stable getFieldState snapshot until the field changes', () => {
+            const a = resource.getFieldState('name');
+            const b = resource.getFieldState('name');
+            expect(a).toBe(b);
+
+            resource.set('name', 'Jane');
+            const c = resource.getFieldState('name');
+            expect(c).not.toBe(a);
+            expect(c.value).toBe('Jane');
+        });
+
+        it('returns stable query and mutation object identities across edits', () => {
+            const query1 = resource.query;
+            const mutation1 = resource.mutation;
+            resource.set('name', 'Jane');
+            expect(resource.query).toBe(query1);
+            expect(resource.mutation).toBe(mutation1);
+        });
+    });
+
+    describe('Array fields', () => {
+        it('keeps stable array field ids across reorder', () => {
+            const list = createResource({
+                initialData: { tags: ['a', 'b', 'c'] },
+            });
+
+            const before = list.array('tags').fields;
+            const idA = before[0].id;
+            const idB = before[1].id;
+            const idC = before[2].id;
+
+            list.array('tags').swap(0, 2);
+
+            const after = list.array('tags').fields;
+            expect(after.map((f) => f.item)).toEqual(['c', 'b', 'a']);
+            expect(after[0].id).toBe(idC);
+            expect(after[1].id).toBe(idB);
+            expect(after[2].id).toBe(idA);
+        });
+
+        it('preserves ids for duplicate primitive values on append', () => {
+            const list = createResource({
+                initialData: { tags: ['x', 'x'] },
+            });
+
+            const [first, second] = list.array('tags').fields;
+            expect(first.id).not.toBe(second.id);
+
+            list.array('tags').append('x');
+            const fields = list.array('tags').fields;
+            expect(fields).toHaveLength(3);
+            expect(fields[0].id).toBe(first.id);
+            expect(fields[1].id).toBe(second.id);
+            expect(fields[2].id).not.toBe(first.id);
+        });
+
+        it('caches array.fields until the array mutates', () => {
+            const list = createResource({
+                initialData: { tags: ['a', 'b'] },
+            });
+
+            const first = list.array('tags').fields;
+            const second = list.array('tags').fields;
+            expect(first).toBe(second);
+
+            list.array('tags').append('c');
+            const third = list.array('tags').fields;
+            expect(third).not.toBe(first);
+            expect(third).toHaveLength(3);
+        });
+
+        it('does not mutate array keys when the field is readonly', () => {
+            const list = createResource({
+                initialData: { tags: ['a', 'b'] },
+                fields: { tags: { readonly: true } },
+            });
+
+            const before = list.array('tags').fields.map((f) => f.id);
+            list.array('tags').append('c');
+            const after = list.array('tags').fields.map((f) => f.id);
+
+            expect(list.draft?.tags).toEqual(['a', 'b']);
+            expect(after).toEqual(before);
+        });
+    });
 });

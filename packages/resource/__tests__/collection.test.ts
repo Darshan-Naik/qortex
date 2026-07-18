@@ -110,4 +110,14 @@ describe('Collection Engine', () => {
         expect(collection.selectById('user-2')).toBeDefined();
         expect(collection.getResource('user-2').data).toEqual({ id: 'user-2', name: 'Bob' });
     });
+
+    it('bumps version on data changes while status stays ready', () => {
+        collection.setAll([{ id: '1', title: 'One' }]);
+        expect(collection.status).toBe('ready');
+        const v1 = collection.version;
+
+        collection.addOne({ id: '2', title: 'Two' });
+        expect(collection.status).toBe('ready');
+        expect(collection.version).toBeGreaterThan(v1);
+    });
 });
