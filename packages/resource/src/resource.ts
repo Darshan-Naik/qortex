@@ -19,6 +19,7 @@ import type {
     ResourceStorage,
     ValidationResult,
 } from "./types";
+import type { InternalResourceConfig } from "./types/resource-internal";
 import { flattenFieldsConfig, isEditable } from "./field";
 import { applyOverrides, getByPath } from "./path";
 
@@ -32,7 +33,7 @@ export function createResource<T, R = T>(config: ResourceConfig<T, R>): Resource
 
 class ResourceCore<T, R = T> {
     api: Resource<T, R>;
-    private config: ResourceConfig<T, R>;
+    private config: InternalResourceConfig<T, R>;
 
     private dataValue: T | undefined;
     private statusValue: ResourceStatus = "idle";
@@ -66,7 +67,8 @@ class ResourceCore<T, R = T> {
     private mutationApi!: ResourceMutation<R>;
 
     constructor(config: ResourceConfig<T, R>) {
-        this.config = config;
+        // Public config is a discriminated union; widen for internal property access.
+        this.config = config as InternalResourceConfig<T, R>;
         this.queryEnabled = this.config.query?.enabled !== false;
         this.staleTime = this.config.query?.staleTime ?? 0;
         this.fieldConfigs = flattenFieldsConfig(this.config.fields);
