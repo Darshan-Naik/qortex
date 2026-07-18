@@ -195,6 +195,7 @@ export interface ResourceSnapshot<T, R = any> {
     readonly isSaving: boolean;
     readonly isChanged: boolean;
     readonly isValid: boolean;
+    readonly isError: boolean;
     readonly changedFields: string[];
     readonly touchedFields: string[];
     readonly errors: Record<string, string>;

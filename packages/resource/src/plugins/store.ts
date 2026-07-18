@@ -83,6 +83,7 @@ function buildSnapshot<T>(ctx: PluginContext<T>): ResourceSnapshot<T> {
         isSaving: false,
         isChanged: changedFields.length > 0,
         isValid: true,
+        isError: false,
         changedFields,
         touchedFields: [],
         errors: {},

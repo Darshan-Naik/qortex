@@ -76,6 +76,7 @@ describe('Resource Engine', () => {
                 'get',
                 'getInitial',
                 'isChanged',
+                'isError',
                 'isFetching',
                 'isLoading',
                 'isSaving',

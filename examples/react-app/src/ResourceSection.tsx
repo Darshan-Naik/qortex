@@ -36,7 +36,7 @@ const TagsField = ({ resource }: { resource: any }) => {
       <label style={{ display: "block", marginBottom: "6px", fontSize: "13px", fontWeight: "600" }}>
         User Tags (Array)
       </label>
-      
+
       <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
         <input
           className="store-input"
@@ -45,8 +45,8 @@ const TagsField = ({ resource }: { resource: any }) => {
           value={newTag}
           onChange={(e) => setNewTag(e.target.value)}
         />
-        <button 
-          className="btn" 
+        <button
+          className="btn"
           type="button"
           onClick={() => {
             if (newTag.trim()) {
@@ -63,8 +63,8 @@ const TagsField = ({ resource }: { resource: any }) => {
         {fields.map((field, index) => (
           <div key={field.id} style={{ display: "flex", alignItems: "center", gap: "6px", background: "rgba(56, 189, 248, 0.15)", border: "1px solid var(--primary)", padding: "4px 8px", borderRadius: "4px", fontSize: "12px" }}>
             <span>{field.item}</span>
-            <button 
-              type="button" 
+            <button
+              type="button"
               style={{ background: "transparent", border: "none", color: "var(--danger)", cursor: "pointer", fontWeight: "bold", padding: 0 }}
               onClick={() => remove(index)}
             >
@@ -152,23 +152,23 @@ export default function ResourceSection() {
       </div>
 
       <div className="controls">
-        <button 
-          className="btn" 
-          disabled={isSaving || !isChanged} 
+        <button
+          className="btn"
+          disabled={isSaving || !isChanged}
           onClick={async () => {
             const res = await save();
             if (res.success) {
               alert("Saved successfully!");
             } else {
-              alert("Save failed: " + res.error?.message);
+              alert("Save failed: " + ((res.error as any)?.message || String(res.error)));
             }
           }}
         >
           {isSaving ? "⏳ Saving..." : "💾 Save Changes"}
         </button>
-        <button 
-          className="btn btn-outline" 
-          disabled={isSaving || !isChanged} 
+        <button
+          className="btn btn-outline"
+          disabled={isSaving || !isChanged}
           onClick={() => resetDraft()}
         >
           Reset Form
@@ -177,11 +177,11 @@ export default function ResourceSection() {
 
       <div style={{ marginTop: "20px", padding: "10px", background: "rgba(0,0,0,0.2)", borderRadius: "6px" }}>
         <pre style={{ fontSize: "11px", margin: 0 }}>
-          {JSON.stringify({ 
-            isChanged, 
-            isSaving, 
+          {JSON.stringify({
+            isChanged,
+            isSaving,
             changedFields,
-            draft 
+            draft
           }, null, 2)}
         </pre>
       </div>
