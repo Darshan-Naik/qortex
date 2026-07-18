@@ -2,7 +2,9 @@ import type {
     ArrayFieldController,
     ExistingQuery,
     ExistingState,
+    FieldConfig,
     FieldController,
+    FieldMeta,
     FieldValidationResult,
     MutationResult,
     MutationStatus,
@@ -15,29 +17,11 @@ import type {
     ResourceStatus,
     ResourceStorage,
     ValidationResult,
-    FieldsConfig,
-    ResourceKey,
-    ResourceQueryConfig,
-    ResourceMutationConfig,
-    ResourcePersistConfig,
-    ResourceValidationConfig,
-    SourceUpdateMode,
-    ExistingMutation,
-    MutateMeta,
 } from "./types";
-import type { Plugin, PluginContext } from "./types/plugin";
-import { FieldConfig } from "./types";
 import { flattenFieldsConfig, isEditable } from "./field";
-import { applyOverrides, diffPaths, getByPath, setByPath } from "./path";
+import { applyOverrides, diffPaths, getByPath } from "./path";
 
 type FieldListener = (field: FieldController) => void;
-
-type FieldMeta = {
-    touched: boolean;
-    error: string | undefined;
-};
-
-import type { InternalResourceConfig } from "./types/resource-internal";
 
 export function createResource<T, R = T>(config: ResourceConfig<T, R>): Resource<T, R> {
     return new ResourceCore(config).api;
@@ -45,7 +29,7 @@ export function createResource<T, R = T>(config: ResourceConfig<T, R>): Resource
 
 class ResourceCore<T, R = T> {
     api: Resource<T, R>;
-    private config: InternalResourceConfig<T, R>;
+    private config: ResourceConfig<T, R>;
 
     private dataValue: T | undefined;
     private statusValue: ResourceStatus = "idle";
@@ -68,36 +52,19 @@ class ResourceCore<T, R = T> {
     private persistTimer: ReturnType<typeof setTimeout> | undefined;
     private storage: ResourceStorage | undefined;
     private persistKey: string;
-    private pluginCleanups: Array<() => void> = [];
-    private pluginContext: PluginContext<T>;
-    private pluginsInitialized = false;
     private fieldControllers = new Map<string, FieldController>();
     private fieldStates = new Map<string, any>();
 
     constructor(config: ResourceConfig<T, R>) {
-        this.config = config as unknown as InternalResourceConfig<T, R>;
+        this.config = config;
         this.queryEnabled = this.config.query?.enabled !== false;
         this.staleTime = this.config.query?.staleTime ?? 0;
         this.fieldConfigs = flattenFieldsConfig(this.config.fields);
         this.persistKey = getPersistKey(this.config);
         this.storage = createStorage(this.config.persist);
-        this.pluginContext = this.createPluginContext();
-        
-        // Load synchronous source data first
+
         this.initializeSource();
-        // Run plugin onInit hooks
-        this.initializePlugins();
-        
-        // Notify plugins of the initial sync data
-        this.pluginsInitialized = true;
-        if (this.dataValue !== undefined) {
-            for (const plugin of this.config.plugins ?? []) {
-                plugin.onInitialData?.(this.dataValue, this.pluginContext);
-            }
-        }
-
         this.api = this.createApi();
-
         this.initialize();
     }
 
@@ -177,12 +144,6 @@ class ResourceCore<T, R = T> {
             this.draftOverrides.clear();
         } else if (mode === "replaceAll") {
             this.draftOverrides.clear();
-        }
-
-        if (value !== undefined && this.pluginsInitialized) {
-            for (const plugin of this.config.plugins ?? []) {
-                plugin.onInitialData?.(value, this.pluginContext);
-            }
         }
 
         this.emitAllFields();
@@ -267,7 +228,7 @@ class ResourceCore<T, R = T> {
 
     private get touchedFields(): string[] {
         return [...this.meta.entries()]
-            .filter(([, meta]) => meta.touched)
+            .filter(([, meta]) => meta.isTouched)
             .map(([path]) => path);
     }
 
@@ -376,20 +337,14 @@ class ResourceCore<T, R = T> {
             this.draftOverrides.set(path, nextValue);
         }
 
-        for (const plugin of this.config.plugins ?? []) {
-            plugin.onFieldChange?.(path, nextValue, this.pluginContext);
-        }
-
-        if (this.config.validate?.on === "change") {
-            this.validateField(path);
-        }
-
+        this.runFieldChangeValidation(path);
         this.scheduleDraftPersist();
         this.emitField(path);
         this.emit();
     };
 
     setMany = (patches: Record<string, any>): void => {
+        const changedPaths: string[] = [];
         for (const [path, value] of Object.entries(patches)) {
             if (!this.canEdit(path)) continue;
             const currentValue = this.draftOverrides.has(path)
@@ -402,10 +357,10 @@ class ResourceCore<T, R = T> {
             } else {
                 this.draftOverrides.set(path, nextValue);
             }
-
-            for (const plugin of this.config.plugins ?? []) {
-                plugin.onFieldChange?.(path, nextValue, this.pluginContext);
-            }
+            changedPaths.push(path);
+        }
+        for (const path of changedPaths) {
+            this.runFieldChangeValidation(path);
         }
         this.scheduleDraftPersist();
         this.emitAllFields();
@@ -435,11 +390,8 @@ class ResourceCore<T, R = T> {
     };
 
     touch = (path: string): void => {
-        this.patchMeta(path, { touched: true });
-        for (const plugin of this.config.plugins ?? []) {
-            plugin.onFieldBlur?.(path, this.pluginContext);
-        }
-        if (this.config.validate?.on === "blur") {
+        this.patchMeta(path, { isTouched: true });
+        if (this.config.validate?.on === "blur" || this.config.validate?.on === "change") {
             this.validateField(path);
         }
         this.emitField(path);
@@ -504,17 +456,6 @@ class ResourceCore<T, R = T> {
             };
         }
 
-        for (const plugin of this.config.plugins ?? []) {
-            const result = await plugin.onBeforeMutate?.(this.draft, this.pluginContext);
-            if (result === false) {
-                return {
-                    success: false,
-                    data: undefined,
-                    error: new Error("Mutation blocked by plugin."),
-                };
-            }
-        }
-
         const previous = this.dataValue;
         if (this.config.mutation?.optimistic) {
             const optimistic = typeof this.config.mutation.optimistic === "function"
@@ -539,10 +480,6 @@ class ResourceCore<T, R = T> {
             this.persistCache(nextData);
             this.clearPersistedDraft();
 
-            for (const plugin of this.config.plugins ?? []) {
-                plugin.onAfterMutate?.(result, this.pluginContext);
-            }
-
             this.config.onSaveSuccess?.(result);
             this.emit();
             return { success: true, data: result, error: undefined };
@@ -553,10 +490,6 @@ class ResourceCore<T, R = T> {
             this.mutationStatusValue = "error";
             this.mutationErrorValue = error;
             this.mutationDataValue = undefined;
-
-            for (const plugin of this.config.plugins ?? []) {
-                plugin.onMutateError?.(error, this.pluginContext);
-            }
 
             this.config.onSaveError?.(error);
             this.emit();
@@ -647,59 +580,18 @@ class ResourceCore<T, R = T> {
         this.fieldListeners.clear();
         this.cleanups.forEach((cleanup) => cleanup());
         this.cleanups = [];
-        this.pluginCleanups.forEach((cleanup) => cleanup());
-        this.pluginCleanups = [];
         if (this.persistTimer) clearTimeout(this.persistTimer);
     };
 
-    private createPluginContext(): PluginContext<T> {
-        const core = this;
-        return {
-            getData: () => core.dataValue,
-            getUpdatedData: () => core.draft as T,
-            getDraftOverrides: () => core.draftOverrides,
-            setField: (path, value) => core.set(path, value),
-            setFields: (patches) => core.setMany(patches),
-            setInitialData: (data) => core.applySourceValue(data, "resetDraft"),
-            resetDrafts: () => core.resetDraft(),
-            setFieldError: (path, error) => {
-                core.patchMeta(path, { error });
-                core.emitField(path);
-                core.emit();
-            },
-            setFieldErrors: (errors) => {
-                for (const [path, error] of Object.entries(errors)) {
-                    core.patchMeta(path, { error });
-                    core.emitField(path);
-                }
-                core.emit();
-            },
-            getFieldMeta: (path) => {
-                const meta = core.meta.get(path);
-                return {
-                    isTouched: meta?.touched ?? false,
-                    error: meta?.error,
-                };
-            },
-            setStatus: (status) => {
-                core.statusValue = status;
-                core.emit();
-            },
-            setError: (error) => {
-                core.errorValue = error;
-                core.statusValue = "error";
-                core.emit();
-            },
-            subscribe: (listener) => core.subscribe(listener as any),
-        };
-    }
-
-    private initializePlugins(): void {
-        for (const plugin of this.config.plugins ?? []) {
-            const cleanup = plugin.onInit?.(this.pluginContext);
-            if (typeof cleanup === "function") {
-                this.pluginCleanups.push(cleanup);
-            }
+    private runFieldChangeValidation(path: string): void {
+        const mode = this.config.validate?.on;
+        if (mode === "change") {
+            this.validateField(path);
+            return;
+        }
+        // While in blur mode, re-validate fields that already show an error so it clears early.
+        if (mode === "blur" && this.meta.get(path)?.error) {
+            this.validateField(path);
         }
     }
 
@@ -707,7 +599,7 @@ class ResourceCore<T, R = T> {
         const value = getByPath(this.draft, path);
         const initialValue = getByPath(this.dataValue, path);
         const isChanged = !Object.is(value, initialValue);
-        const isTouched = this.meta.get(path)?.touched ?? false;
+        const isTouched = this.meta.get(path)?.isTouched ?? false;
         const error = this.meta.get(path)?.error;
 
         const cachedState = this.fieldStates.get(path);
@@ -728,7 +620,7 @@ class ResourceCore<T, R = T> {
             get value() { return getByPath(core.draft, path); },
             get initialValue() { return getByPath(core.dataValue, path); },
             get isChanged() { return !Object.is(getByPath(core.draft, path), getByPath(core.dataValue, path)); },
-            get isTouched() { return core.meta.get(path)?.touched ?? false; },
+            get isTouched() { return core.meta.get(path)?.isTouched ?? false; },
             get error() { return core.meta.get(path)?.error; },
             set(val) { core.set(path, val); },
             reset() { core.reset(path); },
@@ -751,7 +643,7 @@ class ResourceCore<T, R = T> {
     }
 
     private patchMeta(path: string, patch: Partial<FieldMeta>): void {
-        const current = this.meta.get(path) ?? { touched: false, error: undefined };
+        const current = this.meta.get(path) ?? { isTouched: false, error: undefined };
         this.meta.set(path, { ...current, ...patch });
     }
 

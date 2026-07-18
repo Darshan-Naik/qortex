@@ -80,38 +80,6 @@ describe('Collection Engine', () => {
             'upsertOne',
         ]);
         expect((collection as any).entities).toBeUndefined();
-        expect((collection as any).pluginContext).toBeUndefined();
-    });
-
-    it('should preserve collection plugin context and cleanup', () => {
-        const events: string[] = [];
-        const pluginCollection = createCollection({
-            getId: (entity: any) => entity.id,
-            plugins: [
-                {
-                    name: 'collection-contract',
-                    onInit: (ctx) => {
-                        events.push(`init:${ctx.getData().length}`);
-                        ctx.subscribe(() => events.push('subscribe'));
-                        ctx.setInitialData([{ id: 'user-1', name: 'Alice' }]);
-                        return () => events.push('cleanup');
-                    },
-                }
-            ],
-        } as any);
-
-        expect(pluginCollection.selectAll()).toEqual([{ id: 'user-1', name: 'Alice' }]);
-
-        pluginCollection.addOne({ id: 'user-2', name: 'Bob' });
-
-        return new Promise<void>((resolve) => {
-            queueMicrotask(() => {
-                expect(events).toEqual(['init:0', 'subscribe', 'subscribe']);
-                pluginCollection.destroy();
-                expect(events.at(-1)).toBe('cleanup');
-                resolve();
-            });
-        });
     });
 
     it('should remove resource from collection', () => {

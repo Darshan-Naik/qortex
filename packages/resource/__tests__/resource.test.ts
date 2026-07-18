@@ -101,7 +101,6 @@ describe('Resource Engine', () => {
                 'validateFields',
             ]);
             expect((resource as any).draftOverrides).toBeUndefined();
-            expect((resource as any).pluginContext).toBeUndefined();
         });
         
         it('should reset all fields', () => {

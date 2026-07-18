@@ -215,9 +215,6 @@ module.exports = {
         '^.+\\.(js|ts)$': 'babel-jest',
       },
       moduleFileExtensions: ['js', 'ts', 'json'],
-      moduleNameMapper: {
-        '^qortex-query$': '<rootDir>/packages/query/src/index.ts',
-      },
     },
     {
       displayName: 'qortex-resource-react',

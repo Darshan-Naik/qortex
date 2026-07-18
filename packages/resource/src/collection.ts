@@ -4,13 +4,7 @@ import type {
     Resource,
     ResourceStatus,
 } from "./types";
-import type { Plugin, PluginContext } from "./types/plugin";
 import { createResource } from "./resource";
-import { setByPath } from "./path";
-
-interface InternalCollectionConfig<T> extends CollectionConfig<T> {
-    plugins?: Plugin<T[]>[];
-}
 
 /**
  * Create a new collection instance.
@@ -38,22 +32,16 @@ export function createCollection<T>(config: CollectionConfig<T>): Collection<T> 
 
 class CollectionCore<T> {
     api: Collection<T>;
-    private internalConfig: InternalCollectionConfig<T>;
 
     private ids: string[] = [];
     private entities = new Map<string, T>();
     private listeners = new Set<() => void>();
     private entityListeners = new Map<string, Set<(entity: T | undefined) => void>>();
     private resourceCache = new Map<string, Resource<T>>();
-    private pluginCleanups: Array<() => void> = [];
-    private pluginContext: PluginContext<T[]>;
     private statusValue: ResourceStatus = "idle";
     private errorValue: unknown = undefined;
 
     constructor(private config: CollectionConfig<T>) {
-        this.internalConfig = config as InternalCollectionConfig<T>;
-        this.pluginContext = this.createPluginContext();
-        this.initializePlugins();
         this.api = this.createApi();
     }
 
@@ -191,8 +179,6 @@ class CollectionCore<T> {
         this.listeners.clear();
         this.entityListeners.clear();
         this.destroyCachedResources();
-        this.pluginCleanups.forEach((cleanup) => cleanup());
-        this.pluginCleanups = [];
     };
 
     private get status(): ResourceStatus {
@@ -233,57 +219,6 @@ class CollectionCore<T> {
             subscribeOne: core.subscribeOne,
             destroy: core.destroy,
         };
-    }
-
-    private createPluginContext(): PluginContext<T[]> {
-        return {
-            getData: this.selectAll,
-            getUpdatedData: this.selectAll,
-            getDraftOverrides: () => new Map(),
-            setField: (path: string, value: any) => {
-                const data = this.selectAll();
-                const currentValue = path.split(".").reduce<any>((current, key) => current?.[key], data);
-                const nextValue = typeof value === "function" ? value(currentValue) : value;
-                this.setAll(setByPath(data, path, nextValue));
-            },
-            setFields: (patches: Record<string, any>) => {
-                let data = this.selectAll();
-                for (const [path, value] of Object.entries(patches)) {
-                    const currentValue = path.split(".").reduce<any>((current, key) => current?.[key], data);
-                    const nextValue = typeof value === "function" ? value(currentValue) : value;
-                    data = setByPath(data, path, nextValue);
-                }
-                this.setAll(data);
-            },
-            resetDrafts: () => { },
-            setInitialData: this.setAll,
-            setFieldError: () => { },
-            setFieldErrors: () => { },
-            getFieldMeta: () => ({ isTouched: false, error: undefined }),
-            setStatus: (s: string) => {
-                this.statusValue = s as ResourceStatus;
-                this.emit();
-            },
-            setError: (err: unknown) => {
-                this.errorValue = err;
-                this.statusValue = "error";
-                this.emit();
-            },
-            subscribe: (listener: any) => {
-                const collectionListener = listener as unknown as () => void;
-                this.listeners.add(collectionListener);
-                return () => this.listeners.delete(collectionListener);
-            },
-        };
-    }
-
-    private initializePlugins(): void {
-        for (const plugin of this.internalConfig.plugins ?? []) {
-            const cleanup = plugin.onInit?.(this.pluginContext);
-            if (typeof cleanup === "function") {
-                this.pluginCleanups.push(cleanup);
-            }
-        }
     }
 
     private setEntity(id: string, entity: T): void {

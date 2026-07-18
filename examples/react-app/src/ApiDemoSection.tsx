@@ -112,12 +112,12 @@ export default function ApiDemoSection() {
 
   return (
     <div className="section-card">
-      <div className="package-info">qortex-resource + queryPlugin + zod</div>
+      <div className="package-info">qortex-resource + source.fetch + zod</div>
       <h2>
         <span>⚡</span> API User Profile & Zod
       </h2>
       <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>
-        Fetches live profile from JSONPlaceholder via <code>queryPlugin</code>, validates forms against a Zod schema resolver, and performs a simulated PUT mutation.
+        Fetches live profile from JSONPlaceholder via <code>source.fetch</code>, validates forms against a Zod schema resolver, and performs a simulated PUT mutation.
       </p>
 
       {isFetching && <p style={{ fontSize: "12px", color: "var(--primary)", margin: "5px 0" }}>⏳ Syncing with remote API...</p>}
