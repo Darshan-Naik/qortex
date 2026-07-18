@@ -85,4 +85,65 @@ describe('createResourceHooks Factory', () => {
         expect(hooks.useField).toBeDefined();
         expect(hooks.useFieldArray).toBeDefined();
     });
+
+    it('should recreate when factory params / key change', async () => {
+        const fetchMock = jest.fn(async (id: string) => ({ id, name: `User ${id}` }));
+
+        const { useResource, useField, destroy } = createResourceHooks((userId: string) => ({
+            key: ['user', userId],
+            initialData: { id: userId, name: '' },
+            source: {
+                fetch: () => fetchMock(userId),
+            },
+        }));
+
+        const Shell = ({ userId }: { userId: string }) => {
+            const { draft, isLoading } = useResource(userId);
+            const name = useField('name');
+            return (
+                <div>
+                    <span data-testid="id">{draft?.id}</span>
+                    <span data-testid="name">{name.value as string}</span>
+                    <span data-testid="loading">{isLoading ? 'yes' : 'no'}</span>
+                </div>
+            );
+        };
+
+        const { rerender } = render(<Shell userId="1" />);
+
+        await act(async () => {
+            await Promise.resolve();
+        });
+
+        expect(fetchMock).toHaveBeenCalledWith('1');
+        expect(screen.getByTestId('id').textContent).toBe('1');
+
+        rerender(<Shell userId="2" />);
+
+        await act(async () => {
+            await Promise.resolve();
+        });
+
+        expect(fetchMock).toHaveBeenCalledWith('2');
+        expect(screen.getByTestId('id').textContent).toBe('2');
+
+        destroy();
+    });
+
+    it('should throw when factory useResource is called without params', () => {
+        const { useResource } = createResourceHooks((id: string) => ({
+            key: id,
+            initialData: { id },
+        }));
+
+        const Broken = () => {
+            // @ts-expect-error params required
+            useResource();
+            return null;
+        };
+
+        const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        expect(() => render(<Broken />)).toThrow(/requires params/);
+        spy.mockRestore();
+    });
 });
