@@ -31,24 +31,24 @@ export function createResource<T>(config: ResourceConfig<T>): Resource<T> {
         initialData: undefined,
         status: "idle",
         statusError: undefined,
-        
+
         draftOverrides: new Map(),
         fieldMetaMap: new Map(),
         fieldStateCache: new Map(),
-        
+
         mutationStatus: "idle",
         mutationError: undefined,
         mutationData: undefined,
-        
+
         listeners: new Set(),
         fieldListeners: new Map(),
-        
+
         fieldConfigs: flattenFieldsConfig(config.fields),
         pluginCleanups: [],
-        
+
         snapshotCache: undefined,
         pluginContext: undefined,
-        
+
         emit: () => {
             state.fieldStateCache.clear();
             state.snapshotCache = undefined;
@@ -136,12 +136,9 @@ export function createResource<T>(config: ResourceConfig<T>): Resource<T> {
     // Public Methods
     // ─────────────────────────────────────────
 
-    function setField(path: string, value: any): void {
+    function applyFieldPatch(path: string, value: any): boolean {
         if (state.fieldConfigs.size > 0 && !isEditable(path, state.fieldConfigs)) {
-            if (typeof console !== "undefined") {
-                console.warn(`[qortex-resource] Field "${path}" is not editable.`);
-            }
-            return;
+            return false;
         }
 
         const currentValue = state.draftOverrides.has(path)
@@ -159,29 +156,20 @@ export function createResource<T>(config: ResourceConfig<T>): Resource<T> {
         for (const plugin of state.config.plugins ?? []) {
             plugin.onFieldChange?.(path, nextValue, state.pluginContext!);
         }
+        return true;
+    }
+
+    function setField(path: string, value: any): void {
+        if (!applyFieldPatch(path, value)) {
+            return;
+        }
+
         state.emitField(path);
     }
 
     function setFields(patches: Record<string, any>): void {
         for (const [path, value] of Object.entries(patches)) {
-            if (state.fieldConfigs.size > 0 && !isEditable(path, state.fieldConfigs)) {
-                continue;
-            }
-            const currentValue = state.draftOverrides.has(path)
-                ? state.draftOverrides.get(path)
-                : getByPath(state.initialData, path);
-            const nextValue = typeof value === "function" ? value(currentValue) : value;
-            const initialVal = getByPath(state.initialData, path);
-
-            if (Object.is(nextValue, initialVal)) {
-                state.draftOverrides.delete(path);
-            } else {
-                state.draftOverrides.set(path, nextValue);
-            }
-
-            for (const plugin of state.config.plugins ?? []) {
-                plugin.onFieldChange?.(path, nextValue, state.pluginContext!);
-            }
+            applyFieldPatch(path, value);
         }
         state.emit();
     }
@@ -351,12 +339,12 @@ export function createResource<T>(config: ResourceConfig<T>): Resource<T> {
         get errors() { return collectErrors(state.fieldMetaMap); },
 
         /** Fire-and-forget mutation (errors tracked in state) */
-        mutate: () => { mutateAsyncInternal(state).catch(() => {}); },
+        mutate: () => { mutateAsyncInternal(state).catch(() => { }); },
         /** Async mutation that returns result */
         mutateAsync: () => mutateAsyncInternal(state),
         /** Run validation only (populate errors) */
         validate: () => validate(state),
-        
+
         /** Mutation lifecycle status */
         get mutationStatus() { return state.mutationStatus; },
         /** Last mutation error */
