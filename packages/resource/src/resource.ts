@@ -2,7 +2,7 @@ import type {
     ResourceConfig,
     Resource,
 } from "./types";
-import { InternalResourceState } from "./resource/state";
+import { InternalResourceState } from "./types/state";
 import { getSnapshotInternal } from "./resource/snapshot";
 import { mutateAsyncInternal, validate } from "./resource/mutation";
 import { getByPath, applyOverrides } from "./path";

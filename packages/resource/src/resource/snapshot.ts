@@ -1,4 +1,4 @@
-import { InternalResourceState } from "./state";
+import { InternalResourceState } from "../types/state";
 import { ResourceSnapshot } from "../types";
 import { collectErrors, isAllValid } from "../field";
 import { getByPath } from "../path";

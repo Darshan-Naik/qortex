@@ -2,12 +2,14 @@ import {
     ResourceConfig,
     ResourceStatus,
     MutationStatus,
+    ResourceSnapshot,
+} from "./resource";
+import {
     FieldMeta,
     FieldState,
     FieldConfig,
-    ResourceSnapshot,
-    PluginContext
-} from "../types";
+} from "./field";
+import { PluginContext } from "./plugin";
 
 export interface InternalResourceState<T> {
     config: ResourceConfig<T>;
