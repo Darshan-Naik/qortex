@@ -13,6 +13,8 @@
     "react-dom": "^18.2.0",
     "qortex-query-react": "workspace:*",
     "qortex-store-react": "workspace:*",
+    "qortex-resource": "workspace:*",
+    "qortex-resource-react": "workspace:*",
     "qortex-db": "workspace:*"
   },
   "devDependencies": {

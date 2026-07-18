@@ -117,6 +117,12 @@ importers:
       qortex-query-react:
         specifier: workspace:*
         version: link:../../packages/query-react
+      qortex-resource:
+        specifier: workspace:*
+        version: link:../../packages/resource
+      qortex-resource-react:
+        specifier: workspace:*
+        version: link:../../packages/resource-react
       qortex-store-react:
         specifier: workspace:*
         version: link:../../packages/store-react
