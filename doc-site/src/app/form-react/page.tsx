@@ -60,11 +60,11 @@ export default function QortexFormReactPage() {
 
             <section className="py-16 bg-white">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">useQueryForm</h2>
-                    <CodeBlock language="tsx">{`import { useQueryForm } from "qortex-form-react/query";
+                    <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">useFormQuery</h2>
+                    <CodeBlock language="tsx">{`import { useFormQuery } from "qortex-form-react/query";
 import { useField } from "qortex-form-react";
 
-const { Provider, save, isLoading, isSaving, isChanged } = useQueryForm({
+const { Provider, save, isLoading, isSaving, isChanged } = useFormQuery({
   key: ["user", id],
   fetcher: () => api.getUser(id),
   mutationFn: (draft) => api.updateUser(id, draft),
@@ -89,7 +89,7 @@ return (
                         {[
                             { icon: Zap, title: 'useForm', desc: 'Lifecycle-managed form + snapshot subscription', color: 'text-orange-600', bg: 'bg-orange-100' },
                             { icon: Layers, title: 'Fine-grained fields', desc: 'useField / useFieldArray via FormProvider', color: 'text-amber-600', bg: 'bg-amber-100' },
-                            { icon: Link2, title: 'Query binder', desc: 'useQueryForm composes query + mutate without owning cache', color: 'text-blue-600', bg: 'bg-blue-100' },
+                            { icon: Link2, title: 'Query binder', desc: 'useFormQuery composes query + mutate without owning cache', color: 'text-blue-600', bg: 'bg-blue-100' },
                             { icon: RefreshCw, title: 'Store binder', desc: 'useFormStore syncs data from qortex-store', color: 'text-teal-600', bg: 'bg-teal-100' },
                             { icon: Code, title: 'Separate entries', desc: 'Bare form users skip query/store peers', color: 'text-purple-600', bg: 'bg-purple-100' },
                         ].map((f) => (

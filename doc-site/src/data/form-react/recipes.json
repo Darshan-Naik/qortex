@@ -9,10 +9,10 @@
   "sections": [
     {
       "title": "1. Edit entity (query + mutate)",
-      "content": "Use `useQueryForm` — save invalidates `key`, refetch fills `data`.",
+      "content": "Use `useFormQuery` — save invalidates `key`, refetch fills `data`.",
       "code": {
         "language": "tsx",
-        "code": "import { useQueryForm } from \"qortex-form-react/query\";\n\nconst { Provider, save, isLoading, isSaving, isChanged } = useQueryForm({\n  key: [\"product\", id],\n  fetcher: () => api.getProduct(id),\n  mutationFn: (draft) => api.updateProduct(id, draft),\n  persist: { draft: true },\n});"
+        "code": "import { useFormQuery } from \"qortex-form-react/query\";\n\nconst { Provider, save, isLoading, isSaving, isChanged } = useFormQuery({\n  key: [\"product\", id],\n  fetcher: () => api.getProduct(id),\n  mutationFn: (draft) => api.updateProduct(id, draft),\n  persist: { draft: true },\n});"
       }
     },
     {
@@ -20,7 +20,7 @@
       "content": "Omit `fetcher`, pass `initialData` + `mutationFn`.",
       "code": {
         "language": "tsx",
-        "code": "const { Provider, save, isSaving } = useQueryForm({\n  key: [\"product\", \"new\"],\n  initialData: { title: \"\", price: 0 },\n  mutationFn: (draft) => api.createProduct(draft),\n});"
+        "code": "const { Provider, save, isSaving } = useFormQuery({\n  key: [\"product\", \"new\"],\n  initialData: { title: \"\", price: 0 },\n  mutationFn: (draft) => api.createProduct(draft),\n});"
       }
     },
     {
@@ -32,5 +32,5 @@
       }
     }
   ],
-  "relatedPages": ["/form-react/docs/useQueryForm", "/form-react/docs/useFormStore", "/form/docs/concepts"]
+  "relatedPages": ["/form-react/docs/useFormQuery", "/form-react/docs/useFormStore", "/form/docs/concepts"]
 }

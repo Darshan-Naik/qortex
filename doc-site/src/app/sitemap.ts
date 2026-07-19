@@ -23,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'useField',
         'useFieldArray',
         'sharing-patterns',
-        'useQueryForm',
+        'useFormQuery',
         'useFormMutation',
         'useFormStore',
         'recipes',

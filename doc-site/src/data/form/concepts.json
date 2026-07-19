@@ -20,5 +20,5 @@
       "content": "• No built-in fetch or query cache\n• No Collection / list-of-forms API (parked)\n• Mutator success does not write `data` — you compose with query invalidate or `setData`"
     }
   ],
-  "relatedPages": ["/form/docs/createForm", "/form/docs/alpha-limitations", "/form-react/docs/useQueryForm"]
+  "relatedPages": ["/form/docs/createForm", "/form/docs/alpha-limitations", "/form-react/docs/useFormQuery"]
 }

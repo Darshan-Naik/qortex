@@ -55,14 +55,14 @@ function NameField() {
 }
 ```
 
-## Query binder (`useQueryForm`)
+## Query binder (`useFormQuery`)
 
 ```tsx
-import { useQueryForm } from "qortex-form-react/query";
+import { useFormQuery } from "qortex-form-react/query";
 import { useField } from "qortex-form-react";
 
 function EditUser({ id }: { id: string }) {
-  const { Provider, save, isLoading, isSaving, isChanged } = useQueryForm({
+  const { Provider, save, isLoading, isSaving, isChanged } = useFormQuery({
     key: ["user", id],
     fetcher: () => api.getUser(id),
     mutationFn: (draft) => api.updateUser(id, draft),
@@ -96,7 +96,7 @@ function NameField() {
 Create-only (no fetcher):
 
 ```tsx
-const { Provider, save, isSaving } = useQueryForm({
+const { Provider, save, isSaving } = useFormQuery({
   key: ["user", "new"],
   initialData: { name: "", email: "" },
   mutationFn: (draft) => api.createUser(draft),
@@ -120,5 +120,5 @@ const { form, isChanged, save } = useFormStore({
 | Entry | Exports |
 |-------|---------|
 | `qortex-form-react` | `useForm`, `FormProvider`, `useFormContext`, `useField`, `useFieldArray` |
-| `qortex-form-react/query` | `useQueryForm`, `useFormMutation` |
+| `qortex-form-react/query` | `useFormQuery`, `useFormMutation` |
 | `qortex-form-react/store` | `useFormStore` |

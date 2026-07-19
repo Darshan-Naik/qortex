@@ -16,7 +16,7 @@
     },
     {
       "title": "Optional: query binders",
-      "content": "For `useQueryForm` / `useFormMutation`:",
+      "content": "For `useFormQuery` / `useFormMutation`:",
       "code": {
         "language": "bash",
         "code": "npm install qortex-query-react\n# import from \"qortex-form-react/query\""

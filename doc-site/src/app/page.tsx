@@ -389,12 +389,12 @@ export default function HomePage() {
               </div>
 
               <p className="text-gray-700 mb-6">
-                useForm, FormProvider, useField, useFieldArray, and useQueryForm binders.
+                useForm, FormProvider, useField, useFieldArray, and useFormQuery binders.
               </p>
 
               <div className="flex flex-wrap gap-2 mb-6">
                 <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">useForm</span>
-                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">useQueryForm</span>
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">useFormQuery</span>
                 <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">FormProvider</span>
               </div>
 
