@@ -1,0 +1,21 @@
+{
+  "id": "useFormStore",
+  "title": "useFormStore",
+  "subtitle": "Sync form data from a store",
+  "description": "Create a form whose data stays in sync with qortex-store (or duck-typed get/subscribe).",
+  "category": "Binders",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function useFormStore<T, S = T>(config: UseFormStoreConfig<T, S>): ReturnType<typeof useForm<T>>\n// from \"qortex-form-react/store\""
+  },
+  "content": "On successful `form.save(mutator)`, draft resets via the form. **Store write-back is the caller's concern** — update the store in your mutator or after an external refresh. This binder only reads.",
+  "examples": [
+    {
+      "title": "Settings from store",
+      "language": "tsx",
+      "code": "import { useFormStore } from \"qortex-form-react/store\";\n\nconst { form, isChanged, save } = useFormStore({\n  key: \"profile\",\n  store: settingsStore,\n  selector: (s) => s.profile,\n  validate: { fields: { name: (v) => (!v ? \"Required\" : null) } },\n});\n\nawait save(async (draft) => {\n  await api.saveProfile(draft);\n  settingsStore.set({ profile: draft }); // optional write-back\n});"
+    }
+  ],
+  "relatedPages": ["/store/docs/createStore", "/form-react/docs/recipes"]
+}

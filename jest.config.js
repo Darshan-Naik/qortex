@@ -188,9 +188,9 @@ module.exports = {
       },
     },
     {
-      displayName: 'qortex-resource',
+      displayName: 'qortex-form',
       testEnvironment: 'node',
-      roots: ['<rootDir>/packages/resource'],
+      roots: ['<rootDir>/packages/form'],
       testPathIgnorePatterns: [
         '/node_modules/',
         '/dist/',
@@ -204,12 +204,12 @@ module.exports = {
         '**/?(*.)+(spec|test).ts'
       ],
       collectCoverageFrom: [
-        'packages/resource/src/**/*.ts',
-        '!packages/resource/src/**/*.d.ts',
-        '!packages/resource/src/**/*.test.ts',
-        '!packages/resource/src/**/*.spec.ts'
+        'packages/form/src/**/*.ts',
+        '!packages/form/src/**/*.d.ts',
+        '!packages/form/src/**/*.test.ts',
+        '!packages/form/src/**/*.spec.ts'
       ],
-      coverageDirectory: 'coverage/resource',
+      coverageDirectory: 'coverage/form',
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       transform: {
         '^.+\\.(js|ts)$': 'babel-jest',
@@ -217,9 +217,9 @@ module.exports = {
       moduleFileExtensions: ['js', 'ts', 'json'],
     },
     {
-      displayName: 'qortex-resource-react',
+      displayName: 'qortex-form-react',
       testEnvironment: 'jsdom',
-      roots: ['<rootDir>/packages/resource-react'],
+      roots: ['<rootDir>/packages/form-react'],
       testPathIgnorePatterns: [
         '/node_modules/',
         '/dist/',
@@ -235,19 +235,24 @@ module.exports = {
         '**/?(*.)+(spec|test).tsx'
       ],
       collectCoverageFrom: [
-        'packages/resource-react/src/**/*.{js,jsx,ts,tsx}',
-        '!packages/resource-react/src/**/*.d.ts',
-        '!packages/resource-react/src/**/*.test.{js,jsx,ts,tsx}',
-        '!packages/resource-react/src/**/*.spec.{js,jsx,ts,tsx}'
+        'packages/form-react/src/**/*.{js,jsx,ts,tsx}',
+        '!packages/form-react/src/**/*.d.ts',
+        '!packages/form-react/src/**/*.test.{js,jsx,ts,tsx}',
+        '!packages/form-react/src/**/*.spec.{js,jsx,ts,tsx}'
       ],
-      coverageDirectory: 'coverage/resource-react',
+      coverageDirectory: 'coverage/form-react',
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       transform: {
         '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
       },
       moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
       moduleNameMapper: {
-        '^qortex-resource$': '<rootDir>/packages/resource/src/index.ts',
+        '^qortex-form$': '<rootDir>/packages/form/src/index.ts',
+        '^qortex-form-react/query$': '<rootDir>/packages/form-react/src/query.ts',
+        '^qortex-form-react/store$': '<rootDir>/packages/form-react/src/store.ts',
+        '^qortex-query-react$': '<rootDir>/packages/query-react/src/index.ts',
+        '^qortex-query$': '<rootDir>/packages/query/src/index.ts',
+        '^qortex-store$': '<rootDir>/packages/store/src/index.ts',
       },
     }
   ]

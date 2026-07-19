@@ -8,9 +8,8 @@ import { createStorePersister } from "qortex-db/store";
 import { useQuery, setDefaultConfig } from "qortex-query-react";
 import { createStore, useStore } from "qortex-store-react";
 
-// Import the new Resource Section component
-import ResourceSection from "./ResourceSection";
-import ApiDemoSection from "./ApiDemoSection";
+// Import form demo
+import FormSection from "./FormSection";
 
 // 2. Initialize Unified Database
 const db = createDB({
@@ -157,8 +156,7 @@ export default function App() {
       <main className="dashboard-grid">
         <QuerySection />
         <StoreSection />
-        <ResourceSection />
-        <ApiDemoSection />
+        <FormSection />
       </main>
 
       <div style={{ marginTop: "40px", display: "flex", justifyContent: "center" }}>

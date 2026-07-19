@@ -28,13 +28,13 @@ export function Packages() {
                                 <ResourceIcon className="h-8 w-8 text-white" />
                             </div>
                             <div className="ml-4">
-                                <h3 className="text-2xl font-bold text-gray-900">qortex-resource</h3>
-                                <p className="text-sm text-orange-700 font-medium">Entity / Form Lifecycle · 0.1.0-alpha.0</p>
+                                <h3 className="text-2xl font-bold text-gray-900">qortex-form</h3>
+                                <p className="text-sm text-orange-700 font-medium">Headless Form Engine · 0.1.0-alpha.0</p>
                             </div>
                         </div>
 
                         <p className="text-gray-700 mb-6">
-                            Fetch → draft → validate → persist → save. Fine-grained React hooks, no Context. Built for data-heavy forms.
+                            Source → draft → validate → persist → save(mutator). Pair with qortex-query for loading. React bindings via FormProvider.
                         </p>
 
                         <div className="flex flex-wrap gap-2 mb-6">
@@ -46,19 +46,19 @@ export function Packages() {
 
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <code className="text-sm bg-gray-900 text-green-400 px-3 py-2 rounded-lg">
-                                npm i qortex-resource@0.1.0-alpha.0
+                                npm i qortex-form@0.1.0-alpha.0
                             </code>
                             <div className="flex gap-4">
                                 <Link
-                                    href="/resource"
-                                    className="inline-flex items-center text-orange-700 hover:text-orange-800 font-semibold transition-colors"
+                                    href="/form"
+                                    className="inline-flex items-center text-orange-600 hover:text-orange-700 font-semibold transition-colors"
                                 >
-                                    Core docs
+                                    Documentation
                                     <ArrowRight className="ml-1 h-4 w-4" />
                                 </Link>
                                 <Link
-                                    href="/resource-react"
-                                    className="inline-flex items-center text-orange-700 hover:text-orange-800 font-semibold transition-colors"
+                                    href="/form-react"
+                                    className="inline-flex items-center text-amber-700 hover:text-amber-800 font-semibold transition-colors"
                                 >
                                     React
                                     <ArrowRight className="ml-1 h-4 w-4" />

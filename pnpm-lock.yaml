@@ -114,15 +114,15 @@ importers:
       qortex-db:
         specifier: workspace:*
         version: link:../../packages/db
+      qortex-form:
+        specifier: workspace:*
+        version: link:../../packages/form
+      qortex-form-react:
+        specifier: workspace:*
+        version: link:../../packages/form-react
       qortex-query-react:
         specifier: workspace:*
         version: link:../../packages/query-react
-      qortex-resource:
-        specifier: workspace:*
-        version: link:../../packages/resource
-      qortex-resource-react:
-        specifier: workspace:*
-        version: link:../../packages/resource-react
       qortex-store-react:
         specifier: workspace:*
         version: link:../../packages/store-react
@@ -161,6 +161,43 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/form:
+    devDependencies:
+      tsup:
+        specifier: ^8.0.2
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.6)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.4.5
+        version: 5.9.3
+
+  packages/form-react:
+    dependencies:
+      qortex-form:
+        specifier: workspace:*
+        version: link:../form
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.27
+      qortex-query:
+        specifier: workspace:*
+        version: link:../query
+      qortex-query-react:
+        specifier: workspace:*
+        version: link:../query-react
+      qortex-store:
+        specifier: workspace:*
+        version: link:../store
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      tsup:
+        specifier: ^8.0.2
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.6)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.4.5
+        version: 5.9.3
+
   packages/query:
     devDependencies:
       tsup:
@@ -184,34 +221,6 @@ importers:
         version: 6.7.0(postcss@8.5.6)(typescript@5.9.3)
       typescript:
         specifier: ^5.0.0
-        version: 5.9.3
-
-  packages/resource:
-    devDependencies:
-      tsup:
-        specifier: ^8.0.2
-        version: 8.5.1(jiti@1.21.7)(postcss@8.5.6)(typescript@5.9.3)
-      typescript:
-        specifier: ^5.4.5
-        version: 5.9.3
-
-  packages/resource-react:
-    dependencies:
-      qortex-resource:
-        specifier: workspace:*
-        version: link:../resource
-    devDependencies:
-      '@types/react':
-        specifier: ^18.2.0
-        version: 18.3.27
-      react:
-        specifier: ^18.2.0
-        version: 18.3.1
-      tsup:
-        specifier: ^8.0.2
-        version: 8.5.1(jiti@1.21.7)(postcss@8.5.6)(typescript@5.9.3)
-      typescript:
-        specifier: ^5.4.5
         version: 5.9.3
 
   packages/store:

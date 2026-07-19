@@ -1,0 +1,30 @@
+{
+  "id": "useForm",
+  "title": "useForm",
+  "subtitle": "Create + subscribe to a form",
+  "description": "React hook that creates a form for the component lifetime and returns snapshot + actions.",
+  "category": "React API",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function useForm<T>(config: FormConfig<T>): FormSnapshot<T> & Actions & { form: Form<T> }"
+  },
+  "content": "Recreates when `config.key` changes. Syncs `config.data` via `form.setData` when it changes by `Object.is`. Does **not** wrap a provider — use `FormProvider`.",
+  "returns": {
+    "type": "snapshot + actions + form",
+    "description": "Same snapshot fields as Form, plus bound actions and the raw instance.",
+    "properties": [
+      { "name": "form", "type": "Form<T>", "description": "Pass to FormProvider" },
+      { "name": "draft / data / isChanged / isValid / …", "type": "snapshot", "description": "Reactive snapshot" },
+      { "name": "set / save / resetDraft / …", "type": "fn", "description": "Bound form actions" }
+    ]
+  },
+  "examples": [
+    {
+      "title": "Sync external data",
+      "language": "tsx",
+      "code": "const { form, draft, set, save } = useForm({\n  key: userId,\n  data: serverUser,\n  validate: { fields: { name: (v) => (!v ? \"Required\" : null) } },\n});"
+    }
+  ],
+  "relatedPages": ["/form-react/docs/FormProvider", "/form/docs/createForm"]
+}

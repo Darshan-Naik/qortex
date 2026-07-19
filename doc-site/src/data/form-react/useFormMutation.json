@@ -1,0 +1,21 @@
+{
+  "id": "useFormMutation",
+  "title": "useFormMutation",
+  "subtitle": "Wire form.save to useMutate",
+  "description": "Compose an existing form with mutateAsync; returns save() and isSaving.",
+  "category": "Binders",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function useFormMutation<T>(\n  form: Form<T>,\n  mutationFn: (draft: T, meta: MutateMeta) => Promise<unknown> | unknown,\n  options?: UseFormMutationOptions<T>,\n): UseFormMutationResult\n// from \"qortex-form-react/query\""
+  },
+  "content": "Does not own the form or network stack beyond `useMutate`. Pass `queryKey` so invalidate → refetch can refresh source `data`.",
+  "examples": [
+    {
+      "title": "With useForm",
+      "language": "tsx",
+      "code": "const { form, isChanged } = useForm({ key: id, data: user });\nconst { save, isSaving, error } = useFormMutation(\n  form,\n  (draft) => api.update(id, draft),\n  { queryKey: [\"user\", id] },\n);"
+    }
+  ],
+  "relatedPages": ["/form-react/docs/useQueryForm", "/docs/useMutate"]
+}

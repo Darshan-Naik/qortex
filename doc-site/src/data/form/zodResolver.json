@@ -1,0 +1,21 @@
+{
+  "id": "zodResolver",
+  "title": "zodResolver",
+  "subtitle": "Zod (or compatible) schema → ValidationResolver",
+  "description": "Build a validate.resolver from a Zod-like safeParse schema.",
+  "category": "API",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function zodResolver<T = any>(schema: ZodLikeSchema): ValidationResolver<T>"
+  },
+  "content": "qortex-form does not depend on Zod. Any object with `safeParse` returning `{ success, error.issues }` works.",
+  "examples": [
+    {
+      "title": "With Zod",
+      "language": "typescript",
+      "code": "import { z } from \"zod\";\nimport { createForm, zodResolver } from \"qortex-form\";\n\nconst schema = z.object({\n  name: z.string().min(1),\n  email: z.string().email(),\n});\n\nconst form = createForm({\n  initialData: { name: \"\", email: \"\" },\n  validate: {\n    resolver: zodResolver(schema),\n    on: \"submit\",\n  },\n});"
+    }
+  ],
+  "relatedPages": ["/form/docs/validation"]
+}

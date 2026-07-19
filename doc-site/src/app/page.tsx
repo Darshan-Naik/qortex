@@ -329,7 +329,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* qortex-resource */}
+            {/* qortex-form */}
             <div className="relative bg-gradient-to-br from-orange-50 to-amber-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-visible">
               <div className="absolute -top-3 -right-3 z-10">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-orange-500 text-white shadow-lg uppercase">
@@ -342,13 +342,13 @@ export default function HomePage() {
                   <ResourceIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-2xl font-bold text-gray-900">qortex-resource</h3>
-                  <p className="text-sm text-orange-700 font-medium">Entity / Form Lifecycle · 0.1.0-alpha.0</p>
+                  <h3 className="text-2xl font-bold text-gray-900">qortex-form</h3>
+                  <p className="text-sm text-orange-700 font-medium">Headless Form Engine · 0.1.0-alpha.0</p>
                 </div>
               </div>
 
               <p className="text-gray-700 mb-6">
-                Fetch → draft → validate → persist → save. Framework-agnostic core for data-heavy forms and entity editors.
+                Source → draft → validate → persist → save(mutator). Framework-agnostic core for data-heavy forms.
               </p>
 
               <div className="flex flex-wrap gap-2 mb-6">
@@ -359,18 +359,18 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-orange-100/50">
                 <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
-                  npm i qortex-resource@0.1.0-alpha.0
+                  npm i qortex-form@0.1.0-alpha.0
                 </code>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-orange-600 uppercase tracking-wide">Alpha</span>
-                  <Link href="/resource" className="inline-flex items-center text-orange-700 hover:text-orange-800 font-bold transition-colors">
+                  <Link href="/form" className="inline-flex items-center text-orange-600 hover:text-orange-700 font-bold transition-colors">
                     Documentation <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </div>
               </div>
             </div>
 
-            {/* qortex-resource-react */}
+            {/* qortex-form-react */}
             <div className="relative bg-gradient-to-br from-amber-50 to-orange-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-visible">
               <div className="absolute -top-3 -right-3 z-10">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-orange-500 text-white shadow-lg uppercase">
@@ -383,28 +383,28 @@ export default function HomePage() {
                   <ResourceIcon className="h-7 w-7" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-2xl font-bold text-gray-900">qortex-resource-react</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">qortex-form-react</h3>
                   <p className="text-sm text-amber-700 font-medium">React Form Hooks · 0.1.0-alpha.0</p>
                 </div>
               </div>
 
               <p className="text-gray-700 mb-6">
-                Fine-grained useField / useFieldArray hooks and createResourceHooks — no React Context required.
+                useForm, FormProvider, useField, useFieldArray, and useQueryForm binders.
               </p>
 
               <div className="flex flex-wrap gap-2 mb-6">
-                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">useResource</span>
-                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">useField</span>
-                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">No Context</span>
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">useForm</span>
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">useQueryForm</span>
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">FormProvider</span>
               </div>
 
               <div className="mt-8 pt-6 border-t border-amber-100/50">
                 <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
-                  npm i qortex-resource-react@0.1.0-alpha.0
+                  npm i qortex-form-react@0.1.0-alpha.0
                 </code>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-amber-700 uppercase tracking-wide">Alpha</span>
-                  <Link href="/resource-react" className="inline-flex items-center text-amber-700 hover:text-amber-800 font-bold transition-colors">
+                  <Link href="/form-react" className="inline-flex items-center text-amber-700 hover:text-amber-800 font-bold transition-colors">
                     Documentation <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </div>

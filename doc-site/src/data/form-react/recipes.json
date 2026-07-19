@@ -1,0 +1,36 @@
+{
+  "id": "recipes",
+  "title": "Recipes",
+  "subtitle": "Common form compositions",
+  "description": "Edit with query+mutate, create-only, and local-only forms.",
+  "category": "Guides",
+  "status": "alpha",
+  "content": "All recipes assume `qortex-form-react@0.1.0-alpha.0`. Query recipes need `qortex-query-react`.",
+  "sections": [
+    {
+      "title": "1. Edit entity (query + mutate)",
+      "content": "Use `useQueryForm` — save invalidates `key`, refetch fills `data`.",
+      "code": {
+        "language": "tsx",
+        "code": "import { useQueryForm } from \"qortex-form-react/query\";\n\nconst { Provider, save, isLoading, isSaving, isChanged } = useQueryForm({\n  key: [\"product\", id],\n  fetcher: () => api.getProduct(id),\n  mutationFn: (draft) => api.updateProduct(id, draft),\n  persist: { draft: true },\n});"
+      }
+    },
+    {
+      "title": "2. Create-only form",
+      "content": "Omit `fetcher`, pass `initialData` + `mutationFn`.",
+      "code": {
+        "language": "tsx",
+        "code": "const { Provider, save, isSaving } = useQueryForm({\n  key: [\"product\", \"new\"],\n  initialData: { title: \"\", price: 0 },\n  mutationFn: (draft) => api.createProduct(draft),\n});"
+      }
+    },
+    {
+      "title": "3. Local-only form",
+      "content": "No query — `useForm` + your own mutator (or just read `draft`).",
+      "code": {
+        "language": "tsx",
+        "code": "const { form, draft, set, save } = useForm({\n  initialData: { theme: \"system\", emails: true },\n});\n\nawait save(async (d) => {\n  localStorage.setItem(\"settings\", JSON.stringify(d));\n});"
+      }
+    }
+  ],
+  "relatedPages": ["/form-react/docs/useQueryForm", "/form-react/docs/useFormStore", "/form/docs/concepts"]
+}

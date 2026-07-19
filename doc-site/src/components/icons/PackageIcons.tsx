@@ -47,7 +47,7 @@ export function StoreIcon({ className, strokeWidth, ...props }: IconProps) {
     );
 }
 
-// "The Form Ledger" - Represents qortex-resource (alpha)
+// "The Form Ledger" - Represents qortex-form (alpha)
 export function ResourceIcon({ className, strokeWidth, ...props }: IconProps) {
     const sw = strokeWidth ? Number(strokeWidth) : 2;
 

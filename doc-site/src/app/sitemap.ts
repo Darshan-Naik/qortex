@@ -3,6 +3,33 @@ import { MetadataRoute } from 'next'
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://qortex.dev'
 
+    const formSlugs = [
+        'installation',
+        'quick-start',
+        'concepts',
+        'createForm',
+        'validation',
+        'zodResolver',
+        'persist',
+        'fields-arrays',
+        'alpha-limitations',
+    ]
+
+    const formReactSlugs = [
+        'installation',
+        'quick-start',
+        'useForm',
+        'FormProvider',
+        'useField',
+        'useFieldArray',
+        'sharing-patterns',
+        'useQueryForm',
+        'useFormQuery',
+        'useFormMutation',
+        'useFormStore',
+        'recipes',
+    ]
+
     return [
         {
             url: baseUrl,
@@ -17,34 +44,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.8,
         },
         {
-            url: `${baseUrl}/docs/getting-started`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.8,
-        },
-        {
             url: `${baseUrl}/docs/installation`,
             lastModified: new Date(),
             changeFrequency: 'monthly',
             priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/docs/basic-usage`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/docs/configuration`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/docs/api`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
         },
         {
             url: `${baseUrl}/store`,
@@ -71,12 +74,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.7,
         },
         {
-            url: `${baseUrl}/store/docs/useStore`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
             url: `${baseUrl}/store-react`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
@@ -95,82 +92,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.7,
         },
         {
-            url: `${baseUrl}/store-react/docs/useStore`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/store-react/docs/createStore`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/resource`,
+            url: `${baseUrl}/form`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.8,
         },
-        {
-            url: `${baseUrl}/resource/docs/installation`,
+        ...formSlugs.map((slug) => ({
+            url: `${baseUrl}/form/docs/${slug}`,
             lastModified: new Date(),
-            changeFrequency: 'monthly',
+            changeFrequency: 'monthly' as const,
             priority: 0.7,
-        },
+        })),
         {
-            url: `${baseUrl}/resource/docs/quick-start`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/resource/docs/lifecycle`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/resource/docs/createResource`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/resource/docs/use-cases`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/resource/docs/product-form`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/resource-react`,
+            url: `${baseUrl}/form-react`,
             lastModified: new Date(),
             changeFrequency: 'weekly',
             priority: 0.8,
         },
-        {
-            url: `${baseUrl}/resource-react/docs/installation`,
+        ...formReactSlugs.map((slug) => ({
+            url: `${baseUrl}/form-react/docs/${slug}`,
             lastModified: new Date(),
-            changeFrequency: 'monthly',
+            changeFrequency: 'monthly' as const,
             priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/resource-react/docs/recipes`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/resource-react/docs/createResourceHooks`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.7,
-        },
+        })),
     ]
 }

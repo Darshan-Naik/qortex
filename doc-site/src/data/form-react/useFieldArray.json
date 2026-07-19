@@ -1,0 +1,21 @@
+{
+  "id": "useFieldArray",
+  "title": "useFieldArray",
+  "subtitle": "Array helpers with stable ids",
+  "description": "Subscribe to an array field via FormProvider.",
+  "category": "React API",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function useFieldArray(path: string): {\n  fields: ArrayFieldEntry[];\n  append / prepend / insert / remove / swap / move\n}"
+  },
+  "content": "Prefer nested `useField(\\`${path}.${i}.…\\`)` for item fields. `fields[].id` is stable across reorder.",
+  "examples": [
+    {
+      "title": "Tag list",
+      "language": "tsx",
+      "code": "function Tags() {\n  const { fields, append, remove } = useFieldArray(\"tags\");\n  return (\n    <ul>\n      {fields.map((f) => (\n        <li key={f.id}>\n          {String(f.item)}\n          <button type=\"button\" onClick={() => remove(f.index)}>×</button>\n        </li>\n      ))}\n      <button type=\"button\" onClick={() => append(\"new\")}>Add</button>\n    </ul>\n  );\n}"
+    }
+  ],
+  "relatedPages": ["/form/docs/fields-arrays", "/form-react/docs/useField"]
+}

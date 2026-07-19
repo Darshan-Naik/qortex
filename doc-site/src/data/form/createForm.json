@@ -1,0 +1,88 @@
+{
+  "id": "createForm",
+  "title": "createForm",
+  "subtitle": "Headless form instance",
+  "description": "Create a subscribeable form that manages draft, validation, and save.",
+  "category": "API",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function createForm<T>(config: FormConfig<T>): Form<T>"
+  },
+  "parameters": {
+    "columns": ["name", "type", "required", "default", "description"],
+    "rows": [
+      {
+        "name": "config.data",
+        "type": "T",
+        "required": false,
+        "default": "—",
+        "description": "External source data. Sync later with setData."
+      },
+      {
+        "name": "config.initialData",
+        "type": "T | (() => T)",
+        "required": false,
+        "default": "—",
+        "description": "Used when data is not provided (create / local forms)."
+      },
+      {
+        "name": "config.key",
+        "type": "FormKey",
+        "required": "when persist",
+        "default": "—",
+        "description": "Identity for persist and React remount (string or tuple)."
+      },
+      {
+        "name": "config.validate",
+        "type": "FormValidationConfig",
+        "required": false,
+        "default": "—",
+        "description": "resolver, fields, and on mode (change | blur | submit | manual)."
+      },
+      {
+        "name": "config.persist",
+        "type": "boolean | FormPersistConfig",
+        "required": false,
+        "default": "false",
+        "description": "Persist draft overrides and/or source cache."
+      },
+      {
+        "name": "config.sourceUpdate",
+        "type": "SourceUpdateMode",
+        "required": false,
+        "default": "keepDirty",
+        "description": "How draft behaves when source data is replaced."
+      },
+      {
+        "name": "config.fields / fieldMode",
+        "type": "FieldsConfig / open|strict",
+        "required": false,
+        "default": "open",
+        "description": "Optional readonly / editable path controls."
+      }
+    ]
+  },
+  "returns": {
+    "type": "Form<T>",
+    "description": "Form instance with snapshot getters and mutation methods.",
+    "properties": [
+      { "name": "data / draft", "type": "T | undefined", "description": "Source and current draft" },
+      { "name": "isChanged / isValid", "type": "boolean", "description": "Dirty and validation flags" },
+      { "name": "set / setMany / reset / resetDraft", "type": "fn", "description": "Draft edits" },
+      { "name": "field / array / getFieldState", "type": "fn", "description": "Field and array controllers" },
+      { "name": "save(mutator)", "type": "fn", "description": "Validate → mutator → resetDraft on success" },
+      { "name": "setData", "type": "fn", "description": "Replace source data" },
+      { "name": "subscribe / subscribeField", "type": "fn", "description": "Listeners" },
+      { "name": "destroy", "type": "fn", "description": "Cleanup timers and listeners" }
+    ]
+  },
+  "examples": [
+    {
+      "title": "Basic edit + save",
+      "language": "typescript",
+      "code": "import { createForm } from \"qortex-form\";\n\nconst form = createForm({\n  key: [\"settings\"],\n  initialData: { theme: \"system\", emails: true },\n});\n\nform.set(\"theme\", \"dark\");\nawait form.save(async (draft) => {\n  await api.saveSettings(draft);\n});\nform.destroy();"
+    }
+  ],
+  "relatedPages": ["/form/docs/validation", "/form/docs/persist", "/form-react/docs/useForm"]
+}
