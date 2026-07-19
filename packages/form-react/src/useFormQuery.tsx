@@ -11,7 +11,7 @@ import {
 
 type FormConfigWithoutData<T> = Omit<FormConfig<T>, "data" | "key">;
 
-export type UseQueryFormConfig<T> = FormConfigWithoutData<T> & {
+export type UseFormQueryConfig<T> = FormConfigWithoutData<T> & {
     /**
      * Query + form identity. Used as `useQuery` key and default form `key`.
      * Also used as mutate `queryKey` so save invalidates → refetch fills `data`.
@@ -32,7 +32,7 @@ export type UseQueryFormConfig<T> = FormConfigWithoutData<T> & {
     };
 };
 
-export type UseQueryFormResult<T> = ReturnType<typeof useForm<T>> & {
+export type UseFormQueryResult<T> = ReturnType<typeof useForm<T>> & {
     /** Bound `FormProvider` for this form instance. */
     Provider: ComponentType<{ children: ReactNode }>;
     /** `() => form.save(mutateAsync)`. */
@@ -66,7 +66,7 @@ export type UseQueryFormResult<T> = ReturnType<typeof useForm<T>> & {
  *
  * @example
  * ```tsx
- * const { Provider, save, isLoading, isSaving, isChanged } = useQueryForm({
+ * const { Provider, save, isLoading, isSaving, isChanged } = useFormQuery({
  *   key: ["user", id],
  *   fetcher: () => api.getUser(id),
  *   mutationFn: (draft) => api.updateUser(id, draft),
@@ -82,7 +82,7 @@ export type UseQueryFormResult<T> = ReturnType<typeof useForm<T>> & {
  * );
  * ```
  */
-export function useQueryForm<T>(config: UseQueryFormConfig<T>): UseQueryFormResult<T> {
+export function useFormQuery<T>(config: UseFormQueryConfig<T>): UseFormQueryResult<T> {
     const {
         key,
         fetcher,
@@ -121,7 +121,7 @@ export function useQueryForm<T>(config: UseQueryFormConfig<T>): UseQueryFormResu
         const BoundProvider = ({ children }: { children: ReactNode }) => (
             <FormProvider form={formState.form as Form<T>}>{children}</FormProvider>
         );
-        BoundProvider.displayName = "QueryFormProvider";
+        BoundProvider.displayName = "FormQueryProvider";
         return BoundProvider;
     }, [formState.form]);
 

@@ -2,14 +2,14 @@ import React from "react";
 import { render, screen, act, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { dangerClearCache } from "qortex-query";
-import { useQueryForm } from "../src/query";
+import { useFormQuery } from "../src/query";
 import { useField } from "../src/index";
 
 beforeEach(() => {
     dangerClearCache();
 });
 
-describe("useQueryForm", () => {
+describe("useFormQuery", () => {
     it("loads via fetcher, edits draft, saves via mutationFn, resets draft", async () => {
         const fetcher = jest.fn(async () => ({ name: "Alice", email: "a@x.com" }));
         const mutationFn = jest.fn(async (draft: { name: string; email: string }) => {
@@ -19,7 +19,7 @@ describe("useQueryForm", () => {
 
         const Shell = () => {
             const { Provider, isLoading, isSaving, isChanged, save, draft, error } =
-                useQueryForm({
+                useFormQuery({
                     key: ["user", "1"],
                     fetcher,
                     mutationFn,
@@ -88,7 +88,7 @@ describe("useQueryForm", () => {
         const mutationFn = jest.fn(async (draft: { name: string }) => draft);
 
         const Shell = () => {
-            const { Provider, isLoading, isChanged, save, draft } = useQueryForm({
+            const { Provider, isLoading, isChanged, save, draft } = useFormQuery({
                 key: ["user", "new"],
                 initialData: { name: "" },
                 mutationFn,

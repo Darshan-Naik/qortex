@@ -20,9 +20,9 @@
       }
     },
     {
-      "title": "useQueryForm Provider",
-      "content": "`useQueryForm` returns a bound `Provider` component — same idea, less boilerplate."
+      "title": "useFormQuery Provider",
+      "content": "`useFormQuery` returns a bound `Provider` component — same idea, less boilerplate."
     }
   ],
-  "relatedPages": ["/form-react/docs/FormProvider", "/form-react/docs/useQueryForm"]
+  "relatedPages": ["/form-react/docs/FormProvider", "/form-react/docs/useFormQuery"]
 }

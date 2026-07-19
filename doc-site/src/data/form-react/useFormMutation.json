@@ -17,5 +17,5 @@
       "code": "const { form, isChanged } = useForm({ key: id, data: user });\nconst { save, isSaving, error } = useFormMutation(\n  form,\n  (draft) => api.update(id, draft),\n  { queryKey: [\"user\", id] },\n);"
     }
   ],
-  "relatedPages": ["/form-react/docs/useQueryForm", "/docs/useMutate"]
+  "relatedPages": ["/form-react/docs/useFormQuery", "/docs/useMutate"]
 }

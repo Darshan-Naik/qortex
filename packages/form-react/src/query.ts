@@ -8,7 +8,7 @@
  * ```
  *
  * ```ts
- * import { useQueryForm } from "qortex-form-react/query";
+ * import { useFormQuery } from "qortex-form-react/query";
  * ```
  */
 
@@ -17,8 +17,8 @@ export type {
     UseFormMutationOptions,
     UseFormMutationResult,
 } from "./useFormMutation";
-export { useQueryForm } from "./useQueryForm";
+export { useFormQuery } from "./useFormQuery";
 export type {
-    UseQueryFormConfig,
-    UseQueryFormResult,
-} from "./useQueryForm";
+    UseFormQueryConfig,
+    UseFormQueryResult,
+} from "./useFormQuery";

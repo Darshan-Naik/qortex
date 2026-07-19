@@ -4,7 +4,7 @@
  * Wrap with `FormProvider` so `useField` / `useFieldArray` can read context.
  *
  * Optional binders (separate entry points — install peer deps as needed):
- * - `qortex-form-react/query` — `useQueryForm`, `useFormMutation`
+ * - `qortex-form-react/query` — `useFormQuery`, `useFormMutation`
  * - `qortex-form-react/store` — `useFormStore`
  */
 

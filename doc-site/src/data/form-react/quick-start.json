@@ -16,8 +16,8 @@
     },
     {
       "title": "Batteries included",
-      "content": "Prefer [useQueryForm](/form-react/docs/useQueryForm) when loading and saving via `qortex-query-react`."
+      "content": "Prefer [useFormQuery](/form-react/docs/useFormQuery) when loading and saving via `qortex-query-react`."
     }
   ],
-  "relatedPages": ["/form-react/docs/useForm", "/form-react/docs/useQueryForm"]
+  "relatedPages": ["/form-react/docs/useForm", "/form-react/docs/useFormQuery"]
 }

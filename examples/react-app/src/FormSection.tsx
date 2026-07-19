@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQueryForm } from "qortex-form-react/query";
+import { useFormQuery } from "qortex-form-react/query";
 import { useField, useFieldArray } from "qortex-form-react";
 
 type Profile = {
@@ -120,7 +120,7 @@ function ProfileForm({ who }: { who: "alice" | "bob" }) {
     save,
     resetDraft,
     error,
-  } = useQueryForm({
+  } = useFormQuery({
     key: ["profile", who],
     fetcher: () => fetchProfile(who),
     mutationFn: (draft) => updateProfile(who, draft),
@@ -159,7 +159,7 @@ function ProfileForm({ who }: { who: "alice" | "bob" }) {
         </button>
       </div>
       <p style={{ marginTop: "12px", fontSize: "12px", color: "var(--text-muted)" }}>
-        Powered by <code>useQueryForm</code> — save invalidates the query; refetch fills <code>data</code>.
+        Powered by <code>useFormQuery</code> — save invalidates the query; refetch fills <code>data</code>.
       </p>
     </Provider>
   );
@@ -175,7 +175,7 @@ export default function FormSection() {
         <span>📝</span> Form Profile
       </h2>
       <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>
-        <code>useQueryForm</code> composes query + form + mutate. Fresh data comes from refetch after save.
+        <code>useFormQuery</code> composes query + form + mutate. Fresh data comes from refetch after save.
       </p>
 
       <div style={{ display: "flex", gap: "8px", margin: "12px 0" }}>
