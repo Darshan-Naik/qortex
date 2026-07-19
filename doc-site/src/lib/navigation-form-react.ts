@@ -30,7 +30,6 @@ export const formReactNavigation: NavigationSection[] = [
         title: "Binders",
         items: [
             { title: "useQueryForm", href: "/form-react/docs/useQueryForm" },
-            { title: "useFormQuery", href: "/form-react/docs/useFormQuery" },
             { title: "useFormMutation", href: "/form-react/docs/useFormMutation" },
             { title: "useFormStore", href: "/form-react/docs/useFormStore" },
         ],
