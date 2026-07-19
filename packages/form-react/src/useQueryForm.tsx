@@ -1,22 +1,20 @@
-import { useCallback, useMemo, type ComponentType, type ReactNode } from "react";
-import type {
-    Form,
-    FormConfig,
-    FormMutator,
-    MutateMeta,
-    SaveResult,
-} from "qortex-form";
-import { useQuery, useMutate, type UseMutateOptions } from "qortex-query-react";
+import { useMemo, type ComponentType, type ReactNode } from "react";
+import type { Form, FormConfig, MutateMeta, SaveResult } from "qortex-form";
+import { useQuery } from "qortex-query-react";
 import type { QueryKey, QueryOptions, QueryState } from "qortex-query";
 import { FormProvider } from "./FormProvider";
 import { useForm } from "./useForm";
+import {
+    useFormMutation,
+    type UseFormMutationOptions,
+} from "./useFormMutation";
 
 type FormConfigWithoutData<T> = Omit<FormConfig<T>, "data" | "key">;
 
 export type UseQueryFormConfig<T> = FormConfigWithoutData<T> & {
     /**
      * Query + form identity. Used as `useQuery` key and default form `key`.
-     * Also used as `useMutate({ queryKey })` so save invalidates → refetch fills `data`.
+     * Also used as mutate `queryKey` so save invalidates → refetch fills `data`.
      */
     key: QueryKey;
     /** Load source data. Omit for create-only forms (use `initialData`). */
@@ -25,9 +23,11 @@ export type UseQueryFormConfig<T> = FormConfigWithoutData<T> & {
     mutationFn: (draft: T, meta: MutateMeta) => Promise<unknown> | unknown;
     /** Pass-through query options (except `fetcher`, which comes from `fetcher`). */
     queryOptions?: Omit<QueryOptions<T>, "fetcher">;
-    /** Pass-through mutate callbacks (queryKey defaults to `key`). */
-    mutateOptions?: Omit<UseMutateOptions<unknown, Error, [T, MutateMeta]>, "queryKey"> & {
-        /** Override invalidate key; defaults to `key`. Pass `null` to skip invalidate. */
+    /**
+     * Options forwarded to {@link useFormMutation}.
+     * `queryKey` defaults to `key`; pass `null` to skip invalidate.
+     */
+    mutateOptions?: Omit<UseFormMutationOptions<T>, "queryKey"> & {
         queryKey?: QueryKey | null;
     };
 };
@@ -55,7 +55,8 @@ export type UseQueryFormResult<T> = ReturnType<typeof useForm<T>> & {
 };
 
 /**
- * Batteries-included: `useQuery` + `useForm` + `useMutate` for edit (or create-only) forms.
+ * Batteries-included: `useQuery` + `useForm` + {@link useFormMutation} for edit
+ * (or create-only) forms.
  *
  * - Fresh `data` comes from query refetch after invalidate — **not** from applying the save result.
  * - `save()` validates → `mutationFn(draft, meta)` → `resetDraft` on success.
@@ -107,27 +108,14 @@ export function useQueryForm<T>(config: UseQueryFormConfig<T>): UseQueryFormResu
         initialData: hasFetcher ? undefined : initialData,
     } as FormConfig<T>);
 
-    const {
-        queryKey: mutateQueryKey,
-        ...mutateCallbacks
-    } = mutateOptions ?? {};
-
+    const { queryKey: mutateQueryKey, ...mutationCallbacks } = mutateOptions ?? {};
     const invalidateKey =
         mutateQueryKey === null ? undefined : (mutateQueryKey ?? key);
 
-    const mutation = useMutate(
-        async (draft: T, meta: MutateMeta) => mutationFn(draft, meta),
-        {
-            ...mutateCallbacks,
-            queryKey: invalidateKey,
-        } as UseMutateOptions<unknown, Error, [T, MutateMeta]>,
-    );
-
-    const save = useCallback(async (): Promise<SaveResult> => {
-        const mutator: FormMutator<T> = (draft, meta) =>
-            mutation.mutateAsync(draft, meta);
-        return formState.form.save(mutator);
-    }, [formState.form, mutation]);
+    const wired = useFormMutation(formState.form, mutationFn, {
+        ...mutationCallbacks,
+        queryKey: invalidateKey,
+    });
 
     const Provider = useMemo(() => {
         const BoundProvider = ({ children }: { children: ReactNode }) => (
@@ -137,22 +125,19 @@ export function useQueryForm<T>(config: UseQueryFormConfig<T>): UseQueryFormResu
         return BoundProvider;
     }, [formState.form]);
 
-    const error = mutation.error ?? query.error;
-
     return {
         ...formState,
-        // Override useForm.save with the wired mutate version
-        save,
+        save: wired.save,
         Provider,
         isLoading: hasFetcher ? query.isLoading : false,
-        isSaving: mutation.isPending,
-        error,
+        isSaving: wired.isSaving,
+        error: wired.error ?? query.error,
         query,
         mutation: {
-            isPending: mutation.isPending,
-            error: mutation.error,
-            data: mutation.data,
-            reset: mutation.reset,
+            isPending: wired.isSaving,
+            error: wired.error,
+            data: wired.data,
+            reset: wired.reset,
         },
     };
 }

@@ -16,6 +16,20 @@ import type {
 } from "./types";
 import { flattenFieldsConfig, isAllValid, isEditable, collectErrors } from "./field";
 import { applyOverrides, getByPath } from "./path";
+import {
+    createStorage,
+    getPersistDebounce,
+    getPersistKey,
+    handlePersistError,
+    shouldPersistCache,
+    shouldPersistDraft,
+} from "./persist";
+import {
+    filterErrors,
+    matchesRequested,
+    resolvePatternPaths,
+    resolveRequestedPaths,
+} from "./validate";
 
 type FieldListener = (field: FieldController) => void;
 
@@ -726,7 +740,7 @@ class FormCore<T> {
                     this.applyPatchesSilent(draft);
                 }
             })
-            .catch((error) => this.handlePersistError(error));
+            .catch((error) => handlePersistError(this.config.persist, error));
     }
 
     /** Restore overrides without running validation (used by persist hydrate). */
@@ -751,139 +765,34 @@ class FormCore<T> {
                     this.applySourceValue(data, "resetDraft");
                 }
             })
-            .catch((error) => this.handlePersistError(error));
+            .catch((error) => handlePersistError(this.config.persist, error));
     }
 
     private scheduleDraftPersist(): void {
         if (!shouldPersistDraft(this.config.persist) || !this.storage) return;
         if (this.persistTimer) clearTimeout(this.persistTimer);
-        const debounce = typeof this.config.persist === "object" ? this.config.persist.debounce ?? 300 : 300;
+        const debounce = getPersistDebounce(this.config.persist);
         this.persistTimer = setTimeout(() => {
             if (this.draftOverrides.size === 0) {
                 this.clearPersistedDraft();
             } else {
                 this.storage!.set(this.persistKey + ":draft", Object.fromEntries(this.draftOverrides))
-                    .catch((error) => this.handlePersistError(error));
+                    .catch((error) => handlePersistError(this.config.persist, error));
             }
         }, debounce);
     }
 
     private persistCache(data: T): void {
         if (!shouldPersistCache(this.config.persist) || !this.storage) return;
-        this.storage.set(this.persistKey + ":cache", data).catch((error) => this.handlePersistError(error));
+        this.storage
+            .set(this.persistKey + ":cache", data)
+            .catch((error) => handlePersistError(this.config.persist, error));
     }
 
     private clearPersistedDraft(): void {
         if (!this.storage) return;
-        this.storage.remove(this.persistKey + ":draft").catch((error) => this.handlePersistError(error));
+        this.storage
+            .remove(this.persistKey + ":draft")
+            .catch((error) => handlePersistError(this.config.persist, error));
     }
-
-    private handlePersistError(error: unknown): void {
-        if (typeof this.config.persist === "object" && this.config.persist.onError) {
-            this.config.persist.onError(error);
-        } else if (typeof console !== "undefined") {
-            console.warn("[qortex-form] Persistence failed:", error);
-        }
-    }
-}
-
-function getPersistKey(config: FormConfig<any>): string {
-    if (typeof config.persist === "object" && "key" in config.persist && config.persist.key) {
-        return config.persist.key;
-    }
-    if (Array.isArray(config.key)) return config.key.map(String).join("#");
-    return config.key == null ? "form" : String(config.key);
-}
-
-function shouldPersistDraft(persist: FormConfig<any>["persist"]): boolean {
-    return persist === true || (typeof persist === "object" && persist.draft === true);
-}
-
-function shouldPersistCache(persist: FormConfig<any>["persist"]): boolean {
-    return persist === true || (typeof persist === "object" && persist.cache === true);
-}
-
-function createStorage(persist: FormConfig<any>["persist"]): FormStorage | undefined {
-    if (!persist) return undefined;
-    if (typeof persist === "object") {
-        if (persist.storage) return persist.storage;
-        if (persist.db) {
-            return {
-                get: (key) => persist.db!.get(key),
-                set: (key, value) => persist.db!.set(key, value),
-                remove: (key) => persist.db!.del(key),
-            };
-        }
-    }
-    const driver = typeof persist === "object" ? persist.driver ?? "localStorage" : "localStorage";
-    return {
-        async get<T>(key: string): Promise<T | undefined> {
-            const storage = browserStorage(driver);
-            const value = storage?.getItem(key);
-            return value ? JSON.parse(value) : undefined;
-        },
-        async set<T>(key: string, value: T): Promise<void> {
-            browserStorage(driver)?.setItem(key, JSON.stringify(value));
-        },
-        async remove(key: string): Promise<void> {
-            browserStorage(driver)?.removeItem(key);
-        },
-    };
-}
-
-function browserStorage(driver: "localStorage" | "sessionStorage"): Storage | undefined {
-    if (typeof window === "undefined") return undefined;
-    return driver === "sessionStorage" ? window.sessionStorage : window.localStorage;
-}
-
-function resolveRequestedPaths(
-    data: any,
-    request: string,
-    validators?: Record<string, any>,
-): string[] {
-    if (request === "*") {
-        const patterns = Object.keys((validators ?? {}) as Record<string, unknown>);
-        return patterns.length === 0 ? [] : patterns.flatMap((pattern) => resolvePatternPaths(data, pattern));
-    }
-    if (request.includes("*")) return resolvePatternPaths(data, request);
-    return [request];
-}
-
-function filterErrors(
-    errors: Record<string, string | undefined>,
-    requestedPaths: string[],
-    request: string[] | string,
-): Record<string, string | undefined> {
-    if (request === "*") return errors;
-    const requested = new Set(requestedPaths);
-    return Object.fromEntries(Object.entries(errors).filter(([path]) => requested.has(path)));
-}
-
-function matchesRequested(path: string, requestedPaths: string[], request: string[] | string): boolean {
-    return request === "*" || requestedPaths.includes(path);
-}
-
-function resolvePatternPaths(data: any, pattern: string): string[] {
-    if (!pattern.includes("*")) return [pattern];
-    const results: string[] = [];
-    const segments = pattern.split(".");
-
-    function walk(current: any, index: number, path: string[]): void {
-        if (index === segments.length) {
-            results.push(path.join("."));
-            return;
-        }
-        const segment = segments[index];
-        if (segment === "*") {
-            if (current == null || typeof current !== "object") return;
-            for (const key of Object.keys(current)) {
-                walk(current[key], index + 1, [...path, key]);
-            }
-            return;
-        }
-        walk(current?.[segment], index + 1, [...path, segment]);
-    }
-
-    walk(data, 0, []);
-    return results;
 }

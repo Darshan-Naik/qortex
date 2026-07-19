@@ -11,7 +11,7 @@ interface PackageSidebarProps {
     packageName: string;
     packageIcon: React.ReactNode;
     packageHref: string;
-    themeColor: 'purple' | 'blue' | 'indigo' | 'emerald';
+    themeColor: 'purple' | 'blue' | 'indigo' | 'emerald' | 'orange';
     onClose?: () => void;
 }
 
@@ -35,6 +35,11 @@ const colorClasses = {
         bg: 'from-emerald-50 to-teal-50',
         icon: 'from-emerald-600 to-teal-600',
         active: 'bg-emerald-100 text-emerald-900',
+    },
+    orange: {
+        bg: 'from-orange-50 to-amber-50',
+        icon: 'from-orange-600 to-amber-600',
+        active: 'bg-orange-100 text-orange-900',
     },
 };
 
