@@ -47,7 +47,7 @@ const packages = [
     dependencyTransforms: {
       'qortex-store': 'qortex-store' // workspace:* -> qortex-store (same version)
     }
-  }
+  },
 ];
 
 function createPublishablePackageJson(pkg) {

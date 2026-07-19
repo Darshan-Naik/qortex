@@ -1,0 +1,28 @@
+{
+  "id": "alpha-limitations",
+  "title": "Alpha limitations",
+  "subtitle": "What is intentionally out of scope",
+  "description": "Known gaps and parked features for 0.1.0-alpha.",
+  "category": "Guides",
+  "status": "alpha",
+  "content": "APIs may change before 1.0.",
+  "sections": [
+    {
+      "title": "No built-in fetch",
+      "content": "Compose with `qortex-query` / `useFormQuery` (or any loader). Pass `data` / `setData`."
+    },
+    {
+      "title": "Save does not apply mutator result as data",
+      "content": "On success: `resetDraft` only. Refresh source via query invalidate → refetch, store update, or `setData`."
+    },
+    {
+      "title": "Collection parked",
+      "content": "No first-class Collection / per-row form registry in this alpha. Build list UIs with your own keys + nested providers."
+    },
+    {
+      "title": "React primary DX",
+      "content": "Core is usable anywhere; richest DX is `qortex-form-react` + optional `/query` and `/store` binders."
+    }
+  ],
+  "relatedPages": ["/form/docs/concepts", "/form-react/docs/useFormQuery"]
+}

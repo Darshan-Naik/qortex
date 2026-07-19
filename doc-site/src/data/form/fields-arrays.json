@@ -1,0 +1,32 @@
+{
+  "id": "fields-arrays",
+  "title": "Fields & arrays",
+  "subtitle": "Controllers and nested paths",
+  "description": "Work with single fields, nested paths, and array helpers.",
+  "category": "API",
+  "status": "alpha",
+  "content": "Paths use dot notation (`profile.contact.email`). Arrays use index segments (`tags.0`).",
+  "sections": [
+    {
+      "title": "field(path)",
+      "content": "Returns a controller with `value`, `set`, `reset`, `touch`, `validate`, and meta (`isChanged`, `error`, …).",
+      "code": {
+        "language": "typescript",
+        "code": "const name = form.field(\"profile.name\");\nname.set(\"Ada\");\nawait name.validate();"
+      }
+    },
+    {
+      "title": "array(path)",
+      "content": "`append`, `prepend`, `insert`, `remove`, `swap`, `move`, plus `fields` with stable `id`s for list keys.",
+      "code": {
+        "language": "typescript",
+        "code": "const tags = form.array(\"tags\");\ntags.append(\"admin\");\ntags.fields.map((f) => f.id); // stable across reorder"
+      }
+    },
+    {
+      "title": "Readonly / strict mode",
+      "content": "`fields` config + `fieldMode: \"strict\"` can restrict which paths are editable."
+    }
+  ],
+  "relatedPages": ["/form-react/docs/useField", "/form-react/docs/useFieldArray"]
+}

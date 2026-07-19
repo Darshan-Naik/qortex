@@ -1,0 +1,78 @@
+{
+  "id": "useFormQuery",
+  "title": "useFormQuery",
+  "subtitle": "Query + form + mutate combo",
+  "description": "Batteries-included binder: useQuery + useForm + useMutate.",
+  "category": "Binders",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function useFormQuery<T>(config: UseFormQueryConfig<T>): UseFormQueryResult<T>\n\n// import from \"qortex-form-react/query\""
+  },
+  "content": "Requires peer `qortex-query-react`. Fresh `data` comes from query refetch after invalidate — not from applying the save result. `save()` validates → `mutationFn(draft, meta)` → `resetDraft` on success. `useMutate` uses `queryKey: key` by default.",
+  "parameters": {
+    "columns": ["name", "type", "required", "default", "description"],
+    "rows": [
+      {
+        "name": "key",
+        "type": "QueryKey",
+        "required": true,
+        "default": "—",
+        "description": "Query + form identity; default mutate invalidate key"
+      },
+      {
+        "name": "fetcher",
+        "type": "() => Promise<T>",
+        "required": false,
+        "default": "—",
+        "description": "Omit for create-only; use initialData instead"
+      },
+      {
+        "name": "mutationFn",
+        "type": "(draft, meta) => Promise | unknown",
+        "required": true,
+        "default": "—",
+        "description": "Passed to form.save via mutateAsync"
+      },
+      {
+        "name": "queryOptions / mutateOptions",
+        "type": "object",
+        "required": false,
+        "default": "—",
+        "description": "Pass-through options; mutateOptions.queryKey null skips invalidate"
+      },
+      {
+        "name": "…FormConfig",
+        "type": "omit data/key",
+        "required": false,
+        "default": "—",
+        "description": "validate, persist, initialData, sourceUpdate, etc."
+      }
+    ]
+  },
+  "returns": {
+    "type": "UseFormQueryResult",
+    "description": "Form snapshot/actions plus binder fields",
+    "properties": [
+      { "name": "Provider", "type": "Component", "description": "FormProvider bound to this form" },
+      { "name": "save", "type": "() => Promise<SaveResult>", "description": "Wired form.save(mutateAsync)" },
+      { "name": "isLoading / isSaving", "type": "boolean", "description": "Query load / mutate pending" },
+      { "name": "error", "type": "unknown", "description": "Mutation error preferred, else query error" },
+      { "name": "query / mutation", "type": "objects", "description": "Underlying query and mutate state" },
+      { "name": "form / draft / isChanged / …", "type": "from useForm", "description": "Standard form surface" }
+    ]
+  },
+  "examples": [
+    {
+      "title": "Edit entity",
+      "language": "tsx",
+      "code": "import { useFormQuery } from \"qortex-form-react/query\";\nimport { useField } from \"qortex-form-react\";\n\nfunction EditUser({ id }: { id: string }) {\n  const { Provider, save, isLoading, isSaving, isChanged } = useFormQuery({\n    key: [\"user\", id],\n    fetcher: () => api.getUser(id),\n    mutationFn: (draft) => api.updateUser(id, draft),\n    validate: { fields: { name: (v) => (!v ? \"Required\" : null) } },\n  });\n\n  if (isLoading) return <p>Loading…</p>;\n\n  return (\n    <Provider>\n      <NameField />\n      <button disabled={!isChanged || isSaving} onClick={() => save()}>\n        Save\n      </button>\n    </Provider>\n  );\n}"
+    },
+    {
+      "title": "Create-only",
+      "language": "tsx",
+      "code": "const { Provider, save, isSaving } = useFormQuery({\n  key: [\"user\", \"new\"],\n  initialData: { name: \"\", email: \"\" },\n  mutationFn: (draft) => api.createUser(draft),\n});"
+    }
+  ],
+  "relatedPages": ["/form-react/docs/useFormMutation", "/form-react/docs/recipes", "/form/docs/concepts"]
+}
