@@ -120,5 +120,5 @@ const { form, isChanged, save } = useFormStore({
 | Entry | Exports |
 |-------|---------|
 | `qortex-form-react` | `useForm`, `FormProvider`, `useFormContext`, `useField`, `useFieldArray` |
-| `qortex-form-react/query` | `useQueryForm`, `useFormQuery`, `useFormMutation` |
+| `qortex-form-react/query` | `useQueryForm`, `useFormMutation` |
 | `qortex-form-react/store` | `useFormStore` |

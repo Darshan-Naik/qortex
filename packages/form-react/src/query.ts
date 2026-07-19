@@ -12,7 +12,6 @@
  * ```
  */
 
-export { useFormQuery } from "./useFormQuery";
 export { useFormMutation } from "./useFormMutation";
 export type {
     UseFormMutationOptions,
