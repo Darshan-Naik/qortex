@@ -1,0 +1,28 @@
+{
+  "id": "sharing-patterns",
+  "title": "Sharing patterns",
+  "subtitle": "Multi-instance via nested providers",
+  "description": "How to share or isolate forms across components.",
+  "category": "React API",
+  "status": "alpha",
+  "content": "`useField` is context-only. Nest `FormProvider` for independent instances (e.g. two editors side by side).",
+  "sections": [
+    {
+      "title": "One form tree",
+      "content": "Shell owns `useForm`; children call `useField` under a single `FormProvider`."
+    },
+    {
+      "title": "Nested providers",
+      "content": "Each instance gets its own `useForm` + `FormProvider`. Inner context wins for descendants.",
+      "code": {
+        "language": "tsx",
+        "code": "function DualEditor({ a, b }: { a: User; b: User }) {\n  const left = useForm({ key: [\"user\", a.id], data: a });\n  const right = useForm({ key: [\"user\", b.id], data: b });\n\n  return (\n    <>\n      <FormProvider form={left.form}><UserFields /></FormProvider>\n      <FormProvider form={right.form}><UserFields /></FormProvider>\n    </>\n  );\n}"
+      }
+    },
+    {
+      "title": "useQueryForm Provider",
+      "content": "`useQueryForm` returns a bound `Provider` component — same idea, less boilerplate."
+    }
+  ],
+  "relatedPages": ["/form-react/docs/FormProvider", "/form-react/docs/useQueryForm"]
+}

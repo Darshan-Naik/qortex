@@ -1,0 +1,24 @@
+{
+  "id": "concepts",
+  "title": "Concepts",
+  "subtitle": "data → draft → validate → save → resetDraft",
+  "description": "Core mental model for qortex-form.",
+  "category": "Getting Started",
+  "status": "alpha",
+  "content": "Form never fetches. It manages source data, local draft overrides, validation, optional persist, and save via a mutator you provide.",
+  "sections": [
+    {
+      "title": "Pipeline",
+      "content": "1. **data** — authoritative source (from props, query, store, etc.)\n2. **draft** — `data` plus path overrides from `set` / arrays\n3. **validate?** — field validators and/or `zodResolver`\n4. **persist?** — optional draft/cache hydration via localStorage or custom storage\n5. **save(mutator)** — validate → `mutator(draft, meta)` → **resetDraft** on success\n6. Fresh **data** comes from refetch / `setData` — **not** from applying the save result"
+    },
+    {
+      "title": "Source updates",
+      "content": "`setData` / config `data` changes apply `sourceUpdate`:\n\n- `keepDirty` (default) — keep overrides that still differ from the new source\n- `resetDraft` / `replaceAll` — clear overrides and field meta"
+    },
+    {
+      "title": "What form does not do",
+      "content": "• No built-in fetch or query cache\n• No Collection / list-of-forms API (parked)\n• Mutator success does not write `data` — you compose with query invalidate or `setData`"
+    }
+  ],
+  "relatedPages": ["/form/docs/createForm", "/form/docs/alpha-limitations", "/form-react/docs/useQueryForm"]
+}

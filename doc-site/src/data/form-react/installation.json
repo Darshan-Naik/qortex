@@ -1,0 +1,34 @@
+{
+  "id": "installation",
+  "title": "Installation",
+  "subtitle": "React bindings for qortex-form",
+  "description": "Install qortex-form-react and optional query/store peers for binders.",
+  "category": "Getting Started",
+  "status": "alpha",
+  "content": "Core React hooks ship in the main entry. Query/store binders are separate entry points with optional peer dependencies.",
+  "sections": [
+    {
+      "title": "Install",
+      "code": {
+        "language": "bash",
+        "code": "npm install qortex-form-react@0.1.0-alpha.0\n# pulls qortex-form as a dependency"
+      }
+    },
+    {
+      "title": "Optional: query binders",
+      "content": "For `useQueryForm` / `useFormMutation` / `useFormQuery`:",
+      "code": {
+        "language": "bash",
+        "code": "npm install qortex-query-react\n# import from \"qortex-form-react/query\""
+      }
+    },
+    {
+      "title": "Optional: store binder",
+      "content": "For `useFormStore`:",
+      "code": {
+        "language": "bash",
+        "code": "npm install qortex-store\n# import from \"qortex-form-react/store\""
+      }
+    }
+  ]
+}

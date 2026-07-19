@@ -1,0 +1,21 @@
+{
+  "id": "useField",
+  "title": "useField",
+  "subtitle": "Fine-grained field subscription",
+  "description": "Subscribe to a single path via FormProvider context.",
+  "category": "React API",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function useField(path: string): FieldState & {\n  onChange: (value) => void;\n  onBlur: () => void;\n  reset: () => void;\n}"
+  },
+  "content": "Re-renders only when this path's value or meta changes. Requires a surrounding `FormProvider`.",
+  "examples": [
+    {
+      "title": "Controlled input",
+      "language": "tsx",
+      "code": "function EmailField() {\n  const { value, error, onChange, onBlur } = useField(\"email\");\n  return (\n    <input\n      value={value ?? \"\"}\n      onChange={(e) => onChange(e.target.value)}\n      onBlur={onBlur}\n      aria-invalid={!!error}\n    />\n  );\n}"
+    }
+  ],
+  "relatedPages": ["/form-react/docs/FormProvider", "/form-react/docs/useFieldArray"]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "persist",
+  "title": "Persist",
+  "subtitle": "Draft and cache hydration",
+  "description": "Optionally persist draft overrides and/or last source payload.",
+  "category": "API",
+  "status": "alpha",
+  "content": "When `persist` is enabled, provide a `key` (or `persist.key`) for storage identity.",
+  "sections": [
+    {
+      "title": "Options",
+      "content": "- `draft: true` — persist unsaved path overrides (debounced)\n- `cache: true` — persist last source for hydrate when `data` is undefined\n- `persist: true` — enables both draft and cache\n- `driver` — `localStorage` (default) or `sessionStorage`\n- `storage` / `db` — custom adapters (including qortex-db-style `del`)",
+      "code": {
+        "language": "typescript",
+        "code": "createForm({\n  key: [\"user\", id],\n  data: serverUser,\n  persist: {\n    draft: true,\n    debounce: 300,\n    driver: \"localStorage\",\n  },\n});"
+      }
+    },
+    {
+      "title": "On successful save",
+      "content": "`resetDraft` also clears the persisted draft blob."
+    }
+  ],
+  "relatedPages": ["/form/docs/createForm", "/db/docs/installation"]
+}

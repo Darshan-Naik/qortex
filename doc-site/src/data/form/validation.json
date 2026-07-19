@@ -1,0 +1,28 @@
+{
+  "id": "validation",
+  "title": "Validation",
+  "subtitle": "Field validators and resolvers",
+  "description": "Configure when and how form validation runs.",
+  "category": "API",
+  "status": "alpha",
+  "content": "Validation runs on `save` / `validate`, and optionally on change or blur via `validate.on`.",
+  "sections": [
+    {
+      "title": "Modes",
+      "content": "- `change` — after each `set`\n- `blur` — after `touch`\n- `submit` — during `save` / `validate` (default-ish for save path)\n- `manual` — only when you call `validate*` explicitly"
+    },
+    {
+      "title": "Field validators",
+      "content": "Keys support wildcards (`contacts.*.email`). Return a string message or null/undefined when valid:",
+      "code": {
+        "language": "typescript",
+        "code": "createForm({\n  initialData: { name: \"\", contacts: [{ email: \"\" }] },\n  validate: {\n    on: \"blur\",\n    fields: {\n      name: (v) => (!v ? \"Required\" : null),\n      \"contacts.*.email\": (v) => (!v?.includes(\"@\") ? \"Invalid email\" : null),\n    },\n  },\n});"
+      }
+    },
+    {
+      "title": "Schema resolver",
+      "content": "Use `zodResolver` or any function returning a flat path → message map. See [zodResolver](/form/docs/zodResolver)."
+    }
+  ],
+  "relatedPages": ["/form/docs/zodResolver", "/form/docs/createForm"]
+}

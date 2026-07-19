@@ -1,0 +1,27 @@
+{
+  "id": "installation",
+  "title": "Installation",
+  "subtitle": "Get started with qortex-form",
+  "description": "Install the headless form engine.",
+  "category": "Getting Started",
+  "status": "alpha",
+  "content": "qortex-form is framework-agnostic. For React, also install `qortex-form-react`.",
+  "sections": [
+    {
+      "title": "Install Package",
+      "content": "Add the package to your project:",
+      "code": {
+        "language": "bash",
+        "code": "# npm\nnpm install qortex-form@0.1.0-alpha.0\n\n# pnpm\npnpm add qortex-form@0.1.0-alpha.0"
+      }
+    },
+    {
+      "title": "React",
+      "content": "For React bindings (`useForm`, `FormProvider`, binders):\n\n```bash\nnpm install qortex-form-react@0.1.0-alpha.0\n```\n\nSee [qortex-form-react](/form-react)."
+    },
+    {
+      "title": "Requirements",
+      "content": "• **Zero runtime dependencies** in core\n• **TypeScript** ≥ 4.7 recommended\n• Pair with `qortex-query` (or any loader) for fetching — form does not fetch"
+    }
+  ]
+}

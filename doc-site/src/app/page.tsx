@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Zap, Code, Shield, ArrowRight, BrainCircuit, Layers, RefreshCw, Globe, Github, Database } from 'lucide-react'
-import { CoreIcon, ReactIcon, DbIcon, StoreIcon } from '@/components/icons/PackageIcons'
+import { CoreIcon, ReactIcon, DbIcon, StoreIcon, ResourceIcon } from '@/components/icons/PackageIcons'
 import { NeuralBackground } from '@/components/ui/NeuralBackground'
 import { Footer } from '@/components/layout'
 
@@ -323,6 +323,88 @@ export default function HomePage() {
                     View on NPM
                   </a>
                   <Link href="/store-react" className="inline-flex items-center text-teal-600 hover:text-teal-700 font-bold transition-colors">
+                    Documentation <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* qortex-form */}
+            <div className="relative bg-gradient-to-br from-orange-50 to-amber-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-visible">
+              <div className="absolute -top-3 -right-3 z-10">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-orange-500 text-white shadow-lg uppercase">
+                  Alpha
+                </span>
+              </div>
+
+              <div className="flex items-center mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-600 text-white">
+                  <ResourceIcon className="h-7 w-7" />
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-2xl font-bold text-gray-900">qortex-form</h3>
+                  <p className="text-sm text-orange-700 font-medium">Headless Form Engine · 0.1.0-alpha.0</p>
+                </div>
+              </div>
+
+              <p className="text-gray-700 mb-6">
+                Source → draft → validate → persist → save(mutator). Framework-agnostic core for data-heavy forms.
+              </p>
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">Draft overrides</span>
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">Zod</span>
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">Persist</span>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-orange-100/50">
+                <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
+                  npm i qortex-form@0.1.0-alpha.0
+                </code>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-orange-600 uppercase tracking-wide">Alpha</span>
+                  <Link href="/form" className="inline-flex items-center text-orange-600 hover:text-orange-700 font-bold transition-colors">
+                    Documentation <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* qortex-form-react */}
+            <div className="relative bg-gradient-to-br from-amber-50 to-orange-100 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-visible">
+              <div className="absolute -top-3 -right-3 z-10">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-orange-500 text-white shadow-lg uppercase">
+                  Alpha
+                </span>
+              </div>
+
+              <div className="flex items-center mb-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-amber-600 text-white">
+                  <ResourceIcon className="h-7 w-7" />
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-2xl font-bold text-gray-900">qortex-form-react</h3>
+                  <p className="text-sm text-amber-700 font-medium">React Form Hooks · 0.1.0-alpha.0</p>
+                </div>
+              </div>
+
+              <p className="text-gray-700 mb-6">
+                useForm, FormProvider, useField, useFieldArray, and useQueryForm binders.
+              </p>
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">useForm</span>
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">useQueryForm</span>
+                <span className="px-3 py-1 bg-white/70 rounded-full text-xs font-medium text-gray-700">FormProvider</span>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-amber-100/50">
+                <code className="block w-full text-center text-sm bg-gray-900 text-green-400 px-4 py-3 rounded-xl mb-4 font-mono shadow-inner">
+                  npm i qortex-form-react@0.1.0-alpha.0
+                </code>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-amber-700 uppercase tracking-wide">Alpha</span>
+                  <Link href="/form-react" className="inline-flex items-center text-amber-700 hover:text-amber-800 font-bold transition-colors">
                     Documentation <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </div>

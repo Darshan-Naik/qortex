@@ -1,0 +1,21 @@
+{
+  "id": "useFormQuery",
+  "title": "useFormQuery",
+  "subtitle": "Thin useQuery helper for forms",
+  "description": "Runs useQuery and surfaces data/load flags for manual useForm wiring.",
+  "category": "Binders",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function useFormQuery<T>(key: QueryKey, opts?: QueryOptions<T>): QueryState<T>\n// from \"qortex-form-react/query\""
+  },
+  "content": "Prefer `useQueryForm` for the full combo. Use this when you already compose `useForm` yourself.",
+  "examples": [
+    {
+      "title": "Manual composition",
+      "language": "tsx",
+      "code": "import { useFormQuery } from \"qortex-form-react/query\";\nimport { useForm, FormProvider } from \"qortex-form-react\";\n\nconst { data, isLoading } = useFormQuery([\"user\", id], {\n  fetcher: () => api.getUser(id),\n});\nconst { form } = useForm({ key: [\"user\", id], data });"
+    }
+  ],
+  "relatedPages": ["/form-react/docs/useQueryForm"]
+}
