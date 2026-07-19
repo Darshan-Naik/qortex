@@ -1,0 +1,36 @@
+{
+  "id": "quick-start",
+  "title": "Quick Start",
+  "subtitle": "Draft → validate → save in minutes",
+  "description": "Create a form, edit the draft, and persist with a mutator.",
+  "category": "Getting Started",
+  "status": "alpha",
+  "content": "qortex-form owns draft edits and validation. You supply source `data` and a save mutator.",
+  "sections": [
+    {
+      "title": "1. Create a form",
+      "content": "Pass source data (or `initialData`) and optional validation:",
+      "code": {
+        "language": "typescript",
+        "code": "import { createForm } from \"qortex-form\";\n\nconst user = createForm({\n  key: [\"user\", id],\n  data: serverUser,\n  validate: {\n    fields: {\n      name: (v) => (!v ? \"Required\" : null),\n    },\n  },\n});"
+      }
+    },
+    {
+      "title": "2. Edit the draft",
+      "content": "Overrides are stored per path until save or reset:",
+      "code": {
+        "language": "typescript",
+        "code": "user.set(\"name\", \"Ada\");\nuser.snapshot.isChanged; // true\nuser.draft?.name;        // \"Ada\"\nuser.data?.name;         // original source value"
+      }
+    },
+    {
+      "title": "3. Save with a mutator",
+      "content": "`save` validates, runs your mutator, then `resetDraft` on success. The mutator result is **not** applied as `data` — refresh source via query refetch or `setData`.",
+      "code": {
+        "language": "typescript",
+        "code": "await user.save(async (draft) => api.updateUser(id, draft));\n// On success: draft cleared. Call setData / refetch for fresh source.\n\nuser.destroy(); // cleanup when done"
+      }
+    }
+  ],
+  "relatedPages": ["/form/docs/concepts", "/form/docs/createForm", "/form-react/docs/quick-start"]
+}

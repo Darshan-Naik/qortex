@@ -1,0 +1,65 @@
+{
+  "name": "qortex-form-react",
+  "version": "0.1.0-alpha.0",
+  "description": "Alpha: React bindings for qortex-form",
+  "author": "Darshan Naik",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./query": {
+      "types": "./dist/query.d.ts",
+      "require": "./dist/query.js",
+      "import": "./dist/query.mjs"
+    },
+    "./store": {
+      "types": "./dist/store.d.ts",
+      "require": "./dist/store.js",
+      "import": "./dist/store.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit && tsup",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "qortex-form": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "qortex-query": "*",
+    "qortex-query-react": "*",
+    "qortex-store": "*"
+  },
+  "peerDependenciesMeta": {
+    "qortex-query": {
+      "optional": true
+    },
+    "qortex-query-react": {
+      "optional": true
+    },
+    "qortex-store": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "react": "^18.2.0",
+    "@types/react": "^18.2.0",
+    "qortex-query": "workspace:*",
+    "qortex-query-react": "workspace:*",
+    "qortex-store": "workspace:*",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  }
+}

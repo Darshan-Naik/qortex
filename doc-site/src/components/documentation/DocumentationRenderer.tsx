@@ -31,12 +31,12 @@ export function DocumentationRenderer({ data }: DocumentationRendererProps) {
                     <div>
                         <div className="flex items-center space-x-3">
                             <h2 className="text-2xl font-bold text-gray-900">{data.title}</h2>
-                            {isApiDocumentation(data) && data.status && (
+                            {'status' in data && data.status && (
                                 <Badge
                                     text={data.status}
                                     variant={
                                         data.status === 'stable' ? 'success' :
-                                            data.status === 'beta' ? 'warning' :
+                                            data.status === 'beta' || data.status === 'alpha' ? 'warning' :
                                                 'error'
                                     }
                                 />
@@ -127,7 +127,7 @@ export function DocumentationRenderer({ data }: DocumentationRendererProps) {
             )}
 
             {/* Best Practices */}
-            {isApiDocumentation(data) && data.bestPractices && (
+            {data.bestPractices && (
                 <div className="mb-10">
                     <h2 className="text-2xl font-semibold text-gray-900 mb-6">Best Practices</h2>
                     <BestPractices dos={data.bestPractices.dos} donts={data.bestPractices.donts} />
@@ -141,7 +141,7 @@ export function DocumentationRenderer({ data }: DocumentationRendererProps) {
                         <div key={index}>
                             <h2 className="text-2xl font-semibold text-gray-900 mb-6">{section.title}</h2>
                             {section.content && (
-                                <p className="text-gray-700 leading-relaxed mb-6">{section.content}</p>
+                                <p className="text-gray-700 leading-relaxed mb-6 whitespace-pre-line">{section.content}</p>
                             )}
                             {section.code && (
                                 <ExamplesList examples={[{

@@ -6,7 +6,7 @@ export interface ApiDocumentation {
     category: string;
     tags?: string[];
     version?: string;
-    status?: 'stable' | 'beta' | 'deprecated';
+    status?: 'stable' | 'beta' | 'alpha' | 'deprecated';
     signature: {
         language: string;
         code: string;
@@ -70,6 +70,8 @@ export interface GuideDocumentation {
     description?: string;
     category: string;
     tags?: string[];
+    version?: string;
+    status?: 'stable' | 'beta' | 'alpha' | 'deprecated';
     content: string;
     callouts?: Array<{
         type: 'info' | 'warning' | 'error' | 'success';
@@ -81,6 +83,10 @@ export interface GuideDocumentation {
         text: string;
         variant: 'default' | 'success' | 'warning' | 'error' | 'info';
     }>;
+    bestPractices?: {
+        dos: string[];
+        donts: string[];
+    };
     sections?: Array<{
         title: string;
         content: string;

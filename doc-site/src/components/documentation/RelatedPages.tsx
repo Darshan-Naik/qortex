@@ -4,6 +4,19 @@ interface RelatedPagesProps {
     pages: string[];
 }
 
+function resolveHref(page: string): string {
+    if (page.startsWith('/')) return page;
+    return `/docs/${page}`;
+}
+
+function labelFor(page: string): string {
+    if (page.startsWith('/')) {
+        const parts = page.split('/').filter(Boolean);
+        return parts[parts.length - 1] || page;
+    }
+    return page;
+}
+
 export function RelatedPages({ pages }: RelatedPagesProps) {
     if (!pages || pages.length === 0) return null;
 
@@ -14,10 +27,10 @@ export function RelatedPages({ pages }: RelatedPagesProps) {
                 {pages.map((page, index) => (
                     <Link
                         key={index}
-                        href={`/docs/${page}`}
+                        href={resolveHref(page)}
                         className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-primary-600 bg-primary-100 hover:bg-primary-200 transition-colors"
                     >
-                        {page}
+                        {labelFor(page)}
                     </Link>
                 ))}
             </div>

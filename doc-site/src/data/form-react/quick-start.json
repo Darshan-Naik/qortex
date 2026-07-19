@@ -1,0 +1,23 @@
+{
+  "id": "quick-start",
+  "title": "Quick Start",
+  "subtitle": "useForm + FormProvider + useField",
+  "description": "Wire a React form with fine-grained field subscriptions.",
+  "category": "Getting Started",
+  "status": "alpha",
+  "content": "`useForm` creates the instance. Wrap children in `FormProvider` so `useField` / `useFieldArray` can read context.",
+  "sections": [
+    {
+      "title": "Example",
+      "code": {
+        "language": "tsx",
+        "code": "import { useForm, FormProvider, useField } from \"qortex-form-react\";\n\nfunction ProfileForm({ data }: { data: User }) {\n  const { form, isChanged, save, resetDraft } = useForm({\n    key: data.id,\n    data,\n  });\n\n  return (\n    <FormProvider form={form}>\n      <NameField />\n      <button disabled={!isChanged} onClick={() => save((d) => api.save(d))}>\n        Save\n      </button>\n      <button type=\"button\" onClick={resetDraft}>Reset</button>\n    </FormProvider>\n  );\n}\n\nfunction NameField() {\n  const { value, onChange, onBlur, error } = useField(\"name\");\n  return (\n    <input\n      value={value ?? \"\"}\n      onChange={(e) => onChange(e.target.value)}\n      onBlur={onBlur}\n      aria-invalid={!!error}\n    />\n  );\n}"
+      }
+    },
+    {
+      "title": "Batteries included",
+      "content": "Prefer [useFormQuery](/form-react/docs/useFormQuery) when loading and saving via `qortex-query-react`."
+    }
+  ],
+  "relatedPages": ["/form-react/docs/useForm", "/form-react/docs/useFormQuery"]
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./App.css";
 
 // 1. Import all ecosystem packages
@@ -7,6 +7,9 @@ import { createQueryPersister } from "qortex-db/query";
 import { createStorePersister } from "qortex-db/store";
 import { useQuery, setDefaultConfig } from "qortex-query-react";
 import { createStore, useStore } from "qortex-store-react";
+
+// Import form demo
+import FormSection from "./FormSection";
 
 // 2. Initialize Unified Database
 const db = createDB({
@@ -135,8 +138,6 @@ const StoreSection = () => {
 };
 
 export default function App() {
-  const [isOnline, setIsOnline] = useState(true);
-
   return (
     <div className="app-container">
       <header className="header">
@@ -155,6 +156,7 @@ export default function App() {
       <main className="dashboard-grid">
         <QuerySection />
         <StoreSection />
+        <FormSection />
       </main>
 
       <div style={{ marginTop: "40px", display: "flex", justifyContent: "center" }}>

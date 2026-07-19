@@ -11,7 +11,7 @@ interface PackageDocsLayoutProps {
     packageName: string;
     packageIcon: React.ReactNode;
     packageHref: string;
-    themeColor: 'purple' | 'blue' | 'indigo' | 'emerald';
+    themeColor: 'purple' | 'blue' | 'indigo' | 'emerald' | 'orange';
 }
 
 export function PackageDocsLayout({

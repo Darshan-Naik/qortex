@@ -1,0 +1,21 @@
+{
+  "id": "FormProvider",
+  "title": "FormProvider",
+  "subtitle": "Context for useField / useFieldArray",
+  "description": "Provide a form instance to context consumers.",
+  "category": "React API",
+  "status": "alpha",
+  "signature": {
+    "language": "typescript",
+    "code": "function FormProvider<T>(props: { form: Form<T>; children: ReactNode }): JSX.Element\nfunction useFormContext<T = any>(): Form<T>"
+  },
+  "content": "`useFormContext` throws if no provider is present. Nest providers for multi-instance UIs (see Sharing patterns).",
+  "examples": [
+    {
+      "title": "Basic",
+      "language": "tsx",
+      "code": "const { form } = useForm({ initialData: { name: \"\" } });\n\nreturn (\n  <FormProvider form={form}>\n    <NameField />\n  </FormProvider>\n);"
+    }
+  ],
+  "relatedPages": ["/form-react/docs/useField", "/form-react/docs/sharing-patterns"]
+}

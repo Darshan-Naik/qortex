@@ -6,3 +6,10 @@ dist/
 
 .pre-commit-config.yaml
 trufflehog/
+
+# Generated subpath proxy folders
+packages/*/query/package.json
+packages/*/store/package.json
+packages/*/validate/package.json
+packages/*/optimistic/package.json
+packages/*/persist/package.json
